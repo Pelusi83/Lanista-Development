@@ -1510,8 +1510,7 @@
       <li><a href="#pricing">Membership</a></li>
       <li><a href="#partners">Partners</a></li>
       <li><a href="#products">Products</a></li>
-      <li><a href="#" onclick="openPlayer();return false;">Dashboard</a></li>
-      <li><a href="#" onclick="openDashboard2();return false;" style="color:#d4af37">Dashboard 2.0</a></li>
+      <li><a href="#" onclick="openIQ();return false;" style="color:#d4af37;font-weight:700">Lanista IQ</a></li>
     </ul>
     <a href="#inquiry" class="btn btn-gold nav-cta" style="display:none;padding:12px 26px;font-size:12px" id="nav-cta-desktop">Get Started</a>
     <button class="hamburger" id="hamburger" aria-label="Menu">
@@ -1528,8 +1527,7 @@
   <a href="#pricing" class="mobile-link">Membership</a>
   <a href="#partners" class="mobile-link">Partners</a>
   <a href="#products" class="mobile-link">Products</a>
-  <a href="#" class="mobile-link" onclick="openPlayer();return false;">Dashboard</a>
-  <a href="#" class="mobile-link" onclick="openDashboard2();return false;" style="color:#d4af37">Dashboard 2.0</a>
+  <a href="#" class="mobile-link" onclick="openIQ();return false;" style="color:#d4af37">Lanista IQ</a>
   <a href="#inquiry" class="btn btn-gold mobile-link" style="border-radius:3px">Get Started →</a>
 </div>
 
@@ -2585,7 +2583,16 @@ function handleSubmit() {
 }
 </script>
 
-<!-- ═══ PLAYER DASHBOARD OVERLAY ════════════════════════════════ -->
+<!-- ═══ LANISTA IQ — UNIFIED PLATFORM OVERLAY ═══════════════════ -->
+<div id="iq-overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:#0b0c0e;flex-direction:column">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#0b0c0e;border-bottom:1px solid rgba(212,175,55,.2);flex-shrink:0">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;letter-spacing:3px;color:#d4af37;text-transform:uppercase">LANISTA IQ <span style="font-size:10px;letter-spacing:1px;color:#6b7a99;margin-left:12px">Player · Coach · Admin · One Platform</span></div>
+    <button onclick="closeIQ()" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:13px;font-weight:600;padding:8px 18px;border-radius:6px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px">✕ Back to Site</button>
+  </div>
+  <iframe id="iq-frame" src="/iq" style="flex:1;border:none;width:100%;height:100%"></iframe>
+</div>
+
+<!-- ═══ PLAYER DASHBOARD OVERLAY (legacy) ═══════════════════════ -->
 <div id="player-overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:#0d1117;flex-direction:column">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#0d1117;border-bottom:1px solid rgba(212,175,55,.2);flex-shrink:0">
     <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;letter-spacing:3px;color:#d4af37;text-transform:uppercase">LANISTA IQ — Player Dashboard</div>
@@ -2614,12 +2621,15 @@ function closeOverlay(id) {
   document.getElementById(id).style.display = 'none';
   document.body.style.overflow = '';
 }
+function openIQ()          { openOverlay('iq-overlay'); }
+function closeIQ()         { closeOverlay('iq-overlay'); }
 function openPlayer()      { openOverlay('player-overlay'); }
 function closePlayer()     { closeOverlay('player-overlay'); }
 function openDashboard2()  { openOverlay('dashboard2-overlay'); }
 function closeDashboard2() { closeOverlay('dashboard2-overlay'); }
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
+    closeOverlay('iq-overlay');
     closeOverlay('player-overlay');
     closeOverlay('dashboard2-overlay');
   }
