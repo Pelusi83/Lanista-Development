@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "vercel dev",
     "start": "vercel dev",
-    "deploy": "vercel deploy --prod"
+    "deploy": "vercel deploy --prod",
+    "test": "node smoke.test.js"
   },
   "devDependencies": {
+    "jsdom": "^25.0.0",
     "vercel": "^39.0.0"
   }
 }
