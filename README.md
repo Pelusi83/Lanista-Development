@@ -5,6 +5,42 @@ Lanista Sports — athlete development platform. Marketing site + the unified
 
 Deployed on **Vercel** (static assets + serverless functions).
 
+## 🚀 Share it with your team (fastest path)
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Pelusi83/Lanista-Development&env=CLAUDE_API_KEY,GLADIUS_PASSWORD&envDescription=Gladius%20AI%20key%20%2B%20admin%20access%20code&project-name=lanista-iq&repository-name=lanista-iq)
+
+**Recommended: import the existing repo (2 minutes)**
+
+1. Go to **[vercel.com/new](https://vercel.com/new)** and sign in with GitHub.
+2. Click **Import** next to `Pelusi83/Lanista-Development`.
+3. Framework Preset: **Other** (no build step needed — leave build/output empty).
+4. (Optional) add Environment Variables so the Gladius AI works:
+   - `CLAUDE_API_KEY` — your Anthropic key
+   - `GLADIUS_PASSWORD` — admin Gladius access code
+   - *(the dashboards work fine without these; Gladius just shows "offline")*
+5. Click **Deploy**. You'll get a shareable URL like `https://lanista-iq.vercel.app`.
+
+Then send your team:
+- `https://<your-project>.vercel.app/iq` → the **new unified LANISTA IQ** dashboard
+- Add `?role=coach` or `?role=admin` to open a specific view (e.g. `.../iq?role=coach`)
+- `https://<your-project>.vercel.app/` → the marketing site (its nav opens Lanista IQ)
+
+> **Getting the NEW dashboard live:** the redesign is on branch
+> `cursor/unified-lanista-iq-dashboard-ac54` (PR #1). Either **merge PR #1 into
+> `main`** first, or — once the repo is connected to Vercel — open the PR and use
+> the **preview URL** Vercel auto-comments for that branch (great for team review
+> without merging).
+
+**CLI alternative**
+
+```bash
+npm i -g vercel
+vercel login
+vercel            # preview deploy → preview URL
+vercel --prod     # production deploy
+```
+
+
 ## Structure
 
 ```
