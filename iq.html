@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>LANISTA IQ — Athlete Intelligence Platform</title>
+<meta name="description" content="LANISTA IQ — one unified sports intelligence platform for Players, Coaches, and Admins. Turn athlete data into insight and action."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Barlow:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+/* ══════════════════════════════════════════════════════════════
+   LANISTA IQ — UNIFIED DESIGN SYSTEM
+══════════════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* surfaces */
+  --ink:#08090b; --bg:#0b0c0e; --panel:#101216; --panel-2:#15181d; --panel-3:#1b1f26;
+  --line:rgba(255,255,255,.07); --line-2:rgba(255,255,255,.12);
+  /* brand */
+  --gold:#C9A84C; --gold-2:#E8C96B; --gold-3:#F5DFA0; --gold-dim:#8a6d2e;
+  --white:#F4F5F7; --silver:#C5C8CC; --steel:#8A93A0; --muted:#5c636e;
+  /* core4 dimension hues */
+  --talent:#C9A84C; --character:#a78bfa; --mentality:#4ade80; --alignment:#60a5fa;
+  /* semantic */
+  --pos:#4ade80; --neg:#f87171; --warn:#f59e0b; --info:#60a5fa;
+  /* type */
+  --f-d:'Barlow Condensed',sans-serif; --f-b:'Barlow',sans-serif; --f-m:'IBM Plex Mono',monospace;
+  --ease:cubic-bezier(.4,0,.2,1);
+  --sidebar-w:248px; --topbar-h:60px; --radius:14px; --radius-sm:10px;
+  --shadow:0 8px 30px rgba(0,0,0,.35);
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--white);font-family:var(--f-b);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font-family:var(--f-b);border:none;outline:none;cursor:pointer;color:inherit;background:none}
+canvas{display:block}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:6px}
+::-webkit-scrollbar-thumb:hover{background:rgba(201,168,76,.35)}
+.hidden{display:none!important}
+.mono{font-family:var(--f-m)}
+.mut{color:var(--steel)}
+.pos{color:var(--pos)} .neg{color:var(--neg)} .warnc{color:var(--warn)}
+
+/* ── APP SHELL ── */
+#app{display:flex;min-height:100vh}
+.sidebar{width:var(--sidebar-w);flex-shrink:0;background:linear-gradient(180deg,var(--ink),var(--bg));border-right:1px solid var(--line);position:fixed;top:0;bottom:0;left:0;z-index:60;display:flex;flex-direction:column;transition:transform .3s var(--ease)}
+.sb-brand{padding:18px 20px 14px;display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--line)}
+.sb-mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--gold-2),var(--gold-dim));display:flex;align-items:center;justify-content:center;font-family:var(--f-d);font-weight:900;color:#1a1206;font-size:18px;flex-shrink:0;box-shadow:0 2px 10px rgba(201,168,76,.3)}
+.sb-word{font-family:var(--f-d);font-weight:900;letter-spacing:2.5px;font-size:17px;line-height:1;text-transform:uppercase}
+.sb-word small{display:block;font-family:var(--f-m);font-size:8px;letter-spacing:3px;color:var(--steel);font-weight:500;margin-top:3px}
+.sb-nav{flex:1;overflow-y:auto;padding:14px 12px}
+.sb-section{font-family:var(--f-m);font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);padding:14px 12px 8px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;color:var(--steel);font-weight:500;font-size:14px;cursor:pointer;transition:all .16s var(--ease);margin-bottom:2px;position:relative}
+.nav-item:hover{background:rgba(255,255,255,.04);color:var(--white)}
+.nav-item.active{background:linear-gradient(90deg,rgba(201,168,76,.16),rgba(201,168,76,.03));color:var(--gold-2)}
+.nav-item.active::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:var(--gold)}
+.nav-ico{width:20px;height:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center;opacity:.9}
+.nav-ico svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.7}
+.nav-badge{margin-left:auto;font-family:var(--f-m);font-size:9px;font-weight:700;background:var(--gold);color:#1a1206;border-radius:20px;padding:1px 7px}
+.sb-foot{border-top:1px solid var(--line);padding:12px}
+.role-pill-wrap{display:flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:4px;margin-bottom:10px}
+.role-pill{flex:1;font-family:var(--f-m);font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:7px 4px;border-radius:7px;color:var(--steel);transition:all .18s;text-align:center}
+.role-pill.active{background:var(--gold);color:#1a1206}
+.sb-user{display:flex;align-items:center;gap:10px;padding:8px 6px}
+.sb-user .av{width:34px;height:34px;border-radius:50%;background:rgba(201,168,76,.12);border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:var(--f-d);font-weight:800;color:var(--gold);font-size:13px}
+.sb-user .nm{font-size:13px;font-weight:600;line-height:1.2}
+.sb-user .rl{font-family:var(--f-m);font-size:9px;color:var(--steel);text-transform:uppercase;letter-spacing:1px}
+
+/* main */
+.main{flex:1;margin-left:var(--sidebar-w);min-width:0;display:flex;flex-direction:column}
+.topbar{height:var(--topbar-h);position:sticky;top:0;z-index:50;background:rgba(11,12,14,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 26px}
+.tb-menu{display:none;font-size:22px;color:var(--white)}
+.tb-crumb{display:flex;flex-direction:column}
+.tb-crumb .kick{font-family:var(--f-m);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--steel)}
+.tb-crumb .ttl{font-family:var(--f-d);font-size:20px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;line-height:1}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.tb-search{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px;width:220px;transition:border-color .2s}
+.tb-search:focus-within{border-color:rgba(201,168,76,.4)}
+.tb-search svg{width:15px;height:15px;stroke:var(--steel);fill:none;stroke-width:2}
+.tb-search input{background:none;border:none;outline:none;color:var(--white);font-size:13px;width:100%}
+.tb-icon-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--panel);display:flex;align-items:center;justify-content:center;position:relative;transition:all .18s}
+.tb-icon-btn:hover{border-color:rgba(201,168,76,.4)}
+.tb-icon-btn svg{width:17px;height:17px;stroke:var(--silver);fill:none;stroke-width:1.8}
+.tb-dot{position:absolute;top:8px;right:9px;width:7px;height:7px;border-radius:50%;background:var(--gold);border:2px solid var(--panel)}
+.view{padding:26px;max-width:1360px;width:100%;margin:0 auto;flex:1}
+
+/* ── HERO / PAGE HEADER ── */
+.page-hero{display:flex;align-items:flex-start;gap:18px;flex-wrap:wrap;margin-bottom:22px}
+.page-hero .lead{flex:1;min-width:220px}
+.page-hero h1{font-family:var(--f-d);font-size:30px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;line-height:1.02}
+.page-hero p{color:var(--steel);font-size:14px;margin-top:5px;max-width:640px}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--f-d);font-weight:800;font-size:13px;letter-spacing:1.4px;text-transform:uppercase;padding:10px 18px;border-radius:10px;border:1px solid var(--line-2);color:var(--white);background:var(--panel-2);transition:all .18s}
+.btn:hover{border-color:rgba(201,168,76,.5);background:var(--panel-3)}
+.btn.gold{background:linear-gradient(135deg,var(--gold-2),var(--gold));color:#1a1206;border-color:transparent}
+.btn.gold:hover{filter:brightness(1.06)}
+.btn.ghost{background:transparent}
+.btn.sm{padding:7px 13px;font-size:11px;letter-spacing:1px}
+.btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2}
+
+/* ── CARDS ── */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);transition:border-color .2s,transform .2s}
+.card.pad{padding:20px}
+.card.hover:hover{border-color:rgba(201,168,76,.25)}
+.card-head{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.card-head .lbl{font-family:var(--f-m);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--steel)}
+.card-head .act{margin-left:auto;font-family:var(--f-m);font-size:10px;color:var(--gold);letter-spacing:1px;cursor:pointer}
+.card-head .act:hover{color:var(--gold-2)}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)} .g5{grid-template-columns:repeat(5,1fr)}
+.g-2-1{grid-template-columns:2fr 1fr} .g-1-2{grid-template-columns:1fr 2fr}
+.mb16{margin-bottom:16px}.mb22{margin-bottom:22px}.mt16{margin-top:16px}
+
+/* ── KPI CARD ── */
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 18px 16px;position:relative;overflow:hidden}
+.kpi::after{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),transparent)}
+.kpi .k-lbl{font-family:var(--f-m);font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--steel)}
+.kpi .k-val{font-family:var(--f-d);font-size:38px;font-weight:900;line-height:1;margin-top:8px;letter-spacing:.5px}
+.kpi .k-sub{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:12px;color:var(--steel)}
+.chip{font-family:var(--f-m);font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;display:inline-flex;align-items:center;gap:3px}
+.chip.up{background:rgba(74,222,128,.12);color:var(--pos)}
+.chip.down{background:rgba(248,113,113,.12);color:var(--neg)}
+.chip.flat{background:rgba(138,147,160,.12);color:var(--steel)}
+
+/* ── CORE4 SIGNATURE ── */
+.core4-hero{display:grid;grid-template-columns:300px 1fr;gap:22px;align-items:center}
+.core4-rings{position:relative;width:260px;height:260px;margin:0 auto}
+.core4-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none}
+.core4-center .cc-lbl{font-family:var(--f-m);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--steel)}
+.core4-center .cc-val{font-family:var(--f-d);font-size:54px;font-weight:900;line-height:.9;background:linear-gradient(135deg,var(--gold-3),var(--gold));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.core4-center .cc-tag{font-family:var(--f-m);font-size:9px;letter-spacing:1px;color:var(--gold);text-transform:uppercase;margin-top:2px}
+.core4-legend{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.c4dim{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:14px 15px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden}
+.c4dim:hover{border-color:var(--dc);transform:translateY(-2px)}
+.c4dim .d-top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.c4dim .d-dot{width:10px;height:10px;border-radius:3px;background:var(--dc)}
+.c4dim .d-name{font-family:var(--f-d);font-weight:800;letter-spacing:1.5px;text-transform:uppercase;font-size:13px}
+.c4dim .d-arrow{margin-left:auto;color:var(--muted);font-size:15px}
+.c4dim .d-val{font-family:var(--f-d);font-size:32px;font-weight:900;line-height:1}
+.c4dim .d-bar{height:5px;border-radius:3px;background:rgba(255,255,255,.08);margin-top:9px;overflow:hidden}
+.c4dim .d-bar i{display:block;height:100%;border-radius:3px;background:var(--dc)}
+.c4dim .d-meta{display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--steel)}
+
+/* ── PROFILE HEADER ── */
+.athlete-head{background:linear-gradient(135deg,var(--panel-2),var(--panel));border:1px solid var(--line);border-top:3px solid var(--gold);border-radius:var(--radius);padding:22px 24px;display:flex;gap:20px;align-items:center;flex-wrap:wrap;margin-bottom:22px}
+.ah-avatar{width:78px;height:78px;border-radius:16px;background:rgba(201,168,76,.1);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:var(--f-d);font-size:30px;font-weight:900;color:var(--gold);flex-shrink:0}
+.ah-info{flex:1;min-width:200px}
+.ah-name{font-family:var(--f-d);font-size:30px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;line-height:1}
+.ah-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.tag{font-family:var(--f-m);font-size:10px;font-weight:600;letter-spacing:.5px;padding:4px 9px;border-radius:7px;background:var(--panel-3);color:var(--silver);border:1px solid var(--line)}
+.tag.gold{color:var(--gold);border-color:rgba(201,168,76,.3);background:rgba(201,168,76,.07)}
+.ah-scores{display:flex;gap:22px}
+.ah-score{text-align:center}
+.ah-score .v{font-family:var(--f-d);font-size:40px;font-weight:900;line-height:1;color:var(--gold)}
+.ah-score .v.blue{color:var(--info)}
+.ah-score .l{font-family:var(--f-m);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--steel);margin-top:3px}
+.ah-actions{display:flex;gap:9px;flex-wrap:wrap}
+/* profile completion ring */
+.pc-ring{display:flex;align-items:center;gap:10px}
+.pc-ring svg{width:52px;height:52px}
+
+/* ── INSIGHT / PRIORITY ── */
+.insight{display:flex;gap:12px;padding:13px 15px;border-radius:11px;background:var(--panel-2);border:1px solid var(--line);border-left:3px solid var(--gold);margin-bottom:10px}
+.insight:last-child{margin-bottom:0}
+.insight.good{border-left-color:var(--pos)} .insight.watch{border-left-color:var(--warn)} .insight.bad{border-left-color:var(--neg)}
+.insight .ic{width:34px;height:34px;border-radius:9px;background:var(--panel-3);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.insight .tt{font-weight:600;font-size:13.5px;margin-bottom:2px}
+.insight .ds{font-size:12.5px;color:var(--steel);line-height:1.5}
+.priority{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:15px;margin-bottom:12px}
+.priority .p-top{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.priority .p-rank{font-family:var(--f-d);font-size:20px;font-weight:900;color:var(--gold);width:26px}
+.priority .p-name{font-weight:700;font-size:14px}
+.priority .p-scores{margin-left:auto;font-family:var(--f-m);font-size:11px;color:var(--steel)}
+.priority .p-scores b{color:var(--gold)}
+.priority .p-why{font-size:12.5px;color:var(--steel);margin:4px 0 10px;line-height:1.5}
+.priority .p-act{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--gold-2)}
+.progress{height:7px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:8px}
+.progress i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gold),var(--gold-2))}
+.progress i.on{background:linear-gradient(90deg,#16a34a,var(--pos))}
+.progress i.risk{background:linear-gradient(90deg,#b45309,var(--warn))}
+.progress i.over{background:linear-gradient(90deg,#991b1b,var(--neg))}
+
+/* action list */
+.action{display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:11px;background:var(--panel-2);border:1px solid var(--line);margin-bottom:9px;transition:all .16s;cursor:pointer}
+.action:hover{border-color:rgba(201,168,76,.35);transform:translateX(2px)}
+.action .a-ic{width:36px;height:36px;border-radius:10px;background:rgba(201,168,76,.1);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.action .a-tt{font-weight:600;font-size:13.5px}
+.action .a-ds{font-size:11.5px;color:var(--steel)}
+.action .a-go{margin-left:auto;color:var(--gold);font-family:var(--f-m);font-size:10px;letter-spacing:1px;white-space:nowrap}
+
+/* ── METRIC ROWS ── */
+.mrow{display:flex;align-items:center;gap:14px;padding:11px 0;border-bottom:1px solid var(--line)}
+.mrow:last-child{border-bottom:none}
+.mrow .m-nm{width:150px;flex-shrink:0;font-size:13px;color:var(--silver)}
+.mrow .m-track{flex:1;height:7px;border-radius:4px;background:rgba(255,255,255,.07);overflow:hidden}
+.mrow .m-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gold),var(--gold-2))}
+.mrow .m-fill.green{background:linear-gradient(90deg,#16a34a,var(--pos))}
+.mrow .m-fill.red{background:linear-gradient(90deg,#991b1b,var(--neg))}
+.mrow .m-val{width:92px;text-align:right;font-family:var(--f-m);font-weight:700;color:var(--gold);flex-shrink:0}
+.mrow .m-avg{width:78px;text-align:right;font-family:var(--f-m);font-size:10px;color:var(--muted);flex-shrink:0}
+
+/* ── TABLES ── */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{font-family:var(--f-m);font-size:9.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--steel);text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);white-space:nowrap;cursor:pointer;user-select:none}
+.tbl th:hover{color:var(--gold)}
+.tbl td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.045)}
+.tbl tbody tr{transition:background .15s;cursor:pointer}
+.tbl tbody tr:hover{background:rgba(201,168,76,.05)}
+.tbl tbody tr:last-child td{border-bottom:none}
+.av-sm{width:30px;height:30px;border-radius:8px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);display:inline-flex;align-items:center;justify-content:center;font-family:var(--f-d);font-weight:800;color:var(--gold);font-size:11px;margin-right:9px;vertical-align:middle}
+.pill{font-family:var(--f-m);font-size:9px;font-weight:700;letter-spacing:.5px;padding:3px 9px;border-radius:20px;text-transform:uppercase}
+.pill.g{background:rgba(74,222,128,.12);color:var(--pos)}
+.pill.y{background:rgba(245,158,11,.14);color:var(--warn)}
+.pill.r{background:rgba(248,113,113,.12);color:var(--neg)}
+.pill.b{background:rgba(96,165,250,.12);color:var(--info)}
+.pill.n{background:var(--panel-3);color:var(--steel)}
+.mini-bar{display:inline-flex;align-items:center;gap:8px}
+.mini-bar .mb-t{width:64px;height:6px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden}
+.mini-bar .mb-f{height:100%;border-radius:3px;background:var(--gold)}
+
+/* segmented / toggle */
+.seg{display:inline-flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:4px}
+.seg button{font-family:var(--f-m);font-size:11px;font-weight:700;letter-spacing:.5px;padding:7px 14px;border-radius:7px;color:var(--steel);transition:all .16s}
+.seg button.active{background:var(--gold);color:#1a1206}
+
+/* tabs (profile) */
+.subtabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:20px;overflow-x:auto}
+.subtab{font-family:var(--f-d);font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:12px 16px;color:var(--steel);border-bottom:2px solid transparent;white-space:nowrap;transition:all .16s;margin-bottom:-1px}
+.subtab:hover{color:var(--white)}
+.subtab.active{color:var(--gold);border-bottom-color:var(--gold)}
+
+/* heatmap */
+.hm{width:100%;border-collapse:collapse;font-size:11px}
+.hm th{font-family:var(--f-m);font-size:9px;color:var(--steel);padding:6px;text-align:center;font-weight:600}
+.hm td{padding:3px;text-align:center}
+.hm .cell{height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--f-m);font-size:10px;font-weight:600;color:#0a0a0a}
+.hm .rname{font-size:11px;color:var(--silver);text-align:left;padding-right:10px;white-space:nowrap;font-family:var(--f-b)}
+
+/* resource cards */
+.res{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:16px;transition:all .18s;cursor:pointer}
+.res:hover{border-color:rgba(201,168,76,.3);transform:translateY(-2px)}
+.res .r-top{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.res .r-type{font-size:18px}
+.res .r-tier{margin-left:auto;font-family:var(--f-m);font-size:8px;font-weight:700;letter-spacing:1px;padding:2px 7px;border-radius:20px;text-transform:uppercase}
+.tier-free{background:rgba(74,222,128,.12);color:var(--pos)}
+.tier-pro{background:rgba(96,165,250,.12);color:var(--info)}
+.tier-elite{background:rgba(201,168,76,.14);color:var(--gold)}
+.res .r-tt{font-weight:600;font-size:14px;line-height:1.3;margin-bottom:6px}
+.res .r-mt{font-size:11px;color:var(--steel);font-family:var(--f-m)}
+
+/* ── MODAL / DRAWER ── */
+.overlay{position:fixed;inset:0;z-index:100;background:rgba(4,5,7,.72);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px}
+.overlay.open{display:flex}
+.modal{background:var(--panel);border:1px solid var(--line-2);border-radius:16px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;position:relative;box-shadow:var(--shadow)}
+.modal.wide{max-width:900px}
+.modal-head{padding:20px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;position:sticky;top:0;background:var(--panel);z-index:2}
+.modal-head .m-ttl{font-family:var(--f-d);font-size:20px;font-weight:900;letter-spacing:1px;text-transform:uppercase}
+.modal-head .m-sub{font-size:12px;color:var(--steel)}
+.modal-x{margin-left:auto;width:34px;height:34px;border-radius:9px;border:1px solid var(--line);color:var(--steel);font-size:16px;display:flex;align-items:center;justify-content:center}
+.modal-x:hover{color:var(--white);border-color:var(--line-2)}
+.modal-body{padding:22px 24px}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,94vw);background:var(--panel);border-left:1px solid var(--line-2);z-index:110;transform:translateX(100%);transition:transform .32s var(--ease);overflow-y:auto;box-shadow:-10px 0 40px rgba(0,0,0,.5)}
+.drawer.open{transform:translateX(0)}
+
+/* likert */
+.likert{margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.likert .q{font-size:13.5px;margin-bottom:11px}
+.likert .opts{display:flex;gap:9px}
+.likert .opt{width:44px;height:44px;border-radius:11px;border:1.5px solid var(--line-2);display:flex;align-items:center;justify-content:center;font-family:var(--f-d);font-size:17px;font-weight:800;color:var(--steel);transition:all .14s}
+.likert .opt:hover{border-color:var(--gold)}
+.likert .opt.sel{background:var(--gold);color:#1a1206;border-color:var(--gold)}
+.inp{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;color:var(--white);padding:11px 13px;font-family:var(--f-b);font-size:13px;outline:none;margin-bottom:12px}
+.inp:focus{border-color:rgba(201,168,76,.4)}
+
+/* gladius */
+.gladius-fab{position:fixed;bottom:26px;right:26px;z-index:90;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--gold-2),var(--gold));display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(201,168,76,.45);transition:transform .2s}
+.gladius-fab:hover{transform:scale(1.06)}
+.gladius-fab svg{width:26px;height:26px;stroke:#1a1206;fill:none;stroke-width:2}
+.gladius-panel{position:fixed;bottom:94px;right:26px;z-index:90;width:min(380px,92vw);height:520px;max-height:74vh;background:var(--panel);border:1px solid var(--line-2);border-radius:16px;display:none;flex-direction:column;overflow:hidden;box-shadow:var(--shadow)}
+.gladius-panel.open{display:flex}
+.g-head{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(201,168,76,.1),transparent)}
+.g-head .g-mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--gold-2),var(--gold-dim));display:flex;align-items:center;justify-content:center;font-family:var(--f-d);font-weight:900;color:#1a1206}
+.g-head .g-t{font-family:var(--f-d);font-weight:900;letter-spacing:2px;font-size:15px}
+.g-head .g-s{font-family:var(--f-m);font-size:8px;color:var(--steel);letter-spacing:1px}
+.g-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.g-msg{font-size:13px;line-height:1.5;padding:10px 13px;border-radius:12px;max-width:88%}
+.g-msg.u{background:var(--gold);color:#1a1206;align-self:flex-end;border-bottom-right-radius:4px}
+.g-msg.a{background:var(--panel-3);align-self:flex-start;border-bottom-left-radius:4px}
+.g-msg.err{background:rgba(248,113,113,.1);color:var(--neg)}
+.g-in{border-top:1px solid var(--line);padding:11px;display:flex;gap:8px}
+.g-in input{flex:1;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;color:var(--white);padding:9px 12px;font-size:13px;outline:none}
+.g-in button{width:40px;border-radius:10px;background:var(--gold);color:#1a1206;display:flex;align-items:center;justify-content:center}
+
+/* toast */
+.toasts{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center}
+.toast{background:var(--panel-3);border:1px solid var(--line-2);border-radius:11px;padding:11px 18px;font-size:13px;font-weight:500;box-shadow:var(--shadow);opacity:0;transform:translateY(12px);transition:all .3s var(--ease)}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.gold{border-color:rgba(201,168,76,.5);color:var(--gold-2)}
+.toast.good{border-color:rgba(74,222,128,.4);color:var(--pos)}
+
+/* misc */
+.spark{height:44px}
+.empty{text-align:center;color:var(--steel);padding:30px;font-size:13px}
+.stat-strip{display:flex;gap:26px;flex-wrap:wrap}
+.stat-strip .s{}
+.stat-strip .s .v{font-family:var(--f-d);font-size:26px;font-weight:900;line-height:1}
+.stat-strip .s .l{font-family:var(--f-m);font-size:9px;letter-spacing:1.2px;text-transform:uppercase;color:var(--steel);margin-top:3px}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:55;display:none}
+.scrim.open{display:block}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1100px){
+  .core4-hero{grid-template-columns:1fr}
+  .g-2-1,.g-1-2{grid-template-columns:1fr}
+  .g4{grid-template-columns:repeat(2,1fr)}
+  .g5{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:860px){
+  :root{--sidebar-w:0px}
+  .sidebar{transform:translateX(-100%);width:262px}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .tb-menu{display:block}
+  .tb-search{display:none}
+  .g2,.g3{grid-template-columns:1fr}
+  .g4,.g5{grid-template-columns:repeat(2,1fr)}
+  .core4-legend{grid-template-columns:repeat(2,1fr)}
+  .view{padding:18px 16px}
+  .page-hero h1{font-size:24px}
+  .ah-scores{gap:16px}
+  .ah-score .v{font-size:32px}
+}
+@media(max-width:480px){
+  .g4,.g5,.core4-legend{grid-template-columns:1fr}
+  .stat-strip{gap:16px}
+  .core4-rings{width:220px;height:220px}
+}
+</style>
+</head>
+<body>
+
+<div class="scrim" id="scrim" onclick="toggleSidebar(false)"></div>
+<div id="app">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-brand">
+      <div class="sb-mark">L</div>
+      <div class="sb-word">Lanista<small>IQ · Intelligence</small></div>
+    </div>
+    <nav class="sb-nav" id="sbNav"></nav>
+    <div class="sb-foot">
+      <div class="role-pill-wrap" id="rolePills">
+        <button class="role-pill active" data-role="player" onclick="setRole('player')">Player</button>
+        <button class="role-pill" data-role="coach" onclick="setRole('coach')">Coach</button>
+        <button class="role-pill" data-role="admin" onclick="setRole('admin')">Admin</button>
+      </div>
+      <div class="sb-user" id="sbUser"></div>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <div class="main">
+    <header class="topbar">
+      <button class="tb-menu" onclick="toggleSidebar(true)">☰</button>
+      <div class="tb-crumb">
+        <span class="kick" id="tbKick">Lanista IQ</span>
+        <span class="ttl" id="tbTitle">Home</span>
+      </div>
+      <div class="tb-right">
+        <div class="tb-search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input id="globalSearch" placeholder="Search athletes, resources…" oninput="onSearch(this.value)"/>
+        </div>
+        <a class="tb-icon-btn" href="/" title="Back to site">
+          <svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9"/><path d="M9 21V12h6v9"/></svg>
+        </a>
+        <button class="tb-icon-btn" title="Notifications" onclick="showToast('No new notifications','')">
+          <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+          <span class="tb-dot"></span>
+        </button>
+      </div>
+    </header>
+    <main class="view" id="view"></main>
+  </div>
+</div>
+
+<!-- ══ ATHLETE PROFILE DRAWER ══ -->
+<div class="scrim" id="drawerScrim" onclick="closeDrawer()"></div>
+<div class="drawer" id="athleteDrawer"></div>
+
+<!-- ══ GENERIC MODAL ══ -->
+<div class="overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modalCard"></div>
+</div>
+
+<!-- ══ GLADIUS ══ -->
+<button class="gladius-fab" onclick="toggleGladius()" title="Ask Gladius AI">
+  <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+</button>
+<div class="gladius-panel" id="gladiusPanel">
+  <div class="g-head">
+    <div class="g-mark">G</div>
+    <div><div class="g-t">GLADIUS</div><div class="g-s">Lanista AI · Performance Intelligence</div></div>
+    <button class="modal-x" style="margin-left:auto;width:28px;height:28px" onclick="toggleGladius()">✕</button>
+  </div>
+  <div class="g-msgs" id="gMsgs"></div>
+  <div class="g-in">
+    <input id="gInput" placeholder="Ask about performance, drills, trends…"/>
+    <button onclick="sendGladius()"><svg viewBox="0 0 24 24" style="width:17px;height:17px;stroke:#1a1206;fill:none;stroke-width:2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg></button>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   LANISTA IQ — DATA LAYER
+   Merged model from the original Player Dashboard + Platform 2.0.
+   CORE4 = TALENT · CHARACTER · MENTALITY · ALIGNMENT (LS4 composite)
+══════════════════════════════════════════════════════════════ */
+var C4 = {
+  talent:    { name:'Talent',    color:'#C9A84C', icon:'🎯', desc:'On-field skill & athletic ability' },
+  character: { name:'Character', color:'#a78bfa', icon:'🛡️', desc:'Coachability, effort & leadership' },
+  mentality: { name:'Mentality', color:'#4ade80', icon:'🧠', desc:'Confidence, focus & composure' },
+  alignment: { name:'Alignment', color:'#60a5fa', icon:'🧭', desc:'Development fit & engagement' }
+};
+
+var ATHLETE = {
+  name:'Marcus Rivera', first:'Marcus', pos:'RHP / 3B·SS', posShort:'3B/SS', team:'Westlake HS',
+  city:'Dallas, TX', grad:'2027', grade:'11th', gpa:'3.7', height:'6\'2"', weight:'195 lbs',
+  bats:'R/R', number:'14', avatar:'MR',
+  lanistaIQ:91, ls4:87, status:'Rising', profile:82, streak:4, xp:245, level:'Prospect',
+  core4:{
+    talent:    {score:88, trend:+7,  prev:81},
+    character: {score:85, trend:+4,  prev:81},
+    mentality: {score:88, trend:+6,  prev:82},
+    alignment: {score:79, trend:+3,  prev:76}
+  },
+  // athletic
+  exitVelo:94, armVelo:84, pitchVelo:94, sprint30:6.58, agility:6.52, firstToThird:12.1, rsi:81, vert:28, popTime:1.92,
+  // pitching
+  spinRate:2485, spinEff:85, strikesPct:78,
+  // hitting
+  batSpeed:72, launchAngle:18, hardHit:47,
+  // mentality subs
+  confidence:91, grit:89, resilience:88, focus:88, composure:85, coachability:87, effort:90, eq:84, stress:32, morale:90, wellness:84,
+  devPlan:[
+    {title:'FB Velocity → 95+ mph', dim:'talent', cur:'94 mph', target:'Aug 2026', progress:72, status:'on', why:'Adds a full grade to your pitching profile and college ceiling.'},
+    {title:'Changeup Command → 60%', dim:'talent', cur:'52%', target:'Jul 2026', progress:45, status:'risk', why:'A reliable third pitch is your fastest path to varsity innings.'},
+    {title:'Coachability → 90+', dim:'character', cur:'87', target:'Jul 2026', progress:55, status:'on', why:'Coaches recruit coachability first — small gap, high payoff.'},
+    {title:'60-Yard Dash → under 6.5s', dim:'talent', cur:'6.58s', target:'Sep 2026', progress:60, status:'on', why:'Improves your athletic testing profile for showcases.'},
+    {title:'Exit Velocity → 98+ mph', dim:'talent', cur:'94 mph', target:'Oct 2026', progress:80, status:'on', why:'Top-percentile power separates you from your class.'}
+  ],
+  highlights:[]
+};
+
+var MENTALITY_HISTORY = [
+  {week:'Wk1',confidence:3,stress:4,mindset:3,morale:3,wellness:3},
+  {week:'Wk2',confidence:3,stress:3,mindset:4,morale:4,wellness:4},
+  {week:'Wk3',confidence:4,stress:3,mindset:4,morale:4,wellness:3},
+  {week:'Wk4',confidence:4,stress:2,mindset:5,morale:4,wellness:4},
+  {week:'Wk5',confidence:3,stress:3,mindset:4,morale:3,wellness:3},
+  {week:'Wk6',confidence:4,stress:2,mindset:5,morale:5,wellness:4},
+  {week:'Wk7',confidence:5,stress:2,mindset:5,morale:5,wellness:5},
+  {week:'Wk8',confidence:4,stress:2,mindset:4,morale:4,wellness:4}
+];
+
+/* Roster — extended with CORE4 for the Team Matrix & averages */
+var ROSTER = [
+  {name:'Marcus Rivera',pos:'3B/SS',cls:'2027',talent:88,character:85,mentality:88,alignment:79,exitVelo:94.2,armVelo:84.5,streak:4,status:'green',trend:+6,assess:'complete'},
+  {name:'Jordan Sanchez',pos:'1B/OF',cls:'2026',talent:90,character:64,mentality:52,alignment:58,exitVelo:96.8,armVelo:78.2,streak:1,status:'red',trend:-8,assess:'complete'},
+  {name:'Tyler Kim',pos:'CF',cls:'2027',talent:78,character:74,mentality:68,alignment:55,exitVelo:88.4,armVelo:82.0,streak:0,status:'yellow',trend:-3,assess:'overdue'},
+  {name:'Devin Parker',pos:'RHP',cls:'2026',talent:83,character:90,mentality:88,alignment:86,exitVelo:82.1,armVelo:87.6,streak:8,status:'green',trend:+9,assess:'complete'},
+  {name:'Kane Johnson',pos:'C',cls:'2028',talent:85,character:82,mentality:76,alignment:80,exitVelo:90.2,armVelo:83.4,streak:5,status:'green',trend:+4,assess:'complete'},
+  {name:'Andre Torres',pos:'LHP',cls:'2027',talent:80,character:84,mentality:84,alignment:82,exitVelo:79.8,armVelo:85.2,streak:6,status:'green',trend:+5,assess:'complete'},
+  {name:'Mason Williams',pos:'2B',cls:'2028',talent:76,character:78,mentality:72,alignment:70,exitVelo:87.6,armVelo:76.8,streak:3,status:'green',trend:+2,assess:'pending'},
+  {name:'Brandon Chen',pos:'RHP',cls:'2026',talent:82,character:92,mentality:90,alignment:89,exitVelo:80.4,armVelo:88.9,streak:11,status:'green',trend:+11,assess:'complete'},
+  {name:'Luis Garcia',pos:'SS',cls:'2027',talent:86,character:79,mentality:78,alignment:74,exitVelo:91.5,armVelo:80.2,streak:2,status:'yellow',trend:0,assess:'pending'},
+  {name:'Ravi Patel',pos:'3B/RHP',cls:'2027',talent:81,character:86,mentality:80,alignment:83,exitVelo:85.3,armVelo:83.8,streak:7,status:'green',trend:+6,assess:'complete'}
+];
+
+var RESOURCES = [
+  {id:'r1',title:'Fastball Mechanics: Adding 3–5 mph',type:'video',tier:'free',tag:'VELOCITY',source:'Driveline Baseball',meta:'18 min'},
+  {id:'r2',title:'Changeup Grip & Release Mastery',type:'video',tier:'pro',tag:'COMMAND',source:'Lanista Academy',meta:'12 min'},
+  {id:'r3',title:'Weighted Ball Protocol — 8 Weeks',type:'pdf',tier:'pro',tag:'STRENGTH',source:'Lanista Tools',meta:'2.4 MB'},
+  {id:'r4',title:'60-Yard Dash: Acceleration Phase',type:'video',tier:'free',tag:'SPEED',source:'Dashr Academy',meta:'22 min'},
+  {id:'r5',title:'Coachability: The Skill Coaches Recruit First',type:'pdf',tier:'free',tag:'MENTAL',source:'Lanista Research',meta:'1.1 MB'},
+  {id:'r6',title:'Pre-Game Mental Routine Builder',type:'pdf',tier:'elite',tag:'MENTAL',source:'LS4 Tools',meta:'0.8 MB'},
+  {id:'r7',title:'Bat Speed: Diamond Kinetics Protocol',type:'video',tier:'pro',tag:'HITTING',source:'Diamond Kinetics',meta:'15 min'},
+  {id:'r8',title:'2026 D1 Recruiting Calendar',type:'pdf',tier:'free',tag:'RECRUITING',source:'Lanista Recruiting',meta:'0.5 MB'}
+];
+
+var ADMIN_USERS = [
+  {name:'Marcus Rivera',role:'Player',org:'Westlake HS',plan:'Pro',active:'Today',status:'Active'},
+  {name:'Dave Rivera',role:'Coach',org:'Westlake HS',plan:'Elite',active:'Today',status:'Active'},
+  {name:'Jordan Sanchez',role:'Player',org:'Westlake HS',plan:'Free',active:'3 days ago',status:'Active'},
+  {name:'Tyler Kim',role:'Player',org:'Westlake HS',plan:'Free',active:'1 week ago',status:'Inactive'},
+  {name:'Coach Ellis',role:'Coach',org:'North Prep',plan:'Elite',active:'Yesterday',status:'Active'},
+  {name:'Sara Lin',role:'Player',org:'North Prep',plan:'Pro',active:'Today',status:'Active'},
+  {name:'Andre Torres',role:'Player',org:'Westlake HS',plan:'Free',active:'2 days ago',status:'Active'},
+  {name:'Platform Admin',role:'Admin',org:'—',plan:'Elite',active:'Today',status:'Active'}
+];
+
+var CHECKIN_QS = [
+  {key:'confidence',q:'How confident do you feel in your ability to perform right now?'},
+  {key:'stress',q:'How well are you managing stress from baseball / school?'},
+  {key:'mindset',q:'How growth-focused is your mindset today?'},
+  {key:'morale',q:'How connected and motivated do you feel about the team?'},
+  {key:'wellness',q:'How recovered and physically well do you feel?'}
+];
+
+/* ══════════════════════════════════════════════════════════════
+   STATE + HELPERS
+══════════════════════════════════════════════════════════════ */
+var STATE = { role:'player', page:'home' };
+try { var sv = JSON.parse(localStorage.getItem('lanista_iq_unified')||'{}'); if(sv.role) STATE.role = sv.role; if(sv.highlights) ATHLETE.highlights = sv.highlights; } catch(e){}
+function persist(){ try{ localStorage.setItem('lanista_iq_unified', JSON.stringify({role:STATE.role, highlights:ATHLETE.highlights})); }catch(e){} }
+
+function pct(v,mn,mx){ return Math.round(Math.max(0,Math.min(100,(v-mn)/(mx-mn)*100))); }
+function avg(arr){ return arr.reduce(function(a,b){return a+b;},0)/arr.length; }
+function trendChip(t){
+  if(t>0) return '<span class="chip up">▲ +'+t+'</span>';
+  if(t<0) return '<span class="chip down">▼ '+t+'</span>';
+  return '<span class="chip flat">■ 0</span>';
+}
+function core4Avg(a){ var c=a.core4; return Math.round((c.talent.score+c.character.score+c.mentality.score+c.alignment.score)/4); }
+function rosterCore4(p){ return Math.round((p.talent+p.character+p.mentality+p.alignment)/4); }
+function statusColor(s){ return s==='green'?'g':s==='yellow'?'y':'r'; }
+function initials(n){ return n.split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase(); }
+
+/* SVG ring (single) */
+function ring(value, size, stroke, color, track){
+  var r=(size-stroke)/2, c=2*Math.PI*r, off=c*(1-value/100);
+  return '<svg viewBox="0 0 '+size+' '+size+'" style="width:'+size+'px;height:'+size+'px;transform:rotate(-90deg)">'+
+    '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="'+(track||'rgba(255,255,255,.08)')+'" stroke-width="'+stroke+'"/>'+
+    '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="'+stroke+'" stroke-linecap="round" stroke-dasharray="'+c+'" stroke-dashoffset="'+off+'"/></svg>';
+}
+
+/* CORE4 signature — concentric layered rings */
+function core4Rings(a, size){
+  size = size||260;
+  var dims=['talent','character','mentality','alignment'];
+  var stroke=15, gap=6, s='';
+  s+='<svg viewBox="0 0 '+size+' '+size+'" style="width:'+size+'px;height:'+size+'px">';
+  s+='<g transform="rotate(-90 '+size/2+' '+size/2+')">';
+  dims.forEach(function(d,i){
+    var r=(size/2)-stroke/2-i*(stroke+gap);
+    var c=2*Math.PI*r, val=a.core4[d].score, off=c*(1-val/100);
+    s+='<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="'+stroke+'"/>';
+    s+='<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="'+C4[d].color+'" stroke-width="'+stroke+'" stroke-linecap="round" stroke-dasharray="'+c+'" stroke-dashoffset="'+off+'"><animate attributeName="stroke-dashoffset" from="'+c+'" to="'+off+'" dur="1s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1"/></circle>';
+  });
+  s+='</g></svg>';
+  return s;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   NAVIGATION (role-adaptive)
+══════════════════════════════════════════════════════════════ */
+var ICONS = {
+  home:'<path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/>',
+  profile:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',
+  core4:'<circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="9"/>',
+  perf:'<path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/>',
+  dev:'<path d="M12 2l3 6 6 1-4.5 4 1 6-5.5-3-5.5 3 1-6L3 9l6-1z"/>',
+  reports:'<path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/><path d="M9 13h7M9 17h7"/>',
+  resources:'<path d="M4 5a2 2 0 012-2h9l5 5v11a2 2 0 01-2 2H6a2 2 0 01-2-2z"/><path d="M9 9h4M9 13h6M9 17h6"/>',
+  team:'<circle cx="9" cy="8" r="3"/><path d="M2 20c0-3.5 3-5 7-5s7 1.5 7 5"/><path d="M16 8a3 3 0 010-6"/><path d="M22 20c0-3-2-4.5-5-5"/>',
+  athletes:'<circle cx="12" cy="7" r="3.5"/><path d="M5 21c0-4 3-6 7-6s7 2 7 6"/>',
+  orgs:'<path d="M3 21V7l7-4 7 4v14"/><path d="M17 21V11l4 2v8"/><path d="M7 10h2M7 14h2M13 10h2M13 14h2"/>',
+  analytics:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  assess:'<path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/>',
+  platform:'<circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 00-.1-1l2-1.6-2-3.4-2.4 1a7 7 0 00-1.7-1L16.5 2h-4l-.3 2.6a7 7 0 00-1.7 1l-2.4-1-2 3.4L5.1 11a7 7 0 000 2l-2 1.6 2 3.4 2.4-1a7 7 0 001.7 1L12.5 22h4l.3-2.6a7 7 0 001.7-1l2.4 1 2-3.4-2-1.6c.1-.3.1-.7.1-1z"/>'
+};
+var NAV = {
+  player:[
+    {sec:'Personal'},
+    {id:'home',label:'Home',ico:'home'},
+    {id:'profile',label:'My Profile',ico:'profile'},
+    {id:'core4',label:'My CORE4',ico:'core4'},
+    {sec:'Development'},
+    {id:'performance',label:'Performance',ico:'perf'},
+    {id:'development',label:'My Development',ico:'dev',badge:'2'},
+    {id:'reports',label:'Reports',ico:'reports'},
+    {id:'resources',label:'Resources',ico:'resources'}
+  ],
+  coach:[
+    {sec:'Command Center'},
+    {id:'home',label:'Home',ico:'home'},
+    {id:'team',label:'Team',ico:'team'},
+    {id:'athletes',label:'Athletes',ico:'athletes'},
+    {sec:'Analysis'},
+    {id:'core4',label:'CORE4',ico:'core4'},
+    {id:'performance',label:'Performance',ico:'perf'},
+    {id:'development',label:'Development',ico:'dev'},
+    {id:'reports',label:'Reports',ico:'reports'},
+    {id:'resources',label:'Resources',ico:'resources'}
+  ],
+  admin:[
+    {sec:'Overview'},
+    {id:'home',label:'Home',ico:'home'},
+    {id:'organizations',label:'Organizations',ico:'orgs'},
+    {id:'teams',label:'Teams',ico:'team'},
+    {id:'athletes',label:'Athletes',ico:'athletes'},
+    {sec:'Platform'},
+    {id:'analytics',label:'Analytics',ico:'analytics'},
+    {id:'assessments',label:'Assessments',ico:'assess'},
+    {id:'reports',label:'Reports',ico:'reports'},
+    {id:'platform',label:'Platform',ico:'platform'}
+  ]
+};
+var TITLES = {
+  home:{player:'Player Home',coach:'Team Command Center',admin:'Platform Overview'},
+  profile:{player:'My Profile'}, core4:{player:'My CORE4',coach:'Team CORE4',admin:'CORE4 Distribution'},
+  performance:{player:'Performance',coach:'Team Performance',admin:'Performance'},
+  development:{player:'My Development',coach:'Development Plans',admin:'Development'},
+  reports:{player:'Reports',coach:'Reports',admin:'Reports'},
+  resources:{player:'Resources',coach:'Resource Hub',admin:'Content Hub'},
+  team:{coach:'Team Overview'}, athletes:{coach:'Athlete Matrix',admin:'All Athletes'},
+  organizations:{admin:'Organizations'}, teams:{admin:'Teams'}, analytics:{admin:'Analytics'},
+  assessments:{admin:'Assessments'}, platform:{admin:'Platform Management'}
+};
+
+function renderSidebar(){
+  var items = NAV[STATE.role];
+  document.getElementById('sbNav').innerHTML = items.map(function(it){
+    if(it.sec) return '<div class="sb-section">'+it.sec+'</div>';
+    return '<div class="nav-item'+(it.id===STATE.page?' active':'')+'" onclick="navigate(\''+it.id+'\')">'+
+      '<span class="nav-ico"><svg viewBox="0 0 24 24">'+ICONS[it.ico]+'</svg></span>'+it.label+
+      (it.badge?'<span class="nav-badge">'+it.badge+'</span>':'')+'</div>';
+  }).join('');
+  document.querySelectorAll('.role-pill').forEach(function(p){ p.classList.toggle('active', p.dataset.role===STATE.role); });
+  var u = STATE.role==='player'?{n:ATHLETE.name,r:'Player · '+ATHLETE.team,a:ATHLETE.avatar}
+        : STATE.role==='coach'?{n:'Dave Rivera',r:'Head Coach · Westlake',a:'DR'}
+        : {n:'Platform Admin',r:'Administrator',a:'PA'};
+  document.getElementById('sbUser').innerHTML='<div class="av">'+u.a+'</div><div><div class="nm">'+u.n+'</div><div class="rl">'+u.r+'</div></div>';
+}
+
+function setRole(role){
+  STATE.role=role; STATE.page='home'; persist();
+  renderSidebar(); route();
+  toggleSidebar(false);
+}
+function navigate(page){
+  STATE.page=page; renderSidebar(); route(); toggleSidebar(false);
+  document.querySelector('.view').scrollTop=0; window.scrollTo(0,0);
+}
+function toggleSidebar(open){
+  var sb=document.getElementById('sidebar'), sc=document.getElementById('scrim');
+  var show = open===undefined ? !sb.classList.contains('open') : open;
+  sb.classList.toggle('open',show); sc.classList.toggle('open',show);
+}
+
+var _charts={};
+function destroyCharts(){ Object.keys(_charts).forEach(function(k){ try{_charts[k].destroy();}catch(e){} }); _charts={}; }
+
+function route(){
+  destroyCharts();
+  var role=STATE.role, page=STATE.page;
+  var fn = (PAGES[role]&&PAGES[role][page]) || PAGES[role].home;
+  var t = (TITLES[page]&&TITLES[page][role]) || page;
+  document.getElementById('tbTitle').textContent = t;
+  document.getElementById('tbKick').textContent = 'Lanista IQ · '+role.charAt(0).toUpperCase()+role.slice(1);
+  var out = fn();
+  document.getElementById('view').innerHTML = out.html;
+  if(out.after) out.after();
+}
+
+/* Chart defaults */
+function lineOpts(min,max){
+  return {responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:'#8A93A0',boxWidth:10,font:{size:10,family:'IBM Plex Mono'}}}},
+    scales:{x:{ticks:{color:'#5c636e',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'}},
+      y:{min:min,max:max,ticks:{color:'#5c636e',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'}}}};
+}
+var CHART_COLORS=['#C9A84C','#60a5fa','#4ade80','#a78bfa','#f59e0b','#f87171'];
+
+/* ══════════════════════════════════════════════════════════════
+   REUSABLE BLOCKS
+══════════════════════════════════════════════════════════════ */
+function core4Signature(a, title, sub){
+  var dims=['talent','character','mentality','alignment'];
+  return '<div class="card pad mb22">'+
+    '<div class="card-head"><span class="lbl">◆ CORE4 · The Lanista Scorecard</span>'+
+      '<span class="act" onclick="navigate(\'core4\')">Open CORE4 →</span></div>'+
+    '<div class="core4-hero">'+
+      '<div><div class="core4-rings">'+core4Rings(a)+
+        '<div class="core4-center"><div class="cc-lbl">Lanista IQ</div><div class="cc-val">'+a.lanistaIQ+'</div>'+
+        '<div class="cc-tag">'+a.status+' · Top 12%</div></div></div></div>'+
+      '<div class="core4-legend">'+dims.map(function(d){
+        var dim=a.core4[d];
+        return '<div class="c4dim" style="--dc:'+C4[d].color+'" onclick="openC4(\''+d+'\')">'+
+          '<div class="d-top"><span class="d-dot"></span><span class="d-name">'+C4[d].name+'</span><span class="d-arrow">›</span></div>'+
+          '<div style="display:flex;align-items:flex-end;gap:8px"><span class="d-val" style="color:'+C4[d].color+'">'+dim.score+'</span>'+trendChip(dim.trend)+'</div>'+
+          '<div class="d-bar"><i style="width:'+dim.score+'%"></i></div>'+
+          '<div class="d-meta"><span>'+C4[d].desc+'</span></div></div>';
+      }).join('')+'</div>'+
+    '</div></div>';
+}
+
+function athleteHeader(a, actions){
+  var comp = a.profile;
+  return '<div class="athlete-head">'+
+    '<div class="ah-avatar">'+a.avatar+'</div>'+
+    '<div class="ah-info">'+
+      '<div class="ah-name">'+a.name+'</div>'+
+      '<div class="ah-meta">'+
+        '<span class="tag">#'+a.number+' · '+a.pos+'</span>'+
+        '<span class="tag">'+a.grade+' · '+a.team+'</span>'+
+        '<span class="tag">Class of '+a.grad+'</span>'+
+        '<span class="tag">'+a.height+' · '+a.weight+'</span>'+
+        '<span class="tag gold">GPA '+a.gpa+'</span>'+
+      '</div>'+
+      '<div class="ah-meta" style="margin-top:10px"><span class="tag gold">🔥 '+a.streak+'-week check-in streak</span>'+
+        '<span class="tag">⭐ '+a.level+'</span>'+
+        '<span class="tag">Profile '+comp+'% complete</span></div>'+
+    '</div>'+
+    '<div class="pc-ring"><div style="position:relative;width:52px;height:52px">'+ring(comp,52,6,'#C9A84C')+
+      '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--f-d);font-weight:900;font-size:15px">'+comp+'</div></div>'+
+      '<div style="font-family:var(--f-m);font-size:9px;color:var(--steel);text-transform:uppercase;letter-spacing:1px;line-height:1.4">Profile<br>Complete</div></div>'+
+    '<div class="ah-scores">'+
+      '<div class="ah-score"><div class="v">'+a.lanistaIQ+'</div><div class="l">Lanista IQ</div></div>'+
+      '<div class="ah-score"><div class="v blue">'+a.ls4+'</div><div class="l">LS4 Score</div></div>'+
+    '</div>'+
+    '<div class="ah-actions">'+(actions||('<button class="btn gold" onclick="openCheckin()">✓ Check-In</button>'+
+      '<button class="btn" onclick="openPlayerCard()">Share Card</button>'))+'</div>'+
+  '</div>';
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PLAYER PAGES
+══════════════════════════════════════════════════════════════ */
+var PAGES = { player:{}, coach:{}, admin:{} };
+
+PAGES.player.home = function(){
+  var a=ATHLETE;
+  var strengths=[
+    {ic:'💥',t:'Elite exit velocity — 94.2 mph',d:'Top 12% nationally for your class. Your power is a genuine separator.'},
+    {ic:'🔥',t:'Fastball trending up +3.2 mph',d:'Six months of consistent velocity gains — your development curve is steep.'},
+    {ic:'🧠',t:'Mentality at 88 (+6)',d:'One of your fastest-rising CORE4 areas — composure under pressure is strong.'}
+  ];
+  var priorities=a.devPlan.slice(0,3);
+  var actions=[
+    {ic:'✓',t:'Complete this week\'s check-in',d:'Keep your 4-week streak alive — closes Sunday.',go:'DO NOW',fn:'openCheckin()'},
+    {ic:'🎬',t:'Review your latest coach evaluation',d:'Coach Rivera left notes on your changeup command.',go:'REVIEW',fn:'navigate(\'development\')'},
+    {ic:'▶️',t:'Watch: Changeup Grip & Release',d:'Recommended for your #2 development priority.',go:'WATCH',fn:'navigate(\'resources\')'},
+    {ic:'👤',t:'Add 2 highlights to your profile',d:'Profiles with film get 3× more coach views.',go:'ADD',fn:'openPlayerCard()'}
+  ];
+  var html = athleteHeader(a)+
+    '<div class="grid g4 mb22">'+
+      kpi('Lanista IQ',a.lanistaIQ,'+7 vs last cycle','up')+
+      kpi('CORE4 Avg',core4Avg(a),'Balanced profile','up')+
+      kpi('Dev Goals On Track','4/5','1 needs attention','flat')+
+      kpi('Check-In Streak',a.streak+' wks','Personal best','up')+
+    '</div>'+
+    core4Signature(a)+
+    '<div class="grid g-2-1 mb22">'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">📈 6-Week Performance Trend</span></div>'+
+        '<div style="height:260px"><canvas id="phTrend"></canvas></div></div>'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">✅ What\'s Going Well</span></div>'+
+        strengths.map(function(s){return insight(s.ic,s.t,s.d,'good');}).join('')+'</div>'+
+    '</div>'+
+    '<div class="grid g-2-1 mb22">'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">🎯 Your Top Development Priorities</span>'+
+        '<span class="act" onclick="navigate(\'development\')">Full plan →</span></div>'+
+        priorities.map(function(p,i){return priorityRow(p,i+1);}).join('')+'</div>'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">⚡ Recommended Next Actions</span></div>'+
+        actions.map(function(x){return '<div class="action" onclick="'+x.fn+'"><div class="a-ic">'+x.ic+'</div>'+
+          '<div><div class="a-tt">'+x.t+'</div><div class="a-ds">'+x.d+'</div></div><div class="a-go">'+x.go+' →</div></div>';}).join('')+'</div>'+
+    '</div>';
+  return {html:html, after:function(){ playerTrendChart('phTrend'); }};
+};
+
+PAGES.player.core4 = function(){
+  var a=ATHLETE, dims=['talent','character','mentality','alignment'];
+  var sub={
+    talent:[['Exit Velocity',a.exitVelo+' mph',pct(a.exitVelo,60,110)],['Pitch Velocity',a.pitchVelo+' mph',pct(a.pitchVelo,50,95)],['Arm Velocity',a.armVelo+' mph',pct(a.armVelo,50,100)],['30-Yd Dash',a.sprint30+'s',pct(7.5-a.sprint30,0,1)]],
+    character:[['Coachability',a.coachability,a.coachability],['Effort',a.effort,a.effort],['Grit',a.grit,a.grit],['Leadership',82,82]],
+    mentality:[['Confidence',a.confidence,a.confidence],['Focus',a.focus,a.focus],['Composure',a.composure,a.composure],['Resilience',a.resilience,a.resilience]],
+    alignment:[['Dev Plan Progress','62%',62],['Check-In Rate','90%',90],['Goal Fit','High',84],['Engagement',a.morale,a.morale]]
+  };
+  var html='<div class="page-hero"><div class="lead"><h1>My CORE4</h1><p>Your complete athlete story across the four dimensions that define elite development. Every score maps to real metrics — click any dimension to see what drives it.</p></div>'+
+    '<button class="btn gold" onclick="openCheckin()">✓ New Check-In</button></div>'+
+    core4Signature(a)+
+    '<div class="grid g4 mb22">'+dims.map(function(d){
+      var dim=a.core4[d];
+      return '<div class="card pad hover" style="--dc:'+C4[d].color+'">'+
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-size:20px">'+C4[d].icon+'</span>'+
+          '<span style="font-family:var(--f-d);font-weight:800;letter-spacing:1px;text-transform:uppercase;font-size:14px">'+C4[d].name+'</span>'+trendChip(dim.trend)+'</div>'+
+        '<div style="position:relative;width:120px;height:120px;margin:0 auto 12px">'+ring(dim.score,120,11,C4[d].color)+
+          '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-family:var(--f-d);font-size:34px;font-weight:900;color:'+C4[d].color+'">'+dim.score+'</span><span style="font-family:var(--f-m);font-size:8px;color:var(--steel)">/ 100</span></div></div>'+
+        sub[d].map(function(r){return '<div class="mrow" style="padding:7px 0"><span class="m-nm" style="width:auto;flex:1;font-size:12px">'+r[0]+'</span><div class="m-track" style="max-width:60px"><div class="m-fill" style="width:'+r[2]+'%;background:'+C4[d].color+'"></div></div><span class="m-val" style="width:70px;font-size:12px;color:'+C4[d].color+'">'+r[1]+'</span></div>';}).join('')+
+      '</div>';
+    }).join('')+'</div>'+
+    '<div class="grid g-2-1">'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">📊 CORE4 Trajectory — 6 Cycles</span></div><div style="height:280px"><canvas id="c4Trend"></canvas></div></div>'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">💡 The Story Behind Your Numbers</span></div>'+
+        insight('🧠','Mentality is your momentum engine','Up 6 points in 30 days — the fastest-improving CORE4 area. Your composure work is paying off.','good')+
+        insight('🧭','Alignment is your biggest opportunity','At 79, closing the gap here (dev-plan follow-through + coach alignment) would lift your Lanista IQ the most.','watch')+
+        insight('🎯','Talent is elite and stable','Power and velocity keep you in the top tier — now command refinement adds the next grade.','good')+
+      '</div>'+
+    '</div>';
+  return {html:html, after:function(){ core4TrendChart('c4Trend'); }};
+};
+
+PAGES.player.performance = function(){
+  var a=ATHLETE;
+  var html='<div class="page-hero"><div class="lead"><h1>Performance</h1><p>Verified athletic and skill metrics from combine testing, Rapsodo, and Diamond Kinetics — benchmarked against your class.</p></div>'+
+    '<div class="seg" id="perfSeg"><button class="active" onclick="perfTab(\'athletic\',this)">Athletic</button><button onclick="perfTab(\'pitching\',this)">Pitching</button><button onclick="perfTab(\'hitting\',this)">Hitting</button></div></div>'+
+    '<div id="perfBody"></div>';
+  return {html:html, after:function(){ perfTab('athletic'); }};
+};
+
+PAGES.player.development = function(){
+  var a=ATHLETE;
+  var html='<div class="page-hero"><div class="lead"><h1>My Development</h1><p>Your active goals, coach evaluations, and the resources matched to each priority. Turn insight into weekly action.</p></div>'+
+    '<button class="btn gold" onclick="showToast(\'Goal builder coming soon\',\'gold\')">+ New Goal</button></div>'+
+    '<div class="grid g-2-1 mb22">'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">🎯 Active Development Goals</span></div>'+
+        a.devPlan.map(function(p,i){return priorityRow(p,i+1,true);}).join('')+'</div>'+
+      '<div class="card pad" style="align-self:flex-start"><div class="card-head"><span class="lbl">Goal Progress</span></div>'+
+        '<div style="height:200px"><canvas id="devChart"></canvas></div></div>'+
+    '</div>'+
+    '<div class="grid g2 mb22">'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">🎬 Latest Coach Evaluation</span><span class="act">Jun 30</span></div>'+
+        insight('📋','Coach Rivera — Overall: Strong','"Marcus is a high-character kid with a plus fastball. Changeup is the swing skill — when the cambio plays, he\'s a varsity arm today. Keep attacking the zone."','good')+
+        '<div class="mrow"><span class="m-nm">Coach Talent</span><div class="m-track"><div class="m-fill" style="width:88%"></div></div><span class="m-val">88</span></div>'+
+        '<div class="mrow"><span class="m-nm">Self-Eval Talent</span><div class="m-track"><div class="m-fill green" style="width:84%"></div></div><span class="m-val">84</span></div>'+
+        '<div class="mrow"><span class="m-nm">Perception Gap</span><div class="m-track"><div class="m-fill" style="width:20%"></div></div><span class="m-val" style="color:var(--pos)">Small</span></div>'+
+      '</div>'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">📚 Matched to Your Priorities</span><span class="act" onclick="navigate(\'resources\')">All →</span></div>'+
+        RESOURCES.slice(0,4).map(function(r){return resourceRow(r);}).join('')+'</div>'+
+    '</div>';
+  return {html:html, after:function(){ devChart('devChart'); }};
+};
+
+PAGES.player.reports = function(){
+  var a=ATHLETE;
+  var html='<div class="page-hero"><div class="lead"><h1>Reports</h1><p>Generate and share your verified Lanista player card and development reports with coaches, scouts, and family.</p></div></div>'+
+    '<div class="grid g-1-2 mb22">'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">⚡ Player Card</span></div>'+
+        '<div id="cardMini"></div>'+
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">'+
+          '<button class="btn gold sm" onclick="openPlayerCard()">Open Full Card</button>'+
+          '<button class="btn sm" onclick="printCard()">Save PDF</button>'+
+          '<button class="btn sm" onclick="emailCard()">Email</button></div></div>'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">📄 Available Reports</span></div>'+
+        [['Individual Player Report','Full CORE4 + performance breakdown','👤'],
+         ['Recruiting Readiness','Class benchmarking & fit analysis','🎓'],
+         ['Parent Progress Summary','Plain-language development update','👨‍👩‍👧'],
+         ['LS4 Score Breakdown','How your composite is calculated','📊'],
+         ['Coach Scouting Report','Shareable evaluation packet','🏆']].map(function(r){
+          return '<div class="action" onclick="showToast(\'Generating '+r[0]+'…\',\'gold\')"><div class="a-ic">'+r[2]+'</div><div><div class="a-tt">'+r[0]+'</div><div class="a-ds">'+r[1]+'</div></div><div class="a-go">GENERATE →</div></div>';
+        }).join('')+'</div>'+
+    '</div>';
+  return {html:html, after:function(){ document.getElementById('cardMini').innerHTML=cardPreview(ATHLETE); }};
+};
+
+PAGES.player.resources = function(){
+  var html='<div class="page-hero"><div class="lead"><h1>Resources</h1><p>Development programs, drills, and courses — curated for your position and matched to your CORE4 priorities.</p></div>'+
+    '<div class="seg"><button class="active" onclick="filterRes(\'all\',this)">All</button><button onclick="filterRes(\'video\',this)">Video</button><button onclick="filterRes(\'pdf\',this)">Guides</button></div></div>'+
+    '<div class="grid g3" id="resGrid"></div>';
+  return {html:html, after:function(){ filterRes('all'); }};
+};
+
+PAGES.player.profile = function(){ return { html: profileBody(ATHLETE,'player') , after: profileAfter }; };
+
+/* ── small block helpers ── */
+function kpi(lbl,val,sub,dir){
+  var chip = dir==='up'?'<span class="chip up">▲</span>':dir==='down'?'<span class="chip down">▼</span>':'<span class="chip flat">■</span>';
+  return '<div class="kpi"><div class="k-lbl">'+lbl+'</div><div class="k-val">'+val+'</div><div class="k-sub">'+chip+sub+'</div></div>';
+}
+function insight(ic,t,d,type){
+  return '<div class="insight '+(type||'')+'"><div class="ic">'+ic+'</div><div><div class="tt">'+t+'</div><div class="ds">'+d+'</div></div></div>';
+}
+function priorityRow(p,rank,showBar){
+  var cls = p.status==='risk'?'risk':p.status==='over'?'over':'on';
+  return '<div class="priority">'+
+    '<div class="p-top"><span class="p-rank">'+rank+'</span><span class="p-name">'+p.title+'</span>'+
+      '<span class="p-scores">Now <b>'+p.cur+'</b> · Target '+p.target+'</span></div>'+
+    '<div class="p-why">'+p.why+'</div>'+
+    '<div class="progress"><i class="'+cls+'" style="width:'+p.progress+'%"></i></div>'+
+    '<div class="p-act" style="margin-top:9px"><span style="font-family:var(--f-m);font-size:10px;color:'+(p.status==='risk'?'var(--warn)':'var(--pos)')+'">'+p.progress+'% · '+(p.status==='risk'?'Needs attention':'On track')+'</span>'+
+      '<span style="margin-left:auto;color:var(--gold-2);cursor:pointer" onclick="navigate(\'resources\')">Recommended drills →</span></div>'+
+  '</div>';
+}
+function resourceRow(r){
+  var icon = r.type==='video'?'▶️':'📄';
+  return '<div class="action" onclick="showToast(\'Opening: '+r.title.replace(/'/g,'')+'\',\'gold\')"><div class="a-ic">'+icon+'</div>'+
+    '<div><div class="a-tt">'+r.title+'</div><div class="a-ds">'+r.source+' · '+r.meta+'</div></div>'+
+    '<span class="r-tier tier-'+r.tier+'">'+r.tier+'</span></div>';
+}
+function resourceCard(r){
+  var icon = r.type==='video'?'🎬':'📘';
+  return '<div class="res" onclick="showToast(\'Opening: '+r.title.replace(/'/g,'')+'\',\'gold\')">'+
+    '<div class="r-top"><span class="r-type">'+icon+'</span><span class="tag">'+r.tag+'</span><span class="r-tier tier-'+r.tier+'">'+r.tier+'</span></div>'+
+    '<div class="r-tt">'+r.title+'</div><div class="r-mt">'+r.source+' · '+r.meta+'</div></div>';
+}
+function filterRes(type,btn){
+  if(btn){ btn.parentElement.querySelectorAll('button').forEach(function(b){b.classList.remove('active');}); btn.classList.add('active'); }
+  var list = type==='all'?RESOURCES:RESOURCES.filter(function(r){return r.type===type;});
+  var el=document.getElementById('resGrid'); if(el) el.innerHTML=list.map(resourceCard).join('');
+}
+
+/* ── performance tabs ── */
+function perfTab(tab,btn){
+  if(btn){ btn.parentElement.querySelectorAll('button').forEach(function(b){b.classList.remove('active');}); btn.classList.add('active'); }
+  var a=ATHLETE, el=document.getElementById('perfBody'); if(!el) return;
+  destroyCharts();
+  if(tab==='athletic'){
+    var rows=[['Exit Velocity',a.exitVelo+' mph',pct(a.exitVelo,65,110),'87 mph'],['Arm Velocity',a.armVelo+' mph',pct(a.armVelo,55,100),'78 mph'],
+      ['30-Yard Dash',a.sprint30+'s',pct(7.5-a.sprint30,0,1),'6.95s'],['Lane Agility',a.agility+'s',pct(7.5-a.agility,0,1),'7.0s'],
+      ['1st-to-3rd',a.firstToThird+'s',pct(14-a.firstToThird,0,2),'13.5s'],['RSI',a.rsi,pct(a.rsi,0,100),'65'],['Vertical Jump',a.vert+'"',pct(a.vert,15,40),'24"']];
+    el.innerHTML='<div class="grid g4 mb22">'+
+      kpi('RSI',a.rsi,'+11 · Good','up')+kpi('30-Yard',a.sprint30+'s','▼ -0.25 · Excellent','up')+
+      kpi('Agility',a.agility+'s','▼ -0.20 · Elite','up')+kpi('1st→3rd',a.firstToThird+'s','▼ -0.8 · Excellent','up')+'</div>'+
+      '<div class="grid g-2-1"><div class="card pad"><div class="card-head"><span class="lbl">Metric Detail vs Class Avg</span></div>'+
+        rows.map(function(r){var c=r[2]>=75?'green':r[2]>=50?'':'red';return '<div class="mrow"><span class="m-nm">'+r[0]+'</span><div class="m-track"><div class="m-fill '+c+'" style="width:'+r[2]+'%"></div></div><span class="m-val">'+r[1]+'</span><span class="m-avg">Avg '+r[3]+'</span></div>';}).join('')+'</div>'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">Athletic Trend</span></div><div style="height:260px"><canvas id="athlChart"></canvas></div></div></div>';
+    _charts.athl=new Chart(document.getElementById('athlChart'),{type:'line',data:{labels:['W1','W2','W3','W4','W5','W6'],datasets:[
+      {label:'RSI',data:[65,68,70,72,74,76],borderColor:'#C9A84C',tension:.35,pointRadius:3},
+      {label:'30-Yd ×10',data:[69.5,69,68.5,68,67.5,65.8],borderColor:'#60a5fa',tension:.35,pointRadius:3},
+      {label:'Agility ×10',data:[68.5,68,67.5,67,66.8,65.2],borderColor:'#4ade80',tension:.35,pointRadius:3}]},options:lineOpts()});
+  } else if(tab==='pitching'){
+    el.innerHTML='<div class="grid g4 mb22">'+kpi('FB Velocity',a.pitchVelo+' mph','+3.2 · 6 mo','up')+kpi('Spin Rate',a.spinRate.toLocaleString(),'RPM · Elite','up')+kpi('Spin Eff.',a.spinEff+'%','High movement','up')+kpi('Strike %',a.strikesPct+'%','Solid command','flat')+'</div>'+
+      '<div class="card pad mb22"><div class="card-head"><span class="lbl">Pitch Arsenal — Trackman / Rapsodo</span></div>'+
+      '<div style="overflow:auto"><table class="tbl"><thead><tr><th>Pitch</th><th>Velo</th><th>Spin</th><th>Spin Eff</th><th>Strike%</th><th>Whiff%</th><th>IVB</th></tr></thead><tbody>'+
+      [['Fastball','94.2','2,485','85%','78%','32%','+18.4"'],['Curveball','78.0','2,400','78%','52%','38%','-14.2"'],['Slider','82.0','2,100','80%','55%','35%','-9.6"'],['Changeup','72.0','1,640','65%','58%','28%','-7.8"']].map(function(p){
+        return '<tr><td style="font-weight:700">'+p[0]+'</td><td class="mono">'+p[1]+'</td><td class="mono">'+p[2]+'</td><td class="mono pos">'+p[3]+'</td><td class="mono">'+p[4]+'</td><td class="mono" style="color:var(--gold)">'+p[5]+'</td><td class="mono">'+p[6]+'</td></tr>';}).join('')+'</tbody></table></div></div>'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">Pitching Trend</span></div><div style="height:240px"><canvas id="pitchChart"></canvas></div></div>';
+    _charts.pitch=new Chart(document.getElementById('pitchChart'),{type:'line',data:{labels:['W1','W2','W3','W4','W5','W6'],datasets:[
+      {label:'Velocity',data:[92,92.5,93,93.5,94,94.2],borderColor:'#C9A84C',tension:.35,pointRadius:3},
+      {label:'Strike %',data:[75,76,77,78,78,78],borderColor:'#4ade80',tension:.35,pointRadius:3},
+      {label:'Whiff %',data:[28,29,30,31,32,32],borderColor:'#60a5fa',tension:.35,pointRadius:3}]},options:lineOpts()});
+  } else {
+    el.innerHTML='<div class="grid g4 mb22">'+kpi('Exit Velo',a.exitVelo+' mph','vs 87 avg','up')+kpi('Launch Angle',a.launchAngle+'°','Optimal','flat')+kpi('Hard Hit %',a.hardHit+'%','vs 38 avg','up')+kpi('Bat Speed',a.batSpeed+' mph','vs 68 avg','up')+'</div>'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">Hitting Trend</span></div><div style="height:260px"><canvas id="hitChart"></canvas></div></div>';
+    _charts.hit=new Chart(document.getElementById('hitChart'),{type:'line',data:{labels:['W1','W2','W3','W4','W5','W6'],datasets:[
+      {label:'Exit Velo',data:[87,88,89,90,91,92],borderColor:'#C9A84C',tension:.35,pointRadius:3},
+      {label:'Hard Hit %',data:[35,38,40,42,44,45],borderColor:'#4ade80',tension:.35,pointRadius:3},
+      {label:'Launch Angle',data:[16,17,18,18,18,18],borderColor:'#60a5fa',tension:.35,pointRadius:3}]},options:lineOpts()});
+  }
+}
+
+/* ── player charts ── */
+function playerTrendChart(id){
+  var c=document.getElementById(id); if(!c) return;
+  _charts.pt=new Chart(c,{type:'line',data:{labels:['W1','W2','W3','W4','W5','W6'],datasets:[
+    {label:'Talent',data:[81,82,84,85,86,88],borderColor:C4.talent.color,tension:.35,pointRadius:3},
+    {label:'Character',data:[81,82,82,83,84,85],borderColor:C4.character.color,tension:.35,pointRadius:3},
+    {label:'Mentality',data:[82,84,85,86,87,88],borderColor:C4.mentality.color,tension:.35,pointRadius:3},
+    {label:'Alignment',data:[76,76,77,78,78,79],borderColor:C4.alignment.color,tension:.35,pointRadius:3}]},options:lineOpts(70,100)});
+}
+function core4TrendChart(id){
+  var c=document.getElementById(id); if(!c) return;
+  _charts.c4=new Chart(c,{type:'line',data:{labels:['C1','C2','C3','C4','C5','C6'],datasets:[
+    {label:'Talent',data:[81,82,84,85,86,88],borderColor:C4.talent.color,backgroundColor:'rgba(201,168,76,.06)',fill:true,tension:.35,pointRadius:3},
+    {label:'Character',data:[81,82,82,83,84,85],borderColor:C4.character.color,tension:.35,pointRadius:3},
+    {label:'Mentality',data:[82,84,85,86,87,88],borderColor:C4.mentality.color,tension:.35,pointRadius:3},
+    {label:'Alignment',data:[76,76,77,78,78,79],borderColor:C4.alignment.color,tension:.35,pointRadius:3}]},options:lineOpts(70,100)});
+}
+function devChart(id){
+  var c=document.getElementById(id); if(!c) return;
+  var d=ATHLETE.devPlan;
+  _charts.dev=new Chart(c,{type:'bar',data:{labels:d.map(function(p){return p.title.split('→')[0].trim();}),datasets:[{label:'Progress %',data:d.map(function(p){return p.progress;}),backgroundColor:d.map(function(p){return p.status==='risk'?'#f59e0b':'#C9A84C';}),borderRadius:5}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{max:100,ticks:{color:'#5c636e',font:{size:9}},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#8A93A0',font:{size:10}},grid:{display:false}}}}});
+}
+
+/* ── player card ── */
+function cardPreview(a){
+  var rows=[['Lanista IQ',a.lanistaIQ],['LS4 Score',a.ls4],['Exit Velo',a.exitVelo+' mph'],['Pitch Velo',a.pitchVelo+' mph'],['30-Yard',a.sprint30+'s'],['Mentality',a.core4.mentality.score]];
+  return '<div style="border:1px solid var(--line-2);border-radius:14px;overflow:hidden;background:linear-gradient(160deg,var(--panel-2),var(--ink))">'+
+    '<div style="background:rgba(201,168,76,.08);padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px">'+
+      '<div class="ah-avatar" style="width:56px;height:56px;font-size:22px">'+a.avatar+'</div>'+
+      '<div><div style="font-family:var(--f-d);font-size:24px;font-weight:900;letter-spacing:1px;text-transform:uppercase">'+a.name+'</div>'+
+      '<div style="font-family:var(--f-m);font-size:10px;color:var(--steel);letter-spacing:1px">'+a.pos+' · Class of '+a.grad+' · '+a.team+'</div></div>'+
+      '<div style="margin-left:auto;text-align:right"><div style="font-family:var(--f-d);font-size:38px;font-weight:900;color:var(--gold);line-height:1">'+a.lanistaIQ+'</div><div style="font-family:var(--f-m);font-size:8px;letter-spacing:1px;color:var(--steel)">LANISTA IQ</div></div></div>'+
+    '<div style="padding:16px 18px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px">'+
+      rows.map(function(r){return '<div style="background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:10px;text-align:center"><div style="font-family:var(--f-d);font-size:22px;font-weight:900;color:var(--gold)">'+r[1]+'</div><div style="font-family:var(--f-m);font-size:8px;letter-spacing:1px;color:var(--steel);text-transform:uppercase;margin-top:2px">'+r[0]+'</div></div>';}).join('')+
+    '</div><div style="text-align:center;padding:10px;font-family:var(--f-m);font-size:9px;color:var(--muted);border-top:1px solid var(--line)">Verified by Lanista IQ · lanistasports.com</div></div>';
+}
+
+/* ══════════════════════════════════════════════════════════════
+   COACH PAGES
+══════════════════════════════════════════════════════════════ */
+function teamCore4(){
+  return {talent:Math.round(avg(ROSTER.map(function(p){return p.talent;}))),
+    character:Math.round(avg(ROSTER.map(function(p){return p.character;}))),
+    mentality:Math.round(avg(ROSTER.map(function(p){return p.mentality;}))),
+    alignment:Math.round(avg(ROSTER.map(function(p){return p.alignment;})))};
+}
+function teamHeader(){
+  var tc=teamCore4();
+  return '<div class="athlete-head"><div class="ah-avatar">WW</div>'+
+    '<div class="ah-info"><div class="ah-name">Westlake Warriors</div>'+
+    '<div class="ah-meta"><span class="tag">Coach Dave Rivera</span><span class="tag">2026 Season</span><span class="tag">18–7 Record</span><span class="tag gold">'+ROSTER.length+' Athletes</span></div>'+
+    '<div class="ah-meta" style="margin-top:10px"><span class="tag gold">🔥 84% check-in rate</span><span class="tag">Engagement 78 ▲</span><span class="tag" style="color:var(--warn);border-color:rgba(245,158,11,.3)">2 need attention</span></div></div>'+
+    '<div class="ah-scores"><div class="ah-score"><div class="v">'+Math.round((tc.talent+tc.character+tc.mentality+tc.alignment)/4)+'</div><div class="l">Team CORE4</div></div>'+
+    '<div class="ah-score"><div class="v blue">'+Math.round(avg(ROSTER.map(function(p){return p.exitVelo;})))+'</div><div class="l">Avg Exit Velo</div></div></div>'+
+    '<div class="ah-actions"><button class="btn gold" onclick="navigate(\'athletes\')">Athlete Matrix</button></div></div>';
+}
+function attentionCenter(){
+  var rising=ROSTER.filter(function(p){return p.trend>=6;}).sort(function(a,b){return b.trend-a.trend;}).slice(0,2);
+  var falling=ROSTER.filter(function(p){return p.trend<0;});
+  var overdue=ROSTER.filter(function(p){return p.assess==='overdue'||p.assess==='pending';});
+  var items=[];
+  falling.forEach(function(p){items.push({ic:'⚠️',t:p.name+' trending down',d:'CORE4 '+p.trend+' this cycle · Mentality '+p.mentality+'. Recommend a 1-on-1 check-in.',ty:'bad',pl:p});});
+  overdue.filter(function(p){return p.assess==='overdue';}).forEach(function(p){items.push({ic:'⏰',t:p.name+' — assessment overdue',d:'Streak broken · last check-in 2+ weeks ago.',ty:'watch',pl:p});});
+  rising.forEach(function(p){items.push({ic:'🚀',t:p.name+' improving fast',d:'CORE4 +'+p.trend+' · '+p.streak+'-week streak. Reinforce what\'s working.',ty:'good',pl:p});});
+  overdue.filter(function(p){return p.assess==='pending';}).forEach(function(p){items.push({ic:'📋',t:p.name+' — assessment pending',d:'Nudge to complete this week\'s check-in.',ty:'watch',pl:p});});
+  return items.map(function(x){return '<div class="insight '+x.ty+'" style="cursor:pointer" onclick="openAthlete(\''+x.pl.name+'\')"><div class="ic">'+x.ic+'</div><div><div class="tt">'+x.t+'</div><div class="ds">'+x.d+'</div></div><div style="margin-left:auto;align-self:center;color:var(--gold);font-family:var(--f-m);font-size:10px">OPEN →</div></div>';}).join('');
+}
+
+PAGES.coach.home = function(){
+  var tc=teamCore4();
+  var html=teamHeader()+
+    '<div class="grid g4 mb22">'+
+      kpi('Team CORE4',Math.round((tc.talent+tc.character+tc.mentality+tc.alignment)/4),'+4 vs last month','up')+
+      kpi('Check-In Rate','84%','Season high','up')+
+      kpi('At-Risk Athletes','2','J. Sanchez, T. Kim','down')+
+      kpi('Goals On Track','14/18','2 at risk','flat')+
+    '</div>'+
+    '<div class="grid g-1-2 mb22">'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">◆ Team CORE4 Averages</span></div>'+
+        ['talent','character','mentality','alignment'].map(function(d){return '<div class="mrow"><span class="m-nm" style="color:'+C4[d].color+'">'+C4[d].name+'</span><div class="m-track"><div class="m-fill" style="width:'+tc[d]+'%;background:'+C4[d].color+'"></div></div><span class="m-val" style="color:'+C4[d].color+'">'+tc[d]+'</span></div>';}).join('')+
+        '<div style="height:160px;margin-top:14px"><canvas id="teamRadar"></canvas></div></div>'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">🎯 Athlete Attention Center</span><span class="act" onclick="navigate(\'athletes\')">All athletes →</span></div>'+
+        attentionCenter()+'</div>'+
+    '</div>'+
+    '<div class="grid g3 mb22">'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">Exit Velocity Distribution</span></div><div style="height:190px"><canvas id="cEV"></canvas></div></div>'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">Team Mentality Trend</span></div><div style="height:190px"><canvas id="cMent"></canvas></div></div>'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">Check-In Completion</span></div><div style="height:190px"><canvas id="cChk"></canvas></div></div>'+
+    '</div>'+
+    '<div class="grid g2">'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">✅ Team Strengths</span></div>'+
+        insight('💪','Arm strength rising across 4 pitchers','Avg arm velo +2.1 mph this cycle — your pitching depth is developing.','good')+
+        insight('💥','6 of 10 hitters above 90 mph avg EV','Team power profile is a genuine strength this season.','good')+
+        insight('🔥','Engagement at 84% — highest of the season','Culture and buy-in are trending in the right direction.','good')+'</div>'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">📈 Areas to Improve</span></div>'+
+        insight('🧠','3 athletes with mentality below 70','Review coachability & confidence focus — schedule check-ins.','watch')+
+        insight('🎯','Team zone% at 58% — target 64%','Command is the collective swing skill this month.','watch')+
+        insight('⚡','4 athletes plateaued on speed','No 60-yard improvement in 2+ cycles — refresh programming.','watch')+'</div>'+
+    '</div>';
+  return {html:html, after:function(){ coachCharts(); }};
+};
+
+PAGES.coach.team = PAGES.coach.home;
+
+PAGES.coach.athletes = function(){
+  var html='<div class="page-hero"><div class="lead"><h1>Athlete Matrix</h1><p>Compare every athlete across CORE4 and performance. Sort, filter, and click any row to open the full profile — no more scrolling through dozens of pages.</p></div>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap"><select class="inp" style="width:auto;margin:0" onchange="matrixFilter(this.value)"><option value="">All Positions</option><option>P</option><option>C</option><option>IF</option><option>OF</option></select>'+
+    '<button class="btn sm" onclick="openCompare()">⚖ Compare</button></div></div>'+
+    '<div class="card" style="overflow:hidden"><div style="overflow:auto"><table class="tbl" id="matrixTbl"><thead><tr>'+
+    ['name|Athlete','pos|Pos','cls|Class','core4|CORE4','talent|Talent','character|Character','mentality|Mentality','alignment|Alignment','trend|Trend','assess|Status'].map(function(h){var p=h.split('|');return '<th onclick="sortMatrix(\''+p[0]+'\')">'+p[1]+'</th>';}).join('')+
+    '</tr></thead><tbody id="matrixBody"></tbody></table></div></div>';
+  return {html:html, after:function(){ _matrixSort='core4'; renderMatrix(); }};
+};
+
+PAGES.coach.core4 = function(){
+  var tc=teamCore4();
+  var fake={core4:{talent:{score:tc.talent,trend:+3},character:{score:tc.character,trend:+2},mentality:{score:tc.mentality,trend:+4},alignment:{score:tc.alignment,trend:+1}},lanistaIQ:Math.round((tc.talent+tc.character+tc.mentality+tc.alignment)/4),status:'Team'};
+  var html='<div class="page-hero"><div class="lead"><h1>Team CORE4</h1><p>How your program stacks up across the four dimensions — and where the biggest development opportunities live.</p></div></div>'+
+    core4Signature(fake)+
+    '<div class="card pad mb22"><div class="card-head"><span class="lbl">CORE4 by Athlete</span></div><div style="overflow:auto"><table class="tbl"><thead><tr><th>Athlete</th><th>Talent</th><th>Character</th><th>Mentality</th><th>Alignment</th><th>CORE4</th></tr></thead><tbody>'+
+    ROSTER.map(function(p){return '<tr onclick="openAthlete(\''+p.name+'\')"><td><span class="av-sm">'+initials(p.name)+'</span>'+p.name+'</td>'+
+      ['talent','character','mentality','alignment'].map(function(d){return '<td class="mono" style="color:'+C4[d].color+'">'+p[d]+'</td>';}).join('')+
+      '<td class="mono" style="color:var(--gold);font-weight:700">'+rosterCore4(p)+'</td></tr>';}).join('')+'</tbody></table></div></div>';
+  return {html:html, after:function(){ core4RingsAnimate(); }};
+};
+
+PAGES.coach.performance = function(){
+  var html='<div class="page-hero"><div class="lead"><h1>Team Performance</h1><p>Aggregate athletic and skill benchmarks across the roster.</p></div></div>'+
+    '<div class="grid g4 mb22">'+kpi('Avg Exit Velo',Math.round(avg(ROSTER.map(function(p){return p.exitVelo;})))+' mph','+2.1 vs last','up')+
+      kpi('Avg Arm Velo',Math.round(avg(ROSTER.map(function(p){return p.armVelo;})))+' mph','+1.4 vs last','up')+kpi('Team GPA','3.4','Above district','flat')+kpi('Pitchers','4','on staff','flat')+'</div>'+
+    '<div class="grid g2"><div class="card pad"><div class="card-head"><span class="lbl">Exit Velocity by Athlete</span></div><div style="height:280px"><canvas id="perfEV"></canvas></div></div>'+
+    '<div class="card pad"><div class="card-head"><span class="lbl">Arm Velocity by Athlete</span></div><div style="height:280px"><canvas id="perfArm"></canvas></div></div></div>';
+  return {html:html, after:function(){
+    _charts.pe=new Chart(document.getElementById('perfEV'),{type:'bar',data:{labels:ROSTER.map(function(p){return initials(p.name);}),datasets:[{data:ROSTER.map(function(p){return p.exitVelo;}),backgroundColor:'#C9A84C',borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:70,ticks:{color:'#5c636e'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#8A93A0',font:{size:9}},grid:{display:false}}}}});
+    _charts.pa=new Chart(document.getElementById('perfArm'),{type:'bar',data:{labels:ROSTER.map(function(p){return initials(p.name);}),datasets:[{data:ROSTER.map(function(p){return p.armVelo;}),backgroundColor:'#60a5fa',borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:70,ticks:{color:'#5c636e'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#8A93A0',font:{size:9}},grid:{display:false}}}}});
+  }};
+};
+
+PAGES.coach.development = function(){
+  var rows=[['Marcus Rivera','FB Velocity 90+ mph',72,'Aug 1','on'],['Marcus Rivera','Changeup Command 60%',45,'Jul 15','risk'],
+    ['J. Sanchez','Exit Velocity 95+ mph',88,'Jul 1','on'],['T. Kim','60-Yard Dash 6.6s',20,'Jun 30','over'],['D. Parker','Arm Velocity 88+ mph',90,'Aug 15','on']];
+  var html='<div class="page-hero"><div class="lead"><h1>Development Plans</h1><p>Every athlete goal in one view — spot at-risk and overdue goals before they slip.</p></div>'+
+    '<button class="btn gold" onclick="showToast(\'Assign plan\',\'gold\')">+ Assign Plan</button></div>'+
+    '<div class="card" style="overflow:hidden"><div style="overflow:auto"><table class="tbl"><thead><tr><th>Athlete</th><th>Goal</th><th>Progress</th><th>Deadline</th><th>Status</th></tr></thead><tbody>'+
+    rows.map(function(r){var lbl=r[4]==='on'?'On Track':r[4]==='risk'?'At Risk':'Overdue';var pc=r[4]==='on'?'g':r[4]==='risk'?'y':'r';
+      return '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td><div class="mini-bar"><div class="mb-t"><div class="mb-f '+(r[4]==='over'?'':'')+'" style="width:'+r[2]+'%;background:'+(r[4]==='on'?'#4ade80':r[4]==='risk'?'#f59e0b':'#f87171')+'"></div></div><span class="mono" style="font-size:11px">'+r[2]+'%</span></div></td><td class="mono mut">'+r[3]+'</td><td><span class="pill '+pc+'">'+lbl+'</span></td></tr>';}).join('')+
+    '</tbody></table></div></div>';
+  return {html:html};
+};
+
+PAGES.coach.reports = function(){
+  var html='<div class="page-hero"><div class="lead"><h1>Reports</h1><p>Generate team and individual reports for staff meetings, recruiting, and parent communication.</p></div></div>'+
+    '<div class="grid g3">'+[['Team Analytics Report','Full roster CORE4 + performance','🏟️'],['Culture & Engagement Summary','Weekly check-in and mentality digest','🔥'],['Recruiting Board','Class-ranked prospect packet','🎓'],['At-Risk Athlete Report','Athletes needing intervention','⚠️'],['Development Progress','Goal completion across the team','📈'],['Player Comparison','Side-by-side athlete breakdown','⚖️']].map(function(r){
+      return '<div class="res" onclick="showToast(\'Generating '+r[0]+'…\',\'gold\')"><div class="r-top"><span class="r-type">'+r[2]+'</span></div><div class="r-tt">'+r[0]+'</div><div class="r-mt">'+r[1]+'</div></div>';}).join('')+'</div>';
+  return {html:html};
+};
+
+PAGES.coach.resources = function(){
+  var html='<div class="page-hero"><div class="lead"><h1>Resource Hub</h1><p>Assign development content directly to athletes and browse the full library.</p></div></div>'+
+    '<div class="card pad mb22"><div class="card-head"><span class="lbl">Assign a Resource</span></div>'+
+    '<div style="display:flex;gap:10px;flex-wrap:wrap"><select class="inp" style="margin:0;flex:1"><option>Select athlete…</option>'+ROSTER.map(function(p){return '<option>'+p.name+'</option>';}).join('')+'</select>'+
+    '<select class="inp" style="margin:0;flex:1"><option>Select resource…</option>'+RESOURCES.map(function(r){return '<option>'+r.title+'</option>';}).join('')+'</select>'+
+    '<button class="btn gold" onclick="showToast(\'Resource assigned\',\'good\')">Assign →</button></div></div>'+
+    '<div class="grid g3">'+RESOURCES.map(resourceCard).join('')+'</div>';
+  return {html:html};
+};
+
+function coachCharts(){
+  var tc=teamCore4();
+  var rc=document.getElementById('teamRadar');
+  if(rc) _charts.radar=new Chart(rc,{type:'radar',data:{labels:['Talent','Character','Mentality','Alignment'],datasets:[{data:[tc.talent,tc.character,tc.mentality,tc.alignment],borderColor:'#C9A84C',backgroundColor:'rgba(201,168,76,.15)',pointBackgroundColor:'#C9A84C'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{min:0,max:100,ticks:{display:false,stepSize:25},grid:{color:'rgba(255,255,255,.08)'},angleLines:{color:'rgba(255,255,255,.08)'},pointLabels:{color:'#8A93A0',font:{size:10,family:'IBM Plex Mono'}}}}}});
+  var ev=document.getElementById('cEV');
+  if(ev) _charts.ev=new Chart(ev,{type:'bar',data:{labels:['<85','85-89','90-94','95+'],datasets:[{data:[2,3,3,2],backgroundColor:'#C9A84C',borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#5c636e'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#8A93A0',font:{size:9}},grid:{display:false}}}}});
+  var mt=document.getElementById('cMent');
+  if(mt) _charts.mt=new Chart(mt,{type:'line',data:{labels:['W1','W2','W3','W4','W5','W6','W7','W8'],datasets:[{data:[3.4,3.6,3.7,3.9,3.8,4.0,4.1,4.1],borderColor:'#4ade80',backgroundColor:'rgba(74,222,128,.08)',fill:true,tension:.35,pointRadius:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:5,ticks:{color:'#5c636e'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#5c636e',font:{size:9}},grid:{display:false}}}}});
+  var ck=document.getElementById('cChk');
+  if(ck) _charts.ck=new Chart(ck,{type:'doughnut',data:{labels:['Completed','Missed'],datasets:[{data:[84,16],backgroundColor:['#C9A84C','#242424'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'72%',plugins:{legend:{labels:{color:'#8A93A0',font:{size:10,family:'IBM Plex Mono'}}}}}});
+}
+function core4RingsAnimate(){}
+
+/* ── Athlete Matrix ── */
+var _matrixSort='core4', _matrixDir=-1, _matrixFilter='';
+function matrixFilter(v){ _matrixFilter=v; renderMatrix(); }
+function sortMatrix(k){ if(_matrixSort===k) _matrixDir*=-1; else {_matrixSort=k;_matrixDir=-1;} renderMatrix(); }
+function renderMatrix(){
+  var body=document.getElementById('matrixBody'); if(!body) return;
+  var list=ROSTER.slice();
+  if(_matrixFilter){ list=list.filter(function(p){ var g=p.pos; if(_matrixFilter==='P')return /P/.test(g); if(_matrixFilter==='C')return /^C/.test(g); if(_matrixFilter==='IF')return /(1B|2B|3B|SS)/.test(g); if(_matrixFilter==='OF')return /(CF|LF|RF|OF)/.test(g); return true;}); }
+  list.sort(function(a,b){ var av=_matrixSort==='core4'?rosterCore4(a):a[_matrixSort], bv=_matrixSort==='core4'?rosterCore4(b):b[_matrixSort];
+    if(typeof av==='string') return av.localeCompare(bv)*_matrixDir; return (av-bv)*_matrixDir; });
+  body.innerHTML=list.map(function(p){
+    var st=p.assess==='complete'?'<span class="pill g">Complete</span>':p.assess==='overdue'?'<span class="pill r">Overdue</span>':'<span class="pill y">Pending</span>';
+    return '<tr onclick="openAthlete(\''+p.name+'\')"><td><span class="av-sm">'+initials(p.name)+'</span>'+p.name+'</td>'+
+      '<td class="mono mut">'+p.pos+'</td><td class="mono mut">'+p.cls+'</td>'+
+      '<td class="mono" style="color:var(--gold);font-weight:700">'+rosterCore4(p)+'</td>'+
+      ['talent','character','mentality','alignment'].map(function(d){return '<td class="mono" style="color:'+C4[d].color+'">'+p[d]+'</td>';}).join('')+
+      '<td>'+trendChip(p.trend)+'</td><td>'+st+'</td></tr>';
+  }).join('');
+}
+function openCompare(){
+  openModalHTML('<div class="modal-head"><div><div class="m-ttl">Player Comparison</div><div class="m-sub">Select athletes to compare side by side</div></div><button class="modal-x" onclick="closeModal()">✕</button></div>'+
+    '<div class="modal-body"><p class="mut" style="margin-bottom:14px">Pick two athletes to overlay their CORE4 profiles.</p>'+
+    '<div style="display:flex;gap:10px;margin-bottom:16px"><select class="inp" id="cmpA" style="margin:0" onchange="drawCompare()">'+ROSTER.map(function(p,i){return '<option '+(i===0?'selected':'')+'>'+p.name+'</option>';}).join('')+'</select>'+
+    '<select class="inp" id="cmpB" style="margin:0" onchange="drawCompare()">'+ROSTER.map(function(p,i){return '<option '+(i===3?'selected':'')+'>'+p.name+'</option>';}).join('')+'</select></div>'+
+    '<div style="height:300px"><canvas id="cmpChart"></canvas></div></div>');
+  setTimeout(drawCompare,50);
+}
+function drawCompare(){
+  var a=ROSTER.find(function(p){return p.name===document.getElementById('cmpA').value;});
+  var b=ROSTER.find(function(p){return p.name===document.getElementById('cmpB').value;});
+  if(_charts.cmp)try{_charts.cmp.destroy();}catch(e){}
+  _charts.cmp=new Chart(document.getElementById('cmpChart'),{type:'radar',data:{labels:['Talent','Character','Mentality','Alignment'],datasets:[
+    {label:a.name,data:[a.talent,a.character,a.mentality,a.alignment],borderColor:'#C9A84C',backgroundColor:'rgba(201,168,76,.12)',pointBackgroundColor:'#C9A84C'},
+    {label:b.name,data:[b.talent,b.character,b.mentality,b.alignment],borderColor:'#60a5fa',backgroundColor:'rgba(96,165,250,.12)',pointBackgroundColor:'#60a5fa'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8A93A0',font:{size:11,family:'IBM Plex Mono'}}}},scales:{r:{min:0,max:100,ticks:{display:false},grid:{color:'rgba(255,255,255,.08)'},angleLines:{color:'rgba(255,255,255,.08)'},pointLabels:{color:'#C5C8CC',font:{size:11}}}}}});
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ADMIN PAGES
+══════════════════════════════════════════════════════════════ */
+PAGES.admin.home = function(){
+  var html='<div class="page-hero"><div class="lead"><h1>Platform Overview</h1><p>The health, engagement, and performance of the entire Lanista IQ ecosystem — with drill-down from organization to athlete.</p></div>'+
+    '<span class="tag gold" style="align-self:center">● All Systems Operational</span></div>'+
+    '<div class="grid g5 mb22">'+
+      kpi('Athletes','247','+18 this month','up')+kpi('Coaches','32','+3','up')+
+      kpi('Organizations','9','2 pending','flat')+kpi('Teams','21','','flat')+kpi('Assessment Rate','81%','+5%','up')+
+    '</div>'+
+    '<div class="grid g-2-1 mb22">'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">📊 Platform Engagement — 8 Weeks</span></div><div style="height:260px"><canvas id="admEng"></canvas></div></div>'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">🔔 Requires Action</span></div>'+
+        insight('⏳','14 pending plan upgrades','Revenue opportunity — review and approve.','watch')+
+        insight('🏢','2 organizations awaiting onboarding','North Prep & Eastside Elite need setup.','watch')+
+        insight('⚠️','3 failed logins (24h)','Below alert threshold — monitoring.','good')+
+        insight('📦','Storage at 4.2 GB','72% of quota — plan for expansion.','watch')+'</div>'+
+    '</div>'+
+    '<div class="grid g-1-2 mb22">'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">◆ Platform CORE4 Distribution</span></div><div style="height:230px"><canvas id="admC4"></canvas></div></div>'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">🏢 Organization Comparison</span><span class="act" onclick="navigate(\'organizations\')">View all →</span></div>'+
+        '<div style="overflow:auto"><table class="tbl"><thead><tr><th>Organization</th><th>Athletes</th><th>Avg CORE4</th><th>Engagement</th><th>Plan</th></tr></thead><tbody>'+
+        [['Westlake HS',10,83,'84%','Elite'],['North Prep',7,79,'71%','Elite'],['Eastside Elite',5,76,'63%','Pro'],['Riverside AAU',12,80,'77%','Pro'],['Summit Academy',6,74,'58%','Free']].map(function(o){
+          return '<tr><td style="font-weight:600">'+o[0]+'</td><td class="mono">'+o[1]+'</td><td class="mono" style="color:var(--gold)">'+o[2]+'</td><td><div class="mini-bar"><div class="mb-t"><div class="mb-f" style="width:'+o[3]+'"></div></div><span class="mono" style="font-size:11px">'+o[3]+'</span></div></td><td><span class="pill '+(o[4]==='Elite'?'b':o[4]==='Pro'?'g':'n')+'">'+o[4]+'</span></td></tr>';}).join('')+
+        '</tbody></table></div></div>'+
+    '</div>'+
+    '<div class="card pad"><div class="card-head"><span class="lbl">📡 Recent Activity</span></div>'+
+      [['14:32','Player check-in submitted — Marcus Rivera','info'],['14:28','Resource downloaded — "Fastball Mechanics"','info'],['14:15','Failed login attempt — IP 192.168.1.44','warn'],['13:55','New user registered — T. Kim (Free)','info'],['13:40','Badge unlocked — "Hot Streak"','info'],['11:52','Plan upgrade — Free → Pro','info']].map(function(l){
+        return '<div style="display:flex;gap:14px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px"><span class="mono" style="color:'+(l[2]==='warn'?'var(--warn)':'var(--steel)')+';width:48px">'+l[0]+'</span><span>'+l[1]+'</span></div>';}).join('')+'</div>';
+  return {html:html, after:function(){ adminCharts(); }};
+};
+
+PAGES.admin.organizations = function(){
+  var orgs=[['Westlake HS','High School',10,2,83,'Elite'],['North Prep','High School',7,1,79,'Elite'],['Eastside Elite','Academy',5,1,76,'Pro'],['Riverside AAU','Travel',12,3,80,'Pro'],['Summit Academy','Academy',6,1,74,'Free']];
+  var html='<div class="page-hero"><div class="lead"><h1>Organizations</h1><p>Every organization on the platform. Drill into teams and athletes from here.</p></div><button class="btn gold" onclick="showToast(\'Add organization\',\'gold\')">+ Add Org</button></div>'+
+    '<div class="grid g3">'+orgs.map(function(o){return '<div class="card pad hover" onclick="navigate(\'teams\')"><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><div class="ah-avatar" style="width:48px;height:48px;font-size:18px;border-radius:12px">'+initials(o[0])+'</div><div><div style="font-family:var(--f-d);font-size:18px;font-weight:800">'+o[0]+'</div><div class="mono mut" style="font-size:10px">'+o[1]+'</div></div><span class="r-tier tier-'+o[5].toLowerCase()+'" style="margin-left:auto">'+o[5]+'</span></div>'+
+      '<div class="stat-strip"><div class="s"><div class="v">'+o[2]+'</div><div class="l">Athletes</div></div><div class="s"><div class="v">'+o[3]+'</div><div class="l">Teams</div></div><div class="s"><div class="v" style="color:var(--gold)">'+o[4]+'</div><div class="l">Avg CORE4</div></div></div></div>';}).join('')+'</div>';
+  return {html:html};
+};
+
+PAGES.admin.teams = function(){
+  var html='<div class="page-hero"><div class="lead"><h1>Teams</h1><p>All teams across organizations — click through to the athlete roster.</p></div></div>'+
+    '<div class="card" style="overflow:hidden"><div style="overflow:auto"><table class="tbl"><thead><tr><th>Team</th><th>Organization</th><th>Coach</th><th>Athletes</th><th>Avg CORE4</th><th>Check-In</th></tr></thead><tbody>'+
+    [['Westlake Warriors','Westlake HS','Dave Rivera',10,83,'84%'],['North Prep Varsity','North Prep','Coach Ellis',7,79,'71%'],['Riverside 17U','Riverside AAU','Coach Diaz',12,80,'77%'],['Eastside Elite','Eastside Elite','Coach Nguyen',5,76,'63%']].map(function(t){
+      return '<tr onclick="setRole(\'coach\')"><td style="font-weight:600">'+t[0]+'</td><td class="mut">'+t[1]+'</td><td class="mut">'+t[2]+'</td><td class="mono">'+t[3]+'</td><td class="mono" style="color:var(--gold)">'+t[4]+'</td><td class="mono">'+t[5]+'</td></tr>';}).join('')+
+    '</tbody></table></div></div>';
+  return {html:html};
+};
+
+PAGES.admin.athletes = function(){
+  var html='<div class="page-hero"><div class="lead"><h1>All Athletes</h1><p>Platform-wide athlete directory. Click any athlete to open their universal profile.</p></div></div>'+
+    '<div class="card" style="overflow:hidden"><div style="overflow:auto"><table class="tbl"><thead><tr><th>Athlete</th><th>Position</th><th>Class</th><th>CORE4</th><th>Trend</th><th>Status</th></tr></thead><tbody id="matrixBody"></tbody></table></div></div>';
+  return {html:html, after:function(){ var body=document.getElementById('matrixBody'); body.innerHTML=ROSTER.map(function(p){
+    var st=p.assess==='complete'?'<span class="pill g">Active</span>':p.assess==='overdue'?'<span class="pill r">Overdue</span>':'<span class="pill y">Pending</span>';
+    return '<tr onclick="openAthlete(\''+p.name+'\')"><td><span class="av-sm">'+initials(p.name)+'</span>'+p.name+'</td><td class="mut">'+p.pos+'</td><td class="mono mut">'+p.cls+'</td><td class="mono" style="color:var(--gold);font-weight:700">'+rosterCore4(p)+'</td><td>'+trendChip(p.trend)+'</td><td>'+st+'</td></tr>';}).join(''); }};
+};
+
+PAGES.admin.analytics = function(){
+  var html='<div class="page-hero"><div class="lead"><h1>Analytics</h1><p>Platform-wide trends across engagement, CORE4, and growth.</p></div></div>'+
+    '<div class="grid g4 mb22">'+kpi('Active Users (7d)','247','','up')+kpi('Avg Response','142ms','','flat')+kpi('API Uptime','99.8%','','up')+kpi('Assessments (mo)','1,204','+12%','up')+'</div>'+
+    '<div class="grid g2"><div class="card pad"><div class="card-head"><span class="lbl">Growth — New Users</span></div><div style="height:260px"><canvas id="anGrowth"></canvas></div></div>'+
+    '<div class="card pad"><div class="card-head"><span class="lbl">CORE4 Distribution (Platform)</span></div><div style="height:260px"><canvas id="anC4"></canvas></div></div></div>';
+  return {html:html, after:function(){
+    _charts.ag=new Chart(document.getElementById('anGrowth'),{type:'bar',data:{labels:['Feb','Mar','Apr','May','Jun','Jul'],datasets:[{data:[120,148,171,199,229,247],backgroundColor:'#C9A84C',borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#5c636e'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#8A93A0'},grid:{display:false}}}}});
+    _charts.ac=new Chart(document.getElementById('anC4'),{type:'radar',data:{labels:['Talent','Character','Mentality','Alignment'],datasets:[{data:[81,80,78,75],borderColor:'#C9A84C',backgroundColor:'rgba(201,168,76,.12)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{min:0,max:100,ticks:{display:false},grid:{color:'rgba(255,255,255,.08)'},angleLines:{color:'rgba(255,255,255,.08)'},pointLabels:{color:'#8A93A0',font:{size:11}}}}}});
+  }};
+};
+
+PAGES.admin.assessments = function(){
+  var html='<div class="page-hero"><div class="lead"><h1>Assessments</h1><p>Assessment completion and configuration across the platform.</p></div><button class="btn gold" onclick="showToast(\'New assessment window\',\'gold\')">+ New Window</button></div>'+
+    '<div class="grid g4 mb22">'+kpi('Completion','81%','+5%','up')+kpi('This Cycle','198','of 247','flat')+kpi('Overdue','23','follow-up','down')+kpi('Avg Time','4.2 min','','flat')+'</div>'+
+    '<div class="card" style="overflow:hidden"><div style="overflow:auto"><table class="tbl"><thead><tr><th>Assessment</th><th>Type</th><th>Assigned</th><th>Completed</th><th>Rate</th><th>Status</th></tr></thead><tbody>'+
+    [['Weekly Mentality Check-In','Likert',247,208,'84%','Active'],['CORE4 Self-Evaluation','Rubric',247,181,'73%','Active'],['Combine Testing — Summer','Metric',120,96,'80%','Active'],['Coach Evaluation — Q3','Rubric',32,21,'66%','Open']].map(function(r){
+      return '<tr><td style="font-weight:600">'+r[0]+'</td><td class="mut">'+r[1]+'</td><td class="mono">'+r[2]+'</td><td class="mono">'+r[3]+'</td><td><div class="mini-bar"><div class="mb-t"><div class="mb-f" style="width:'+r[4]+'"></div></div><span class="mono" style="font-size:11px">'+r[4]+'</span></div></td><td><span class="pill g">'+r[5]+'</span></td></tr>';}).join('')+
+    '</tbody></table></div></div>';
+  return {html:html};
+};
+
+PAGES.admin.reports = function(){
+  var html='<div class="page-hero"><div class="lead"><h1>Reports</h1><p>Platform, organization, and compliance reporting.</p></div></div>'+
+    '<div class="grid g3">'+[['Platform Health Report','Uptime, usage & performance','🖥️'],['Engagement Report','Active users & retention','📊'],['Organization Rollup','CORE4 & activity by org','🏢'],['Revenue & Plans','Subscriptions and upgrades','💰'],['Assessment Compliance','Completion across the platform','✅'],['Data Export','Full CSV / JSON export','📦']].map(function(r){
+      return '<div class="res" onclick="showToast(\'Generating '+r[0]+'…\',\'gold\')"><div class="r-top"><span class="r-type">'+r[2]+'</span></div><div class="r-tt">'+r[0]+'</div><div class="r-mt">'+r[1]+'</div></div>';}).join('')+'</div>';
+  return {html:html};
+};
+
+PAGES.admin.platform = function(){
+  var html='<div class="page-hero"><div class="lead"><h1>Platform Management</h1><p>User management, content library, and system health.</p></div>'+
+    '<div class="seg"><button class="active" onclick="platTab(\'users\',this)">Users</button><button onclick="platTab(\'health\',this)">Health</button><button onclick="platTab(\'content\',this)">Content</button></div></div>'+
+    '<div id="platBody"></div>';
+  return {html:html, after:function(){ platTab('users'); }};
+};
+function platTab(tab,btn){
+  if(btn){ btn.parentElement.querySelectorAll('button').forEach(function(b){b.classList.remove('active');}); btn.classList.add('active'); }
+  var el=document.getElementById('platBody'); if(!el) return;
+  if(tab==='users'){
+    el.innerHTML='<div class="card pad mb16" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><input class="inp" style="margin:0;max-width:240px" placeholder="Search users…" oninput="filterUsers(this.value)"/><select class="inp" style="margin:0;width:auto" onchange="filterUsers(\'\',this.value)"><option value="">All Plans</option><option>Free</option><option>Pro</option><option>Elite</option></select><button class="btn gold sm" style="margin-left:auto" onclick="showToast(\'Add user\',\'gold\')">+ Add User</button></div>'+
+      '<div class="card" style="overflow:hidden"><div style="overflow:auto"><table class="tbl"><thead><tr><th>Name</th><th>Role</th><th>Organization</th><th>Plan</th><th>Last Active</th><th>Status</th></tr></thead><tbody id="usersBody"></tbody></table></div></div>';
+    renderUsers();
+  } else if(tab==='health'){
+    el.innerHTML='<div class="grid g3 mb22">'+[['99.8%','API Uptime','g'],['142ms','Avg Response','g'],['247','Active Users (7d)','g'],['4.2 GB','Storage Used','y'],['3','Failed Logins (24h)','g'],['14','Pending Upgrades','y']].map(function(h){
+      return '<div class="kpi"><div class="k-lbl">'+h[1]+'</div><div class="k-val" style="color:'+(h[2]==='y'?'var(--warn)':'var(--pos)')+'">'+h[0]+'</div><div class="k-sub"><span class="pill '+h[2]+'">'+(h[2]==='y'?'Watch':'Healthy')+'</span></div></div>';}).join('')+'</div>'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">System Log Feed</span></div>'+
+      [['14:32:01','info','Player check-in submitted — user #1042'],['14:28:44','info','Resource downloaded — "Fastball Mechanics"'],['14:15:22','warn','Failed login attempt — IP 192.168.1.44'],['13:55:10','info','New user registered — T. Kim'],['12:18:33','error','API timeout — /player/1088/metrics — retried OK'],['11:52:14','info','Plan upgrade — user #1033 — Free → Pro']].map(function(l){
+        var c=l[1]==='error'?'var(--neg)':l[1]==='warn'?'var(--warn)':'var(--steel)';
+        return '<div style="display:flex;gap:14px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12.5px;font-family:var(--f-m)"><span style="color:'+c+';width:70px">'+l[0]+'</span><span>'+l[2]+'</span></div>';}).join('')+'</div>';
+  } else {
+    el.innerHTML='<div class="card pad mb16" style="display:flex;align-items:center;gap:12px"><span class="card-head" style="margin:0"><span class="lbl">Content Library — '+RESOURCES.length+' Resources</span></span><button class="btn gold sm" style="margin-left:auto" onclick="showToast(\'Upload resource\',\'gold\')">+ Upload</button></div>'+
+      '<div class="card" style="overflow:hidden"><div style="overflow:auto"><table class="tbl"><thead><tr><th>Title</th><th>Type</th><th>Tier</th><th>Tag</th><th>Source</th></tr></thead><tbody>'+
+      RESOURCES.map(function(r){return '<tr><td style="font-weight:600">'+r.title+'</td><td class="mut">'+r.type+'</td><td><span class="r-tier tier-'+r.tier+'">'+r.tier+'</span></td><td class="mono mut" style="font-size:10px">'+r.tag+'</td><td class="mut">'+r.source+'</td></tr>';}).join('')+'</tbody></table></div></div>';
+  }
+}
+function renderUsers(term,plan){
+  var body=document.getElementById('usersBody'); if(!body) return;
+  var list=ADMIN_USERS.slice();
+  if(term) list=list.filter(function(u){return u.name.toLowerCase().indexOf(term.toLowerCase())>=0;});
+  if(plan) list=list.filter(function(u){return u.plan===plan;});
+  body.innerHTML=list.map(function(u){var pc=u.status==='Active'?'g':'n';
+    return '<tr><td><span class="av-sm">'+initials(u.name)+'</span>'+u.name+'</td><td class="mut">'+u.role+'</td><td class="mut">'+u.org+'</td><td><span class="r-tier tier-'+u.plan.toLowerCase()+'">'+u.plan+'</span></td><td class="mono mut">'+u.active+'</td><td><span class="pill '+pc+'">'+u.status+'</span></td></tr>';}).join('');
+}
+var _uTerm='',_uPlan='';
+function filterUsers(term,plan){ if(term!==undefined&&plan===undefined){_uTerm=term;} if(plan!==undefined){_uPlan=plan;} renderUsers(_uTerm,_uPlan); }
+function adminCharts(){
+  var e=document.getElementById('admEng');
+  if(e) _charts.ae=new Chart(e,{type:'line',data:{labels:['W1','W2','W3','W4','W5','W6','W7','W8'],datasets:[
+    {label:'Active Users',data:[180,195,205,212,225,231,240,247],borderColor:'#C9A84C',backgroundColor:'rgba(201,168,76,.08)',fill:true,tension:.35,pointRadius:2},
+    {label:'Check-Ins',data:[140,160,168,180,190,198,205,208],borderColor:'#4ade80',tension:.35,pointRadius:2}]},options:lineOpts()});
+  var c=document.getElementById('admC4');
+  if(c) _charts.acd=new Chart(c,{type:'bar',data:{labels:['Talent','Character','Mentality','Alignment'],datasets:[{data:[81,80,78,75],backgroundColor:['#C9A84C','#a78bfa','#4ade80','#60a5fa'],borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:100,ticks:{color:'#5c636e'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#8A93A0',font:{size:10}},grid:{display:false}}}}});
+}
+
+/* ══════════════════════════════════════════════════════════════
+   UNIVERSAL ATHLETE PROFILE  (Overview·CORE4·Performance·Development·Reports·Profile)
+══════════════════════════════════════════════════════════════ */
+var _profTab='overview';
+function profileBody(a){
+  _profTab='overview';
+  return athleteHeader(a)+
+    '<div class="subtabs" id="profTabs">'+
+    ['overview|Overview','core4|CORE4','performance|Performance','development|Development','reports|Reports','profile|Profile'].map(function(t,i){var p=t.split('|');return '<button class="subtab'+(i===0?' active':'')+'" onclick="setProfTab(\''+p[0]+'\',this)">'+p[1]+'</button>';}).join('')+
+    '</div><div id="profBody"></div>';
+}
+function profileAfter(){ setProfTab('overview'); }
+function setProfTab(tab,btn){
+  _profTab=tab;
+  if(btn){ btn.parentElement.querySelectorAll('.subtab').forEach(function(b){b.classList.remove('active');}); btn.classList.add('active'); }
+  var a=ATHLETE, el=document.getElementById('profBody'); if(!el) return;
+  destroyCharts();
+  if(tab==='overview'){
+    el.innerHTML='<div class="grid g-2-1 mb22">'+core4Signature(a).replace('mb22','')+
+      '<div class="card pad"><div class="card-head"><span class="lbl">Snapshot</span></div>'+
+      '<div class="stat-strip" style="flex-direction:column;gap:14px">'+
+      [['Lanista IQ',a.lanistaIQ],['LS4 Score',a.ls4],['CORE4 Avg',core4Avg(a)],['Development Status',a.status],['Profile Completion',a.profile+'%']].map(function(r){return '<div style="display:flex;justify-content:space-between;align-items:center"><span class="mut" style="font-size:13px">'+r[0]+'</span><span style="font-family:var(--f-d);font-size:22px;font-weight:900;color:var(--gold)">'+r[1]+'</span></div>';}).join('')+'</div></div></div>'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">The Complete Story</span></div>'+
+      insight('🎯','Talent — elite & stable (88)','Top-tier power and velocity. Command refinement is the next grade.','good')+
+      insight('🧠','Mentality — fastest riser (+6)','Composure and confidence trending up strongly over 30 days.','good')+
+      insight('🧭','Alignment — biggest opportunity (79)','Development follow-through is where you unlock the most Lanista IQ.','watch')+'</div>';
+  } else if(tab==='core4'){
+    el.innerHTML=PAGES.player.core4().html.replace(/<div class="page-hero">[\s\S]*?<\/div><\/div>/,''); core4TrendChart('c4Trend');
+  } else if(tab==='performance'){
+    el.innerHTML='<div class="seg mb16" id="perfSeg"><button class="active" onclick="perfTab(\'athletic\',this)">Athletic</button><button onclick="perfTab(\'pitching\',this)">Pitching</button><button onclick="perfTab(\'hitting\',this)">Hitting</button></div><div id="perfBody"></div>';
+    perfTab('athletic');
+  } else if(tab==='development'){
+    el.innerHTML='<div class="card pad"><div class="card-head"><span class="lbl">Active Goals</span></div>'+a.devPlan.map(function(p,i){return priorityRow(p,i+1);}).join('')+'</div>';
+  } else if(tab==='reports'){
+    el.innerHTML='<div class="grid g-1-2"><div class="card pad">'+cardPreview(a)+'<div style="display:flex;gap:8px;margin-top:14px"><button class="btn gold sm" onclick="openPlayerCard()">Full Card</button><button class="btn sm" onclick="printCard()">PDF</button></div></div>'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">Reports</span></div>'+['Individual Player Report','Recruiting Readiness','LS4 Breakdown'].map(function(r){return '<div class="action" onclick="showToast(\'Generating…\',\'gold\')"><div class="a-ic">📄</div><div><div class="a-tt">'+r+'</div></div><div class="a-go">GENERATE →</div></div>';}).join('')+'</div></div>';
+  } else {
+    el.innerHTML='<div class="card pad"><div class="card-head"><span class="lbl">Athlete Details</span><span class="act" onclick="showToast(\'Edit profile\',\'gold\')">Edit</span></div>'+
+      '<div class="grid g2">'+[['Full Name',a.name],['Position',a.pos],['Jersey #',a.number],['Team',a.team],['Grad Year',a.grad],['Grade',a.grade],['Height',a.height],['Weight',a.weight],['Bats/Throws',a.bats],['GPA',a.gpa],['Hometown',a.city],['Status',a.status]].map(function(r){
+        return '<div style="padding:11px 0;border-bottom:1px solid var(--line)"><div class="mono mut" style="font-size:9px;letter-spacing:1px;text-transform:uppercase">'+r[0]+'</div><div style="font-size:15px;margin-top:2px">'+r[1]+'</div></div>';}).join('')+'</div></div>';
+  }
+}
+
+/* ── athlete drawer (coach/admin quick view) ── */
+function openAthlete(name){
+  var p=ROSTER.find(function(x){return x.name===name;}); if(!p) return;
+  var c4={talent:p.talent,character:p.character,mentality:p.mentality,alignment:p.alignment};
+  var fake={core4:{talent:{score:p.talent,trend:p.trend},character:{score:p.character,trend:p.trend},mentality:{score:p.mentality,trend:p.trend},alignment:{score:p.alignment,trend:p.trend}},lanistaIQ:rosterCore4(p),status:p.status==='green'?'On Track':p.status==='yellow'?'Monitor':'At Risk'};
+  var note = p.status==='red'?insight('⚠️','Needs attention','Mentality '+p.mentality+' · trending '+p.trend+'. Recommend a 1-on-1 this week.','bad')
+    : p.status==='yellow'?insight('⏰','Monitor','Assessment '+p.assess+' · keep this athlete engaged.','watch')
+    : insight('🚀','Developing well','+'+p.trend+' CORE4 · '+p.streak+'-week streak. Reinforce the routine.','good');
+  var d=document.getElementById('athleteDrawer');
+  d.innerHTML='<div class="modal-head"><div class="ah-avatar" style="width:46px;height:46px;font-size:17px">'+initials(p.name)+'</div>'+
+    '<div><div class="m-ttl" style="font-size:18px">'+p.name+'</div><div class="m-sub">'+p.pos+' · Class of '+p.cls+'</div></div>'+
+    '<button class="modal-x" onclick="closeDrawer()">✕</button></div>'+
+    '<div class="modal-body">'+
+    '<div style="display:flex;gap:16px;align-items:center;margin-bottom:18px"><div style="position:relative;width:130px;height:130px;flex-shrink:0">'+core4Rings(fake,130)+
+      '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-family:var(--f-d);font-size:30px;font-weight:900;color:var(--gold)">'+rosterCore4(p)+'</span><span class="mono" style="font-size:8px;color:var(--steel)">CORE4</span></div></div>'+
+      '<div style="flex:1">'+['talent','character','mentality','alignment'].map(function(dm){return '<div class="mrow" style="padding:7px 0"><span class="m-nm" style="width:auto;flex:1;font-size:12px;color:'+C4[dm].color+'">'+C4[dm].name+'</span><div class="m-track" style="max-width:60px"><div class="m-fill" style="width:'+c4[dm]+'%;background:'+C4[dm].color+'"></div></div><span class="m-val" style="width:44px;font-size:13px;color:'+C4[dm].color+'">'+c4[dm]+'</span></div>';}).join('')+'</div></div>'+
+    note+
+    '<div class="grid g2 mt16" style="gap:10px">'+
+      '<div class="card pad" style="padding:14px"><div class="mono mut" style="font-size:9px;letter-spacing:1px">EXIT VELO</div><div style="font-family:var(--f-d);font-size:24px;font-weight:900;color:var(--gold)">'+p.exitVelo+' mph</div></div>'+
+      '<div class="card pad" style="padding:14px"><div class="mono mut" style="font-size:9px;letter-spacing:1px">ARM VELO</div><div style="font-family:var(--f-d);font-size:24px;font-weight:900;color:var(--gold)">'+p.armVelo+' mph</div></div>'+
+      '<div class="card pad" style="padding:14px"><div class="mono mut" style="font-size:9px;letter-spacing:1px">STREAK</div><div style="font-family:var(--f-d);font-size:24px;font-weight:900">'+p.streak+' wks</div></div>'+
+      '<div class="card pad" style="padding:14px"><div class="mono mut" style="font-size:9px;letter-spacing:1px">ASSESSMENT</div><div style="font-family:var(--f-d);font-size:20px;font-weight:900;text-transform:capitalize">'+p.assess+'</div></div>'+
+    '</div>'+
+    '<div style="display:flex;gap:8px;margin-top:18px"><button class="btn gold sm" style="flex:1" onclick="showToast(\'Opening full profile\',\'gold\')">Full Profile</button>'+
+    '<button class="btn sm" style="flex:1" onclick="closeDrawer();openCompare()">Compare</button>'+
+    '<button class="btn sm" onclick="showToast(\'Message sent\',\'good\')">Message</button></div>'+
+    '</div>';
+  d.classList.add('open'); document.getElementById('drawerScrim').classList.add('open');
+}
+function closeDrawer(){ document.getElementById('athleteDrawer').classList.remove('open'); document.getElementById('drawerScrim').classList.remove('open'); }
+
+/* ── CORE4 dimension detail (modal) ── */
+function openC4(dim){
+  var a=ATHLETE, d=a.core4[dim], meta=C4[dim];
+  var drivers={
+    talent:[['Exit Velocity','94 mph','Top 12%'],['Pitch Velocity','94 mph','+3.2 / 6mo'],['Arm Velocity','84 mph','Above avg'],['30-Yard Dash','6.58s','Excellent']],
+    character:[['Coachability',a.coachability,'Target 90+'],['Effort',a.effort,'Elite'],['Grit',a.grit,'Elite'],['Leadership',82,'Developing']],
+    mentality:[['Confidence',a.confidence,'Elite'],['Focus',a.focus,'Strong'],['Composure',a.composure,'Strong'],['Resilience',a.resilience,'Elite']],
+    alignment:[['Dev Plan Progress','62%','On pace'],['Check-In Rate','90%','Consistent'],['Coach Alignment','Small gap','Good'],['Engagement',a.morale,'High']]
+  };
+  openModalHTML('<div class="modal-head"><span style="font-size:22px">'+meta.icon+'</span><div><div class="m-ttl">'+meta.name+'</div><div class="m-sub">'+meta.desc+'</div></div><button class="modal-x" onclick="closeModal()">✕</button></div>'+
+    '<div class="modal-body"><div style="display:flex;align-items:center;gap:20px;margin-bottom:20px"><div style="position:relative;width:120px;height:120px;flex-shrink:0">'+ring(d.score,120,12,meta.color)+
+      '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-family:var(--f-d);font-size:36px;font-weight:900;color:'+meta.color+'">'+d.score+'</span></div></div>'+
+      '<div><div style="margin-bottom:8px">'+trendChip(d.trend)+' <span class="mut">vs last cycle ('+d.prev+')</span></div>'+
+      '<p class="mut" style="font-size:13px">This is what drives your '+meta.name+' score. Focus on the lowest bars to raise your Lanista IQ fastest.</p></div></div>'+
+      drivers[dim].map(function(r){var v=typeof r[1]==='number'?r[1]:parseInt(r[1])||70;return '<div class="mrow"><span class="m-nm">'+r[0]+'</span><div class="m-track"><div class="m-fill" style="width:'+v+'%;background:'+meta.color+'"></div></div><span class="m-val" style="color:'+meta.color+'">'+r[1]+'</span><span class="m-avg">'+r[2]+'</span></div>';}).join('')+
+      '<button class="btn gold" style="width:100%;margin-top:18px" onclick="closeModal();navigate(\'development\')">See recommended drills →</button></div>');
+}
+
+/* ── generic modal ── */
+function openModalHTML(html){ document.getElementById('modalCard').innerHTML=html; document.getElementById('modal').classList.add('open'); }
+function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+
+/* ── check-in ── */
+var _ci={};
+function openCheckin(){
+  _ci={};
+  openModalHTML('<div class="modal-head"><div><div class="m-ttl">Weekly Check-In</div><div class="m-sub">Rate honestly — this builds your Mentality & Alignment CORE4.</div></div><button class="modal-x" onclick="closeModal()">✕</button></div>'+
+    '<div class="modal-body" id="ciBody">'+CHECKIN_QS.map(function(q,i){return '<div class="likert"><div class="q">'+(i+1)+'. '+q.q+'</div><div class="opts">'+[1,2,3,4,5].map(function(v){return '<div class="opt" onclick="ciPick('+i+','+v+',this)">'+v+'</div>';}).join('')+'</div></div>';}).join('')+
+    '<button class="btn gold" id="ciSubmit" style="width:100%" disabled onclick="submitCheckin()">Submit Check-In</button></div>');
+}
+function ciPick(i,v,el){ _ci[i]=v; el.parentElement.querySelectorAll('.opt').forEach(function(o){o.classList.remove('sel');}); el.classList.add('sel');
+  if(Object.keys(_ci).length===CHECKIN_QS.length){ document.getElementById('ciSubmit').disabled=false; } }
+function submitCheckin(){
+  document.getElementById('ciBody').innerHTML='<div style="text-align:center;padding:20px"><div style="font-size:46px">🎯</div><div style="font-family:var(--f-d);font-size:24px;font-weight:900;margin-top:10px">Check-In Complete!</div>'+
+    '<p class="mut" style="margin:8px 0 4px">Your Mentality profile has been updated and your streak extended.</p>'+
+    '<div class="toast gold show" style="display:inline-block;margin-top:12px">🔥 5-week streak · +10 XP</div>'+
+    '<button class="btn gold" style="width:100%;margin-top:20px" onclick="closeModal()">Done</button></div>';
+  ATHLETE.streak+=0; showToast('✓ Check-in logged','good');
+}
+
+/* ── player card modal ── */
+function openPlayerCard(){
+  var a=ATHLETE;
+  openModalHTML('<div class="modal-head"><div><div class="m-ttl">Player Card</div><div class="m-sub">Share your verified profile with coaches & scouts</div></div><button class="modal-x" onclick="closeModal()">✕</button></div>'+
+    '<div class="modal-body">'+cardPreview(a)+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px"><button class="btn gold sm" onclick="printCard()">📄 PDF</button><button class="btn sm" onclick="emailCard()">✉️ Email</button><button class="btn sm" onclick="copyCard()">📋 Copy</button><button class="btn sm" onclick="sendCoach()">🎓 Send to Coach</button></div>'+
+    '<div style="margin-top:20px;border-top:1px solid var(--line);padding-top:16px"><div class="card-head"><span class="lbl">🎬 GameChanger Highlights</span></div>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px"><input class="inp" id="hlLabel" style="margin:0;flex:1;min-width:120px" placeholder="Label (e.g. HR vs Riverside)"/><input class="inp" id="hlUrl" style="margin:0;flex:2;min-width:140px" placeholder="Video URL"/><button class="btn gold sm" onclick="addHL()">Add</button></div>'+
+    '<div id="hlList"></div></div></div>');
+  renderHL();
+}
+function addHL(){ var l=document.getElementById('hlLabel').value,u=document.getElementById('hlUrl').value; if(!l||!u){showToast('Enter label and URL','');return;} ATHLETE.highlights.push({label:l,url:u}); persist(); document.getElementById('hlLabel').value='';document.getElementById('hlUrl').value=''; renderHL(); }
+function removeHL(i){ ATHLETE.highlights.splice(i,1); persist(); renderHL(); }
+function renderHL(){ var el=document.getElementById('hlList'); if(!el)return; if(!ATHLETE.highlights.length){el.innerHTML='<div class="mut" style="font-size:12px">No highlights added yet.</div>';return;}
+  el.innerHTML=ATHLETE.highlights.map(function(h,i){return '<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line)"><a href="'+h.url+'" target="_blank" style="color:var(--info);font-size:13px">'+h.label+'</a><button class="modal-x" style="width:24px;height:24px;font-size:12px" onclick="removeHL('+i+')">✕</button></div>';}).join(''); }
+function printCard(){ var a=ATHLETE,w=window.open('','_blank'); w.document.write('<html><head><title>'+a.name+' — Lanista Card</title></head><body style="background:#0b0c0e;color:#fff;font-family:sans-serif;padding:24px">'+cardPreview(a)+'</body></html>'); w.document.close(); setTimeout(function(){w.print();},250); }
+function emailCard(){ var a=ATHLETE; window.open('mailto:?subject='+encodeURIComponent('Lanista Card — '+a.name)+'&body='+encodeURIComponent(a.name+' · '+a.pos+' · Class of '+a.grad+'\nLanista IQ '+a.lanistaIQ+' | LS4 '+a.ls4+'\nExit Velo '+a.exitVelo+' mph | Pitch Velo '+a.pitchVelo+' mph\nhttps://lanistasports.com/iq')); }
+function copyCard(){ var a=ATHLETE; navigator.clipboard.writeText(a.name+' | '+a.pos+' | Class of '+a.grad+' | Lanista IQ '+a.lanistaIQ+' | LS4 '+a.ls4).then(function(){showToast('Copied!','good');}); }
+function sendCoach(){ var e=prompt('Coach / scout email:'); if(e) showToast('Card sent to '+e,'good'); }
+
+/* ── toast ── */
+function showToast(msg,type){ var c=document.getElementById('toasts'),t=document.createElement('div'); t.className='toast '+(type||''); t.textContent=msg; c.appendChild(t); setTimeout(function(){t.classList.add('show');},10); setTimeout(function(){t.classList.remove('show'); setTimeout(function(){t.remove();},350);},3200); }
+
+/* ── search ── */
+function onSearch(v){ if(!v||v.length<2) return; }
+document.getElementById('globalSearch').addEventListener('keydown',function(e){
+  if(e.key==='Enter'){ var v=this.value.toLowerCase(); var p=ROSTER.find(function(x){return x.name.toLowerCase().indexOf(v)>=0;});
+    if(p&&STATE.role!=='player'){ openAthlete(p.name); } else { showToast('No match for "'+this.value+'"',''); } }
+});
+
+/* ── Gladius AI ── */
+function toggleGladius(){ var p=document.getElementById('gladiusPanel'); p.classList.toggle('open');
+  if(p.classList.contains('open') && !document.querySelector('#gMsgs .g-msg')){
+    gAppend('a','I\'m Gladius — Lanista\'s AI performance intelligence. Ask me about '+(STATE.role==='player'?'your metrics, drills, or development plan.':STATE.role==='coach'?'your roster, athlete trends, or development priorities.':'platform trends, engagement, or any athlete.')); }
+}
+function gAppend(cls,text){ var el=document.getElementById('gMsgs'),d=document.createElement('div'); d.className='g-msg '+cls; d.textContent=text; el.appendChild(d); el.scrollTop=el.scrollHeight; }
+function sendGladius(){
+  var inp=document.getElementById('gInput'),msg=(inp.value||'').trim(); if(!msg) return; inp.value=''; gAppend('u',msg);
+  var a=ATHLETE;
+  var ctx='You are Gladius, an elite AI performance coach for Lanista Sports. Current role view: '+STATE.role+'. Athlete context — '+a.name+' ('+a.pos+', Class of '+a.grad+'): Lanista IQ '+a.lanistaIQ+', LS4 '+a.ls4+', CORE4 Talent '+a.core4.talent.score+'/Character '+a.core4.character.score+'/Mentality '+a.core4.mentality.score+'/Alignment '+a.core4.alignment.score+', Exit Velo '+a.exitVelo+' mph, Pitch Velo '+a.pitchVelo+' mph. Be concise, specific, and give one actionable tip.';
+  var typing=document.createElement('div'); typing.className='g-msg a'; typing.textContent='…'; typing.id='gTyping'; document.getElementById('gMsgs').appendChild(typing);
+  fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,context:ctx})})
+    .then(function(r){return r.json();}).then(function(d){ var t=document.getElementById('gTyping'); if(t)t.remove();
+      if(d && (d.response||d.content)){ gAppend('a', d.response || (d.content&&d.content[0]&&d.content[0].text) || d.content); }
+      else if(d && d.error){ gAppend('err','Gladius is offline: '+(d.error.message||'API key not configured.')); }
+      else { gAppend('err','No response.'); }
+    }).catch(function(){ var t=document.getElementById('gTyping'); if(t)t.remove(); gAppend('err','Connection error. Try again.'); });
+}
+document.getElementById('gInput').addEventListener('keydown',function(e){ if(e.key==='Enter'){e.preventDefault();sendGladius();} });
+document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ closeModal(); closeDrawer(); } });
+
+/* ── INIT ── */
+try {
+  var qp = new URLSearchParams(location.search);
+  var qr = qp.get('role'); if(qr && NAV[qr]){ STATE.role = qr; persist(); }
+  var qpg = qp.get('page'); if(qpg){ STATE.page = qpg; }
+} catch(e){}
+renderSidebar();
+route();
+</script>
+</body>
+</html>

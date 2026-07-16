@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Lanista IQ — Player Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@600;700;800;900&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d0d0d;color:#fff;font-family:'Barlow',sans-serif;font-size:14px;min-height:100vh}
+.bebas{font-family:'Bebas Neue',cursive}
+.gold{color:#C9A84C}
+.steel{color:#888}
+.green-text{color:#4ade80}
+.red-text{color:#f87171}
+
+/* ── PLAYER HEADER ── */
+.player-header{border-top:4px solid #C9A84C;border-bottom:4px solid #C9A84C;background:#0a0a0a;padding:24px 28px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.ph-left{display:flex;align-items:center;gap:20px}
+.ph-avatar{width:80px;height:80px;border:2px solid #C9A84C;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;font-size:28px;color:#C9A84C;flex-shrink:0;background:#0a0a0a}
+.ph-name{font-family:'Bebas Neue',cursive;font-size:40px;color:#fff;letter-spacing:2px;line-height:1}
+.ph-sub{color:#888;font-size:13px;margin-top:4px}
+.ph-chips{display:flex;gap:16px;margin-top:10px;flex-wrap:wrap}
+.ph-chip{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px}
+.ph-chip span{color:#aaa}
+.ph-right{display:flex;flex-direction:column;align-items:flex-end;gap:12px}
+.ph-scores{display:flex;gap:28px}
+.ph-score{text-align:center}
+.ph-score-val{font-family:'Bebas Neue',cursive;font-size:44px;color:#C9A84C;line-height:1}
+.ph-score-lbl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.ph-btns{display:flex;gap:10px;flex-wrap:wrap}
+.ph-btn{border:2px solid #C9A84C;color:#C9A84C;background:transparent;padding:8px 20px;font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1px;cursor:pointer;text-transform:uppercase;transition:background .15s}
+.ph-btn:hover{background:rgba(201,168,76,.1)}
+.ph-btn.blue{border-color:#60a5fa;color:#60a5fa}
+.ph-btn.blue:hover{background:rgba(96,165,250,.1)}
+
+/* ── PROFILE CARD BAR ── */
+.profile-bar{border-top:4px solid #C9A84C;border-bottom:4px solid #C9A84C;background:#0a0a0a;padding:16px 28px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:background .15s}
+.profile-bar:hover{background:#111}
+.profile-bar-title{font-family:'Bebas Neue',cursive;font-size:18px;color:#fff;letter-spacing:1px}
+.profile-bar-sub{font-size:12px;color:#888;margin-top:2px}
+.chevron{font-size:20px;color:#C9A84C}
+
+/* ── TABS ── */
+.tab-nav{display:flex;gap:0;border-bottom:2px solid #C9A84C;overflow-x:auto;background:#0d0d0d;flex-shrink:0}
+.tab-btn{font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1px;padding:16px 24px;border:none;background:none;color:#888;cursor:pointer;border-bottom:4px solid transparent;white-space:nowrap;text-transform:uppercase;transition:all .2s;margin-bottom:-2px}
+.tab-btn:hover{color:#C9A84C}
+.tab-btn.active{color:#C9A84C;border-bottom-color:#C9A84C}
+
+/* ── PANELS ── */
+.panel{display:none;padding:28px;max-width:1280px;margin:0 auto}
+.panel.active{display:block}
+.space-y > * + *{margin-top:20px}
+
+/* ── BORDER-TOP CARDS (main style) ── */
+.bt-card{border-top:4px solid #C9A84C;background:#0a0a0a;padding:24px}
+.bt-card-sm{border-top:4px solid #C9A84C;background:#0a0a0a;padding:16px}
+.bt-card-title{font-family:'Bebas Neue',cursive;font-size:20px;color:#C9A84C;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.bt-card-sub{color:#888;font-size:12px}
+
+/* ── SCORE BOXES ── */
+.score-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.score-box{border-top:4px solid #C9A84C;background:#0a0a0a;padding:24px}
+.score-box-label{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:#888;margin-bottom:8px}
+.score-box-val{font-family:'Bebas Neue',cursive;font-size:42px;color:#C9A84C;line-height:1}
+.score-box-trend{display:flex;align-items:center;gap:6px;margin-top:4px}
+.trend-up{color:#4ade80;font-size:12px}
+.score-bar{height:8px;background:#222;border-radius:2px;margin-top:12px;overflow:hidden}
+.score-bar-fill{height:100%;background:#C9A84C}
+
+/* ── STRENGTH / IMPROVE BLOCKS ── */
+.str-block{background:rgba(74,222,128,.08);border-left:4px solid #4ade80;padding:16px;margin-bottom:8px}
+.str-block:last-child{margin-bottom:0}
+.str-title{font-weight:600;color:#fff;margin-bottom:6px}
+.str-desc{font-size:12px;color:#888;line-height:1.6}
+.imp-block{background:rgba(248,113,113,.08);border-left:4px solid #f87171;padding:16px;margin-bottom:8px}
+.imp-block:last-child{margin-bottom:0}
+
+/* ── SECTION HEADER ── */
+.section-header{border-top:4px solid #C9A84C;border-bottom:4px solid #C9A84C;background:#0a0a0a;padding:20px 28px;margin-bottom:20px}
+.section-title{font-family:'Bebas Neue',cursive;font-size:26px;color:#C9A84C;letter-spacing:2px}
+.section-sub{color:#888;font-size:13px;margin-top:4px}
+
+/* ── METRIC ROWS (Athletic detail) ── */
+.mrow{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #1a1a1a}
+.mrow:last-child{border-bottom:none}
+.mrow-lbl{font-size:12px;color:#aaa;width:160px;flex-shrink:0}
+.mrow-bar{flex:1;height:6px;background:#1c1c1c;border-radius:2px;overflow:hidden}
+.mrow-fill{height:100%;background:#C9A84C}
+.mrow-fill.green{background:#4ade80}
+.mrow-fill.red{background:#f87171}
+.mrow-val{font-family:'Bebas Neue',cursive;font-size:18px;color:#C9A84C;width:80px;text-align:right;flex-shrink:0}
+.mrow-nat{font-size:10px;color:#555;width:80px;text-align:right;flex-shrink:0}
+
+/* ── PITCH TABLE ── */
+.pitch-table{width:100%;border-collapse:collapse;font-size:13px}
+.pitch-table th{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:#888;padding:10px 12px;text-align:left;border-bottom:1px solid #1a1a1a}
+.pitch-table td{padding:12px 12px;border-bottom:1px solid #111}
+.pitch-table tr:last-child td{border-bottom:none}
+.pname{font-weight:700;color:#fff}
+
+/* ── RESOURCE GRID ── */
+.res-grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.res-card{border-top:4px solid #C9A84C;background:#0a0a0a;padding:24px;cursor:pointer;transition:background .15s}
+.res-card:hover{background:#111}
+.res-card-title{font-family:'Bebas Neue',cursive;font-size:16px;color:#C9A84C;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.res-card-desc{font-size:13px;color:#888;line-height:1.5;margin-bottom:12px}
+.res-link{font-family:'Bebas Neue',cursive;font-size:12px;color:#C9A84C;letter-spacing:1px}
+
+/* ── SMALL RESOURCE GRID (3-col) ── */
+.res-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.res-sm{border-top:4px solid #C9A84C;background:#111;padding:16px;cursor:pointer;transition:background .15s}
+.res-sm:hover{background:#0a0a0a}
+.res-sm-title{font-family:'Bebas Neue',cursive;font-size:13px;color:#C9A84C;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px}
+.res-sm-desc{font-size:11px;color:#888}
+
+/* ── DEV PROGRESS ── */
+.dev-row{border-left:4px solid #C9A84C;background:#0a0a0a;padding:16px;margin-bottom:12px}
+.dev-row-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.dev-row-title{font-family:'Bebas Neue',cursive;font-size:16px;color:#fff;text-transform:uppercase;letter-spacing:.5px}
+.dev-progress-track{flex:1;height:8px;background:#1c1c1c;border-radius:2px;overflow:hidden;margin:0 14px}
+.dev-progress-fill{height:100%;background:#C9A84C}
+.dev-pct{font-family:'Bebas Neue',cursive;font-size:18px;color:#C9A84C}
+.dev-focus{font-size:11px;color:#888;margin-top:6px}
+
+/* ── MENTALITY METRICS ── */
+.ment-grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.ment-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
+
+/* ── MORALE METER ── */
+.morale-bar{height:20px;background:#1c1c1c;border-radius:3px;overflow:hidden;margin-top:12px}
+.morale-fill{height:100%;background:linear-gradient(90deg,#C9A84C,#ffd700);border-radius:3px}
+.morale-label{display:flex;justify-content:space-between;font-size:11px;color:#888;margin-top:6px}
+
+/* ── PLAYER CARD ── */
+.pc-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:5000;align-items:center;justify-content:center;padding:20px}
+.pc-overlay.open{display:flex}
+.pc-box{background:#0a0a0a;border:2px solid #C9A84C;padding:32px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
+.pc-close{position:absolute;top:12px;right:16px;background:none;border:none;color:#888;font-size:20px;cursor:pointer}
+.pc-logo{font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:4px;color:#C9A84C;text-align:center;margin-bottom:16px}
+.pc-name{font-family:'Bebas Neue',cursive;font-size:36px;color:#fff;text-align:center}
+.pc-pos{text-align:center;color:#888;font-size:12px;margin-bottom:20px}
+.pc-scores{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px}
+.pc-score{border-top:4px solid #C9A84C;background:#0d0d0d;padding:16px;text-align:center}
+.pc-score-val{font-family:'Bebas Neue',cursive;font-size:36px;color:#C9A84C}
+.pc-score-lbl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.5px}
+.pc-actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;justify-content:center}
+.pc-gc{margin-top:16px;border-top:1px solid #222;padding-top:16px}
+.pc-gc-title{font-family:'Bebas Neue',cursive;font-size:14px;color:#C9A84C;letter-spacing:1px;margin-bottom:10px}
+.gc-link{font-size:12px;color:#60a5fa;padding:4px 0;display:block}
+.gc-add-row{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.gc-input{flex:1;min-width:120px;background:#111;border:1px solid #333;color:#fff;padding:8px 10px;font-size:12px;font-family:'Barlow',sans-serif}
+.gc-btn{background:#C9A84C;color:#000;border:none;padding:8px 14px;font-family:'Bebas Neue',cursive;font-size:12px;cursor:pointer;white-space:nowrap}
+
+/* ── GLADIUS FLOAT ── */
+.gladius-fab{position:fixed;bottom:24px;right:24px;z-index:4000;width:56px;height:56px;background:#C9A84C;border-radius:50%;border:none;cursor:pointer;font-size:22px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(201,168,76,.4)}
+.gladius-panel{display:none;position:fixed;bottom:92px;right:24px;z-index:4000;width:340px;background:#0a0a0a;border:2px solid #C9A84C}
+.gladius-panel.open{display:block}
+.gladius-panel-header{border-bottom:2px solid #C9A84C;padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+.gladius-panel-title{font-family:'Bebas Neue',cursive;font-size:16px;color:#C9A84C;letter-spacing:1px}
+.gladius-panel-sub{font-size:9px;color:#888;margin-top:2px}
+.gladius-close-btn{background:none;border:none;color:#888;cursor:pointer;font-size:16px}
+.gladius-msgs{height:240px;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
+.g-msg{font-size:12px;line-height:1.5;padding:8px 12px}
+.g-msg.user{background:#1a1a1a;border-left:3px solid #C9A84C;align-self:flex-end;max-width:85%}
+.g-msg.bot{background:#0d0d0d;border-left:3px solid #60a5fa;max-width:95%}
+.g-msg.error{border-left-color:#f87171;color:#f87171}
+.g-sender{font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:1px;color:#888;display:block;margin-bottom:4px}
+.gladius-input-row{border-top:1px solid #1a1a1a;padding:10px 12px;display:flex;gap:8px}
+.gladius-input{flex:1;background:#111;border:1px solid #333;color:#fff;padding:8px;font-family:'Barlow',sans-serif;font-size:12px;outline:none}
+.gladius-send-btn{background:#C9A84C;color:#000;border:none;padding:8px 14px;font-family:'Bebas Neue',cursive;font-size:12px;cursor:pointer}
+
+/* ── TREND CHART ── */
+.chart-card{border-top:4px solid #C9A84C;background:#0a0a0a;padding:20px}
+.chart-title{font-family:'Bebas Neue',cursive;font-size:16px;color:#C9A84C;letter-spacing:1px;margin-bottom:16px}
+
+/* ── SKILLSET TOGGLE ── */
+.skill-toggle{display:flex;gap:8px;margin-bottom:20px}
+.skill-btn{border:2px solid #C9A84C;background:transparent;color:#C9A84C;padding:10px 24px;font-family:'Bebas Neue',cursive;font-size:14px;cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:all .15s}
+.skill-btn.active{background:#C9A84C;color:#000}
+
+@media(max-width:600px){
+  .score-grid{grid-template-columns:repeat(2,1fr)}
+  .ment-grid-4{grid-template-columns:repeat(2,1fr)}
+  .ment-grid-3{grid-template-columns:repeat(2,1fr)}
+  .res-grid-2{grid-template-columns:1fr}
+  .res-grid-3{grid-template-columns:repeat(2,1fr)}
+  .ph-scores{gap:16px}
+  .ph-score-val{font-size:34px}
+  .mrow-nat{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- PLAYER HEADER -->
+<div class="player-header">
+  <div class="ph-left">
+    <div class="ph-avatar" id="phAvatar">MR</div>
+    <div>
+      <div class="ph-name" id="phName">Marcus Rivera</div>
+      <div class="ph-sub" id="phSub">3B / SS • Westlake HS — Dallas, TX</div>
+      <div class="ph-chips">
+        <span class="ph-chip">Class <span id="phClass">2026</span></span>
+        <span class="ph-chip">Height <span>6'2"</span></span>
+        <span class="ph-chip">Weight <span>195 lbs</span></span>
+        <span class="ph-chip">Bats/Throws <span>Right / Right</span></span>
+        <span class="ph-chip">GPA <span id="phGpa">3.6</span></span>
+      </div>
+    </div>
+  </div>
+  <div class="ph-right">
+    <div class="ph-scores">
+      <div class="ph-score">
+        <div class="ph-score-val" id="phLanista">91</div>
+        <div class="ph-score-lbl">Lanista</div>
+      </div>
+      <div class="ph-score">
+        <div class="ph-score-val" style="color:#60a5fa" id="phLS4">87</div>
+        <div class="ph-score-lbl">LS4</div>
+      </div>
+    </div>
+    <div class="ph-btns">
+      <button class="ph-btn blue" onclick="openCheckin()">Check-In</button>
+      <button class="ph-btn" onclick="openCard()">Share Profile</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW FULL PROFILE BAR -->
+<div class="profile-bar" onclick="openCard()">
+  <div>
+    <div class="profile-bar-title">View Full Profile Card</div>
+    <div class="profile-bar-sub">See latest stats and highlights</div>
+  </div>
+  <div class="chevron">›</div>
+</div>
+
+<!-- TABS -->
+<div class="tab-nav" id="tabNav">
+  <button class="tab-btn active" data-tab="overview">Overview</button>
+  <button class="tab-btn" data-tab="athletic">Athletic</button>
+  <button class="tab-btn" data-tab="skillset">Skillset</button>
+  <button class="tab-btn" data-tab="mentality">Mentality</button>
+  <button class="tab-btn" data-tab="devplan">Dev Plan</button>
+  <button class="tab-btn" data-tab="resources">Resources</button>
+</div>
+
+<!-- ═══ OVERVIEW ═══ -->
+<div class="panel active" id="panel-overview">
+
+  <!-- 4 Score Boxes -->
+  <div class="score-grid" style="margin-bottom:20px" id="scoreGrid"></div>
+
+  <!-- 6-Week Trend -->
+  <div class="chart-card" style="margin-bottom:20px">
+    <div class="chart-title">6-Week Performance Trend</div>
+    <div style="height:280px"><canvas id="trendChart"></canvas></div>
+  </div>
+
+  <!-- Strengths -->
+  <div class="bt-card" style="margin-bottom:20px">
+    <div class="bt-card-title">3 Key Strengths</div>
+    <div style="margin-top:16px" id="overviewStrengths"></div>
+  </div>
+
+  <!-- Improve -->
+  <div class="bt-card" style="margin-bottom:20px">
+    <div class="bt-card-title">3 Areas to Improve</div>
+    <div style="margin-top:16px" id="overviewImprovements"></div>
+  </div>
+</div>
+
+<!-- ═══ ATHLETIC ═══ -->
+<div class="panel" id="panel-athletic">
+  <div class="section-header">
+    <div class="section-title">Athletic Profile</div>
+    <div class="section-sub">Speed, agility, and explosive power metrics</div>
+  </div>
+
+  <div class="score-grid" style="margin-bottom:20px" id="athleticScoreGrid"></div>
+
+  <div class="chart-card" style="margin-bottom:20px">
+    <div class="chart-title">Athletic Metrics — 6-Week Trend</div>
+    <div style="height:280px"><canvas id="athleticTrendChart"></canvas></div>
+  </div>
+
+  <div class="bt-card" style="margin-bottom:20px">
+    <div class="bt-card-title" style="margin-bottom:16px">Metric Detail</div>
+    <div id="athleticRows"></div>
+  </div>
+
+  <div class="bt-card" style="margin-bottom:20px">
+    <div class="bt-card-title">3 Athletic Strengths</div>
+    <div style="margin-top:16px">
+      <div class="str-block"><div class="str-title">Elite Speed Development</div><div class="str-desc">Consistent improvement in 30-yard dash (6.70s) and agility (6.65s) shows strong training response and elite athleticism.</div></div>
+      <div class="str-block"><div class="str-title">Excellent Recovery Capacity</div><div class="str-desc">RSI score of 76 indicates strong balance between training stress and recovery, key for long-season durability.</div></div>
+      <div class="str-block"><div class="str-title">Efficient Base Running</div><div class="str-desc">1st to 3rd time of 12.4s demonstrates elite base-running efficiency and instincts on the base paths.</div></div>
+    </div>
+  </div>
+
+  <div class="bt-card" style="margin-bottom:20px">
+    <div class="bt-card-title">3 Areas to Improve</div>
+    <div style="margin-top:16px">
+      <div class="imp-block"><div class="str-title">Explosive Power Development</div><div class="str-desc">Focus on plyometric training to increase vertical jump and overall explosive power output for top-end speed.</div></div>
+      <div class="imp-block"><div class="str-title">Injury Prevention Maintenance</div><div class="str-desc">Implement comprehensive mobility work and injury prevention protocols to ensure long-term durability.</div></div>
+      <div class="imp-block"><div class="str-title">Sport-Specific Agility Drills</div><div class="str-desc">Add baseball-specific directional change and cutting drills to improve game-speed agility and reaction time.</div></div>
+    </div>
+  </div>
+
+  <div class="bt-card">
+    <div class="bt-card-title" style="margin-bottom:16px">Recommended Resources</div>
+    <div class="res-grid-3">
+      <div class="res-sm"><div class="res-sm-title">Strength Training</div><div class="res-sm-desc">Advanced plyometric and Olympic lift programming →</div></div>
+      <div class="res-sm"><div class="res-sm-title">Recovery Protocol</div><div class="res-sm-desc">Sleep optimization, nutrition, and active recovery →</div></div>
+      <div class="res-sm"><div class="res-sm-title">Injury Prevention</div><div class="res-sm-desc">Mobility work and baseball-specific prevention →</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SKILLSET ═══ -->
+<div class="panel" id="panel-skillset">
+  <div class="section-header">
+    <div class="section-title">Skillset Profile</div>
+    <div class="section-sub">Technical baseball abilities and on-field performance</div>
+  </div>
+
+  <div class="skill-toggle">
+    <button class="skill-btn active" id="btn-pitcher" onclick="switchSkill('pitcher')">Pitcher</button>
+    <button class="skill-btn" id="btn-hitter" onclick="switchSkill('hitter')">Hitter</button>
+  </div>
+
+  <!-- PITCHER VIEW -->
+  <div id="sp-pitcher">
+    <div class="bt-card" style="margin-bottom:20px;overflow:auto">
+      <div class="bt-card-title" style="margin-bottom:16px">Pitch Arsenal — Trackman / Rapsodo</div>
+      <table class="pitch-table" id="pitchTable"></table>
+    </div>
+    <div class="chart-card" style="margin-bottom:20px">
+      <div class="chart-title">Pitching Metrics — 6-Week Trend</div>
+      <div style="height:260px"><canvas id="pitchTrendChart"></canvas></div>
+    </div>
+    <div class="bt-card" style="margin-bottom:20px">
+      <div class="bt-card-title">3 Pitching Strengths</div>
+      <div style="margin-top:16px">
+        <div class="str-block"><div class="str-title">Advanced Fastball Velocity</div><div class="str-desc">94.2 mph fastball with elite spin rate (2,485 RPM) demonstrates professional-level pitching development.</div></div>
+        <div class="str-block"><div class="str-title">High Spin Efficiency</div><div class="str-desc">85% spin efficiency indicates excellent pitch movement and command potential across the arsenal.</div></div>
+        <div class="str-block"><div class="str-title">Consistent Strike Percentage</div><div class="str-desc">78% strike rate shows solid command and ability to attack the strike zone effectively.</div></div>
+      </div>
+    </div>
+    <div class="bt-card">
+      <div class="bt-card-title">3 Areas to Improve</div>
+      <div style="margin-top:16px">
+        <div class="imp-block"><div class="str-title">Breaking Ball Development</div><div class="str-desc">Curveball (78) and changeup (65) need refinement. Focus on spin consistency and command.</div></div>
+        <div class="imp-block"><div class="str-title">Pitch Sequencing</div><div class="str-desc">Work on mixing pitches more effectively to keep hitters off-balance and increase whiff rate.</div></div>
+        <div class="imp-block"><div class="str-title">Changeup Command</div><div class="str-desc">Develop changeup as a true third pitch to complement the fastball-curveball combination.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HITTER VIEW -->
+  <div id="sp-hitter" style="display:none">
+    <div class="score-grid" style="margin-bottom:20px" id="hitterScoreGrid"></div>
+    <div class="chart-card" style="margin-bottom:20px">
+      <div class="chart-title">Hitting Metrics — 6-Week Trend</div>
+      <div style="height:260px"><canvas id="hitTrendChart"></canvas></div>
+    </div>
+    <div class="bt-card" style="margin-bottom:20px">
+      <div class="bt-card-title">3 Hitting Strengths</div>
+      <div style="margin-top:16px">
+        <div class="str-block"><div class="str-title">Consistent Hitting Mechanics</div><div class="str-desc">92 mph exit velocity with 45% hard hit rate shows strong, repeatable hitting mechanics and power potential.</div></div>
+        <div class="str-block"><div class="str-title">Optimal Launch Angle</div><div class="str-desc">Average launch angle of 18° sits in the ideal range for line drives and home runs.</div></div>
+        <div class="str-block"><div class="str-title">Hard Contact Rate</div><div class="str-desc">45% hard hit rate places him in the top quartile nationally for his age group.</div></div>
+      </div>
+    </div>
+    <div class="bt-card">
+      <div class="bt-card-title">3 Areas to Improve</div>
+      <div style="margin-top:16px">
+        <div class="imp-block"><div class="str-title">Plate Discipline</div><div class="str-desc">Work on pitch recognition and selectivity to improve walk rate and on-base percentage.</div></div>
+        <div class="imp-block"><div class="str-title">Launch Angle Consistency</div><div class="str-desc">Reduce variability in launch angle across pitch types to maximize hard contact rate.</div></div>
+        <div class="imp-block"><div class="str-title">Opposite Field Power</div><div class="str-desc">Develop ability to drive pitches on the outer half to the opposite field with authority.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MENTALITY ═══ -->
+<div class="panel" id="panel-mentality">
+  <div class="section-header">
+    <div class="section-title">Mentality Profile</div>
+    <div class="section-sub">Mental performance and psychological traits</div>
+  </div>
+
+  <div class="ment-grid-4" style="margin-bottom:14px" id="mentGrid4"></div>
+  <div class="ment-grid-3" style="margin-bottom:20px" id="mentGrid3"></div>
+
+  <!-- Morale Meter -->
+  <div class="bt-card" style="margin-bottom:20px">
+    <div class="bt-card-title">Current Morale</div>
+    <div class="morale-bar"><div class="morale-fill" style="width:88%"></div></div>
+    <div class="morale-label"><span>Low</span><span style="color:#C9A84C;font-family:'Bebas Neue',cursive;font-size:18px">88 / 100</span><span>High</span></div>
+  </div>
+
+  <div class="chart-card" style="margin-bottom:20px">
+    <div class="chart-title">Mentality Metrics — 6-Week Trend</div>
+    <div style="height:280px"><canvas id="mentalityTrendChart"></canvas></div>
+  </div>
+
+  <div class="bt-card" style="margin-bottom:20px">
+    <div class="bt-card-title">3 Mental Strengths</div>
+    <div style="margin-top:16px">
+      <div class="str-block"><div class="str-title">Exceptional Confidence & Grit</div><div class="str-desc">89 in both confidence and grit demonstrates elite mental toughness and self-belief in competition.</div></div>
+      <div class="str-block"><div class="str-title">High Emotional Intelligence</div><div class="str-desc">84 EQ score shows excellent ability to manage emotions and navigate team dynamics effectively.</div></div>
+      <div class="str-block"><div class="str-title">Low Stress — High Performance</div><div class="str-desc">Stress level of 35 indicates excellent stress management and mental clarity under pressure.</div></div>
+    </div>
+  </div>
+  <div class="bt-card">
+    <div class="bt-card-title">3 Areas to Improve</div>
+    <div style="margin-top:16px">
+      <div class="imp-block"><div class="str-title">Advanced Visualization Techniques</div><div class="str-desc">Develop deeper mental imagery and pre-performance visualization routines for high-stakes situations.</div></div>
+      <div class="imp-block"><div class="str-title">Pressure Performance Consistency</div><div class="str-desc">Work on maintaining performance levels during high-pressure showcases and championship games.</div></div>
+      <div class="imp-block"><div class="str-title">Team Leadership Development</div><div class="str-desc">Enhance leadership skills to become a vocal leader and mentor for younger teammates.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DEV PLAN ═══ -->
+<div class="panel" id="panel-devplan">
+  <div class="section-header">
+    <div class="section-title">Development Plan</div>
+    <div class="section-sub">Consolidated development overview and goals</div>
+  </div>
+
+  <div class="bt-card" style="margin-bottom:20px">
+    <div class="bt-card-title" style="margin-bottom:20px">LS4 Score Overview</div>
+    <div class="score-grid" id="devScoreGrid"></div>
+  </div>
+
+  <div id="devGoalsList"></div>
+</div>
+
+<!-- ═══ RESOURCES ═══ -->
+<div class="panel" id="panel-resources">
+  <div class="section-header">
+    <div class="section-title">Resources</div>
+    <div class="section-sub">Development programs and training content</div>
+  </div>
+  <div class="res-grid-2">
+    <div class="res-card"><div class="res-card-title">Strength & Conditioning</div><div class="res-card-desc">Advanced plyometric and Olympic lift programming for elite athletes. 8-week progressive overload system.</div><div class="res-link">Access Program →</div></div>
+    <div class="res-card"><div class="res-card-title">Pitching Development</div><div class="res-card-desc">Breaking ball mechanics, spin rate optimization, and command training. Includes Rapsodo analysis framework.</div><div class="res-link">Access Program →</div></div>
+    <div class="res-card"><div class="res-card-title">Hitting Mechanics</div><div class="res-card-desc">Launch angle optimization, plate discipline, and hitting consistency training with Diamond Kinetics integration.</div><div class="res-link">Access Program →</div></div>
+    <div class="res-card"><div class="res-card-title">Mental Performance</div><div class="res-card-desc">Visualization, pressure performance, and psychological readiness training based on the LS4 framework.</div><div class="res-link">Access Program →</div></div>
+    <div class="res-card"><div class="res-card-title">Recovery & Nutrition</div><div class="res-card-desc">Sleep optimization, nutrition planning, and active recovery protocols for peak performance maintenance.</div><div class="res-link">Access Program →</div></div>
+    <div class="res-card"><div class="res-card-title">Injury Prevention</div><div class="res-card-desc">Mobility work and baseball-specific injury prevention exercises to ensure long-term durability.</div><div class="res-link">Access Program →</div></div>
+  </div>
+</div>
+
+<!-- ═══ PLAYER CARD MODAL ═══ -->
+<div class="pc-overlay" id="cardOverlay">
+  <div class="pc-box">
+    <button class="pc-close" onclick="closeCard()">✕</button>
+    <div class="pc-logo">LANISTA IQ · PLAYER CARD</div>
+    <div class="pc-name" id="pcName">Marcus Rivera</div>
+    <div class="pc-pos" id="pcPos">RHP / DH · Class of 2026</div>
+    <div class="pc-scores" id="pcScores"></div>
+    <div class="pc-actions">
+      <button class="ph-btn" onclick="printCard()">📄 PDF</button>
+      <button class="ph-btn" onclick="emailCard()">✉️ Email</button>
+      <button class="ph-btn" onclick="copyCard()">📋 Copy</button>
+      <button class="ph-btn blue" onclick="sendToCoach()">🎓 Coach</button>
+    </div>
+    <div class="pc-gc">
+      <div class="pc-gc-title">🎬 GameChanger Highlights</div>
+      <div class="gc-add-row">
+        <input class="gc-input" id="gcLabel" placeholder="Label (e.g. HR vs Riverside)"/>
+        <input class="gc-input" id="gcUrl" placeholder="GameChanger URL" style="flex:2"/>
+        <button class="gc-btn" onclick="addHL()">Add</button>
+      </div>
+      <div id="gcLinks"><div style="font-size:12px;color:#888">No highlights added yet.</div></div>
+    </div>
+    <div style="text-align:center;font-size:10px;color:#555;margin-top:20px;border-top:1px solid #1a1a1a;padding-top:12px">Generated by Lanista IQ · lanistasports.com</div>
+  </div>
+</div>
+
+<!-- ═══ CHECK-IN MODAL ═══ -->
+<div class="pc-overlay" id="checkinOverlay">
+  <div class="pc-box" style="max-width:480px">
+    <button class="pc-close" onclick="closeCheckin()">✕</button>
+    <div class="pc-logo">LS4 WEEKLY CHECK-IN</div>
+    <div id="checkinContent"></div>
+  </div>
+</div>
+
+<!-- ═══ GLADIUS FLOAT ═══ -->
+<button class="gladius-fab" onclick="toggleGladius()" title="Ask Gladius">🤖</button>
+<div class="gladius-panel" id="gladiusPanel">
+  <div class="gladius-panel-header">
+    <div>
+      <div class="gladius-panel-title">GLADIUS AI COACH</div>
+      <div class="gladius-panel-sub">Built from 1,000+ MLB & college player surveys</div>
+    </div>
+    <button class="gladius-close-btn" onclick="toggleGladius()">✕</button>
+  </div>
+  <div class="gladius-msgs" id="gladiusMsgs"></div>
+  <div class="gladius-input-row">
+    <input class="gladius-input" id="gladiusInput" placeholder="Ask about your metrics or drills…"/>
+    <button class="gladius-send-btn" onclick="sendGladius()">SEND</button>
+  </div>
+</div>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────
+var saved = {};
+try { saved = JSON.parse(localStorage.getItem('liq_player_v1') || '{}') || {}; } catch(e) {}
+var D = Object.assign({
+  name:'Marcus Rivera', pos:'RHP / 3B·SS', sub:'3B / SS • Westlake HS — Dallas, TX',
+  classYear:'2026', gpa:'3.7', lanistaScore:91, ls4Score:87,
+  athleticScore:86, skillsetScore:88, mentalityScore:88,
+  exitVelo:94, armVelo:84, sprint30:6.58, agility:6.52, firstToThird:12.1, rsi:81,
+  pitchVelo:94, spinRate:2485, spinEff:85, strikesPct:78,
+  batSpeed:72, launchAngle:18, hardHitPct:47,
+  mindset:86, grit:89, resilience:88, confidence:91, eq:84, stress:32, morale:90,
+  highlights: []
+}, {name: saved.name||'Marcus Rivera', highlights: saved.highlights||[]});
+
+function save(){ localStorage.setItem('liq_player_v1', JSON.stringify(D)); }
+
+// ── TABS ─────────────────────────────────────────────────────
+document.getElementById('tabNav').addEventListener('click', function(e){
+  var btn = e.target.closest('[data-tab]'); if(!btn) return;
+  document.querySelectorAll('.tab-btn[data-tab]').forEach(function(b){b.classList.remove('active');});
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+  btn.classList.add('active');
+  document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+  if(btn.dataset.tab==='athletic') { renderAthletic(); initAthleticTrend(); }
+  if(btn.dataset.tab==='skillset') { renderSkillset(); initPitchTrend(); initHitTrend(); }
+  if(btn.dataset.tab==='mentality') { renderMentality(); initMentalityTrend(); }
+  if(btn.dataset.tab==='devplan') renderDevPlan();
+});
+
+// ── OVERVIEW ─────────────────────────────────────────────────
+function renderOverview(){
+  // Update header
+  document.getElementById('phAvatar').textContent = D.name.split(' ').map(function(w){return w[0];}).join('').slice(0,2);
+  document.getElementById('phName').textContent = D.name;
+  document.getElementById('phSub').textContent = D.sub;
+  document.getElementById('phClass').textContent = D.classYear;
+  document.getElementById('phGpa').textContent = D.gpa;
+  document.getElementById('phLanista').textContent = D.lanistaScore;
+  document.getElementById('phLS4').textContent = D.ls4Score;
+  document.getElementById('pcName').textContent = D.name;
+  document.getElementById('pcPos').textContent = D.pos+' · Class of '+D.classYear;
+
+  // Score grid
+  var scores = [
+    {lbl:'Athletic Score', val:D.athleticScore, trend:'+7'},
+    {lbl:'Skillset Score',  val:D.skillsetScore,  trend:'+7'},
+    {lbl:'Mentality Score', val:D.mentalityScore, trend:'+6'},
+    {lbl:'LS4 Score',       val:D.ls4Score,        trend:'+7'},
+  ];
+  document.getElementById('scoreGrid').innerHTML = scores.map(function(s){
+    return '<div class="score-box"><div class="score-box-label">'+s.lbl+'</div>' +
+      '<div style="display:flex;align-items:flex-end;gap:8px">' +
+      '<div class="score-box-val">'+s.val+'</div>' +
+      '<div class="trend-up" style="margin-bottom:6px">▲ '+s.trend+'</div></div>' +
+      '<div class="score-bar"><div class="score-bar-fill" style="width:'+s.val+'%"></div></div></div>';
+  }).join('');
+
+  // Strengths
+  var strs = [
+    {t:'Exceptional Speed & Agility', d:'Top-tier 30-yard dash ('+D.sprint30+'s) and lane agility ('+D.agility+'s) demonstrate elite athleticism and base-running ability.'},
+    {t:'Consistent Pitching Mechanics', d:D.pitchVelo+' mph fastball with excellent spin rate ('+D.spinRate.toLocaleString()+' RPM) and '+D.spinEff+'% spin efficiency shows advanced pitching development.'},
+    {t:'Strong Mental Resilience', d:D.mentalityScore+' mentality score with high confidence ('+D.confidence+') and low stress ('+D.stress+') indicates excellent psychological readiness.'},
+  ];
+  document.getElementById('overviewStrengths').innerHTML = strs.map(function(s){
+    return '<div class="str-block"><div class="str-title">'+s.t+'</div><div class="str-desc">'+s.d+'</div></div>';
+  }).join('');
+
+  var imps = [
+    {t:'Breaking Ball Consistency', d:'Curveball (78) and changeup (65) need development. Focus on spin consistency and command to improve secondary pitches.'},
+    {t:'Hitting Launch Angle', d:'Current average launch angle ('+D.launchAngle+'°) is optimal but consistency varies. Work on repeatability across pitch types.'},
+    {t:'Stress Management in High-Pressure Situations', d:'While current stress level ('+D.stress+') is good, develop advanced mental strategies for tournament and showcase environments.'},
+  ];
+  document.getElementById('overviewImprovements').innerHTML = imps.map(function(s){
+    return '<div class="imp-block"><div class="str-title">'+s.t+'</div><div class="str-desc">'+s.d+'</div></div>';
+  }).join('');
+
+  initTrendChart();
+  renderCardContent();
+}
+
+var _charts = {};
+function initTrendChart(){
+  var c = document.getElementById('trendChart'); if(!c||_charts.trend) return;
+  var weeks=['W1','W2','W3','W4','W5','W6'];
+  _charts.trend = new Chart(c,{type:'line',data:{labels:weeks,datasets:[
+    {label:'Athletic', data:[75,76,78,79,80,82], borderColor:'#FF6B6B', backgroundColor:'transparent', tension:.3, pointRadius:4},
+    {label:'Skillset',  data:[78,80,82,83,84,85], borderColor:'#4ECDC4', backgroundColor:'transparent', tension:.3, pointRadius:4},
+    {label:'Mentality', data:[82,84,85,86,87,88], borderColor:'#95E1D3', backgroundColor:'transparent', tension:.3, pointRadius:4},
+    {label:'LS4',       data:[80,81,83,84,85,87], borderColor:'#C9A84C', backgroundColor:'transparent', tension:.3, pointRadius:4},
+  ]},options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:'#888',boxWidth:12,font:{size:11}}}},
+    scales:{x:{ticks:{color:'#555'},grid:{color:'#1a1a1a'}},y:{min:70,max:100,ticks:{color:'#555'},grid:{color:'#1a1a1a'}}}}});
+}
+
+// ── ATHLETIC ─────────────────────────────────────────────────
+function renderAthletic(){
+  var scores = [
+    {lbl:'RSI', val:D.rsi, sub:'Good', trend:'+11'},
+    {lbl:'30-Yard Dash', val:D.sprint30, sub:'s (Excellent)', trend:'▼ -0.25'},
+    {lbl:'Agility', val:D.agility, sub:'s (Elite)', trend:'▼ -0.20'},
+    {lbl:'1st to 3rd', val:D.firstToThird, sub:'s (Excellent)', trend:'▼ -0.8'},
+  ];
+  document.getElementById('athleticScoreGrid').innerHTML = scores.map(function(s){
+    return '<div class="score-box"><div class="score-box-label">'+s.lbl+'</div>' +
+      '<div style="display:flex;align-items:flex-end;gap:8px">' +
+      '<div class="score-box-val">'+s.val+'</div>' +
+      '<div class="trend-up" style="margin-bottom:6px;font-size:11px">'+s.trend+'</div></div>' +
+      '<div style="font-size:11px;color:#888;margin-top:6px">'+s.sub+'</div></div>';
+  }).join('');
+
+  var rows=[
+    {lbl:'Exit Velocity',val:D.exitVelo+' mph', p:pct(D.exitVelo,65,110), nat:'87 mph'},
+    {lbl:'Arm Velocity', val:D.armVelo+' mph',  p:pct(D.armVelo,55,100), nat:'78 mph'},
+    {lbl:'30-Yard Dash', val:D.sprint30+'s',   p:pct(7.5-D.sprint30,0,1), nat:'6.95s avg'},
+    {lbl:'Lane Agility', val:D.agility+'s',    p:pct(7.5-D.agility,0,1), nat:'7.0s avg'},
+    {lbl:'1st to 3rd',   val:D.firstToThird+'s', p:pct(14-D.firstToThird,0,2), nat:'13.5s avg'},
+    {lbl:'RSI Score',    val:D.rsi,            p:pct(D.rsi,0,100), nat:'65 avg'},
+  ];
+  document.getElementById('athleticRows').innerHTML = rows.map(function(r){
+    var fillCls = r.p>=75?'green':r.p>=50?'':'red';
+    return '<div class="mrow"><span class="mrow-lbl">'+r.lbl+'</span>' +
+      '<div class="mrow-bar"><div class="mrow-fill '+fillCls+'" style="width:'+r.p+'%"></div></div>' +
+      '<span class="mrow-val">'+r.val+'</span><span class="mrow-nat">Avg: '+r.nat+'</span></div>';
+  }).join('');
+}
+function pct(v,mn,mx){return Math.round(Math.max(0,Math.min(100,(v-mn)/(mx-mn)*100)));}
+
+function initAthleticTrend(){
+  var c=document.getElementById('athleticTrendChart'); if(!c||_charts.athl) return;
+  var w=['W1','W2','W3','W4','W5','W6'];
+  _charts.athl=new Chart(c,{type:'line',data:{labels:w,datasets:[
+    {label:'RSI',data:[65,68,70,72,74,76],borderColor:'#FF6B6B',backgroundColor:'transparent',tension:.3,pointRadius:4},
+    {label:'30-Yd (×10)',data:[69.5,69,68.5,68,67.5,67],borderColor:'#4ECDC4',backgroundColor:'transparent',tension:.3,pointRadius:4},
+    {label:'Agility (×10)',data:[68.5,68,67.5,67,66.8,66.5],borderColor:'#95E1D3',backgroundColor:'transparent',tension:.3,pointRadius:4},
+  ]},options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:'#888',boxWidth:12,font:{size:11}}}},
+    scales:{x:{ticks:{color:'#555'},grid:{color:'#1a1a1a'}},y:{ticks:{color:'#555'},grid:{color:'#1a1a1a'}}}}});
+}
+
+// ── SKILLSET ─────────────────────────────────────────────────
+function renderSkillset(){
+  document.getElementById('pitchTable').innerHTML =
+    '<tr><th>Pitch</th><th>Velocity</th><th>Spin Rate</th><th>Spin Eff.</th><th>Strike %</th><th>Whiff %</th><th>IVB</th></tr>' +
+    [['Fastball','94.2','2,485','85%','78%','32%','+18.4'],
+     ['Curveball','78.0','2,400','78%','52%','38%','-14.2'],
+     ['Slider','82.0','2,100','80%','55%','35%','-9.6'],
+     ['Changeup','72.0','1,640','65%','58%','28%','-7.8']].map(function(p){
+      return '<tr><td class="pname">'+p[0]+'</td><td>'+p[1]+' mph</td><td>'+p[2]+' RPM</td>' +
+        '<td style="color:#4ade80">'+p[3]+'</td><td>'+p[4]+'</td>' +
+        '<td style="color:#C9A84C">'+p[5]+'</td><td>'+p[6]+'"</td></tr>';
+    }).join('');
+
+  var hScores=[
+    {lbl:'Max Exit Velo', val:D.exitVelo+' mph', sub:'vs 87 mph avg'},
+    {lbl:'Launch Angle',  val:D.launchAngle+'°',  sub:'Optimal range'},
+    {lbl:'Hard Hit %',    val:D.hardHitPct+'%',   sub:'vs 38% avg'},
+    {lbl:'Bat Speed',     val:D.batSpeed+' mph',  sub:'vs 68 mph avg'},
+  ];
+  document.getElementById('hitterScoreGrid').innerHTML = hScores.map(function(s){
+    return '<div class="score-box"><div class="score-box-label">'+s.lbl+'</div>' +
+      '<div class="score-box-val">'+s.val+'</div>' +
+      '<div style="font-size:11px;color:#888;margin-top:6px">'+s.sub+'</div></div>';
+  }).join('');
+}
+
+function switchSkill(type){
+  document.getElementById('sp-pitcher').style.display = type==='pitcher'?'block':'none';
+  document.getElementById('sp-hitter').style.display  = type==='hitter'?'block':'none';
+  document.getElementById('btn-pitcher').classList.toggle('active', type==='pitcher');
+  document.getElementById('btn-hitter').classList.toggle('active',  type==='hitter');
+}
+
+function initPitchTrend(){
+  var c=document.getElementById('pitchTrendChart'); if(!c||_charts.pitch) return;
+  var w=['W1','W2','W3','W4','W5','W6'];
+  _charts.pitch=new Chart(c,{type:'line',data:{labels:w,datasets:[
+    {label:'Velocity',data:[92,92.5,93,93.5,94,94.2],borderColor:'#FF6B6B',backgroundColor:'transparent',tension:.3,pointRadius:4},
+    {label:'Strike %',data:[75,76,77,78,78,78],borderColor:'#C9A84C',backgroundColor:'transparent',tension:.3,pointRadius:4},
+    {label:'Whiff %', data:[28,29,30,31,32,32],borderColor:'#4ECDC4',backgroundColor:'transparent',tension:.3,pointRadius:4},
+  ]},options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:'#888',boxWidth:12,font:{size:11}}}},
+    scales:{x:{ticks:{color:'#555'},grid:{color:'#1a1a1a'}},y:{ticks:{color:'#555'},grid:{color:'#1a1a1a'}}}}});
+}
+function initHitTrend(){
+  var c=document.getElementById('hitTrendChart'); if(!c||_charts.hit) return;
+  var w=['W1','W2','W3','W4','W5','W6'];
+  _charts.hit=new Chart(c,{type:'line',data:{labels:w,datasets:[
+    {label:'Exit Velo',   data:[87,88,89,90,91,92],borderColor:'#FF6B6B',backgroundColor:'transparent',tension:.3,pointRadius:4},
+    {label:'Hard Hit %',  data:[35,38,40,42,44,45],borderColor:'#C9A84C',backgroundColor:'transparent',tension:.3,pointRadius:4},
+    {label:'Launch Angle',data:[16,17,18,18,18,18],borderColor:'#4ECDC4',backgroundColor:'transparent',tension:.3,pointRadius:4},
+  ]},options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:'#888',boxWidth:12,font:{size:11}}}},
+    scales:{x:{ticks:{color:'#555'},grid:{color:'#1a1a1a'}},y:{ticks:{color:'#555'},grid:{color:'#1a1a1a'}}}}});
+}
+
+// ── MENTALITY ─────────────────────────────────────────────────
+function renderMentality(){
+  var m4=[
+    {lbl:'Mindset', val:D.mindset},{lbl:'Grit',val:D.grit},
+    {lbl:'Resilience',val:D.resilience},{lbl:'Confidence',val:D.confidence}
+  ];
+  document.getElementById('mentGrid4').innerHTML = m4.map(function(m){
+    return '<div class="score-box"><div class="score-box-label">'+m.lbl+'</div><div class="score-box-val">'+m.val+'</div></div>';
+  }).join('');
+  var m3=[
+    {lbl:'EQ', val:D.eq},{lbl:'Stress Level',val:D.stress,red:true},{lbl:'Morale',val:D.morale}
+  ];
+  document.getElementById('mentGrid3').innerHTML = m3.map(function(m){
+    return '<div class="score-box"><div class="score-box-label">'+m.lbl+'</div>' +
+      '<div class="score-box-val" style="color:'+(m.red?'#f87171':'#C9A84C')+'">'+m.val+'</div></div>';
+  }).join('');
+}
+
+function initMentalityTrend(){
+  var c=document.getElementById('mentalityTrendChart'); if(!c||_charts.ment) return;
+  var w=['W1','W2','W3','W4','W5','W6'];
+  _charts.ment=new Chart(c,{type:'line',data:{labels:w,datasets:[
+    {label:'Mindset',    data:[80,82,83,84,85,86],borderColor:'#FF6B6B',backgroundColor:'transparent',tension:.3,pointRadius:4},
+    {label:'Grit',       data:[85,86,87,88,88,89],borderColor:'#4ECDC4',backgroundColor:'transparent',tension:.3,pointRadius:4},
+    {label:'Confidence', data:[84,85,86,87,88,89],borderColor:'#FFD93D',backgroundColor:'transparent',tension:.3,pointRadius:4},
+    {label:'Resilience', data:[83,84,85,86,87,88],borderColor:'#C9A84C',backgroundColor:'transparent',tension:.3,pointRadius:4},
+    {label:'EQ',         data:[78,80,81,82,83,84],borderColor:'#6BCB77',backgroundColor:'transparent',tension:.3,pointRadius:4},
+  ]},options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:'#888',boxWidth:12,font:{size:11}}}},
+    scales:{x:{ticks:{color:'#555'},grid:{color:'#1a1a1a'}},y:{min:70,max:100,ticks:{color:'#555'},grid:{color:'#1a1a1a'}}}}});
+}
+
+// ── DEV PLAN ─────────────────────────────────────────────────
+function renderDevPlan(){
+  document.getElementById('devScoreGrid').innerHTML =
+    [{lbl:'Overall LS4',val:D.ls4Score},{lbl:'Athletic',val:D.athleticScore},
+     {lbl:'Skillset',val:D.skillsetScore},{lbl:'Mentality',val:D.mentalityScore}].map(function(s){
+      return '<div class="score-box"><div class="score-box-label">'+s.lbl+'</div><div class="score-box-val">'+s.val+'</div></div>';
+    }).join('');
+
+  var goals=[
+    {t:'Athletic Development',   sub:'Focus: Strength training and injury prevention',   pct:78,status:'On Track'},
+    {t:'Skillset Development',   sub:'Focus: Breaking ball consistency and plate discipline', pct:82,status:'On Track'},
+    {t:'Mentality Development',  sub:'Focus: High-pressure consistency and emotional regulation', pct:88,status:'On Track'},
+    {t:'60-Yard Dash — Break 6.70s', sub:'Current: '+D.sprint30+'s · Target: Jun 2026', pct:45,status:'Behind'},
+    {t:'FB Velocity — 95+ mph', sub:'Current: '+D.pitchVelo+' mph · Target: Sep 2026', pct:68,status:'On Track'},
+  ];
+  document.getElementById('devGoalsList').innerHTML = goals.map(function(g){
+    var borderColor = g.status==='Behind'?'#f87171':'#C9A84C';
+    return '<div class="dev-row" style="border-left-color:'+borderColor+'"><div class="dev-row-header">' +
+      '<div class="dev-row-title">'+g.t+'</div>' +
+      '<div style="display:flex;align-items:center;gap:12px">' +
+      '<div class="dev-progress-track" style="width:160px"><div class="dev-progress-fill" style="width:'+g.pct+'%;background:'+borderColor+'"></div></div>' +
+      '<div class="dev-pct" style="color:'+borderColor+'">'+g.pct+'%</div>' +
+      '<span style="font-family:\'Bebas Neue\',cursive;font-size:11px;letter-spacing:1px;color:'+borderColor+'">'+g.status+'</span>' +
+      '</div></div><div class="dev-focus">'+g.sub+'</div></div>';
+  }).join('');
+}
+
+// ── PLAYER CARD ───────────────────────────────────────────────
+function renderCardContent(){
+  document.getElementById('pcScores').innerHTML =
+    [{lbl:'Lanista Score',val:D.lanistaScore},{lbl:'LS4 Score',val:D.ls4Score},
+     {lbl:'Exit Velocity',val:D.exitVelo+' mph'},{lbl:'Pitch Velocity',val:D.pitchVelo+' mph'},
+     {lbl:'30-Yard Dash', val:D.sprint30+'s'},{lbl:'Mentality',val:D.mentalityScore+'/100'}].map(function(s){
+      return '<div class="pc-score"><div class="pc-score-val">'+s.val+'</div><div class="pc-score-lbl">'+s.lbl+'</div></div>';
+    }).join('');
+  renderGCLinks();
+}
+function openCard(){ document.getElementById('cardOverlay').classList.add('open'); renderCardContent(); }
+function closeCard(){ document.getElementById('cardOverlay').classList.remove('open'); }
+function printCard(){
+  var w=window.open('','_blank');
+  w.document.write('<html><head><title>'+D.name+' — Player Card</title></head><body style="background:#0a0a0a;color:#fff;font-family:sans-serif;padding:20px">');
+  w.document.write(document.getElementById('cardOverlay').innerHTML);
+  w.document.write('</body></html>'); w.document.close(); w.print();
+}
+function emailCard(){
+  var s=encodeURIComponent('Lanista IQ Player Card — '+D.name);
+  var b=encodeURIComponent(D.name+'\n'+D.pos+' · Class of '+D.classYear+'\n\nLanista: '+D.lanistaScore+' | LS4: '+D.ls4Score+'\nExit Velo: '+D.exitVelo+' mph | Pitch Velo: '+D.pitchVelo+' mph\n30-Yard: '+D.sprint30+'s | Mentality: '+D.mentalityScore+'/100\n\nhttps://lanistasports.com/player');
+  window.open('mailto:?subject='+s+'&body='+b);
+}
+function copyCard(){
+  var t=D.name+' | '+D.pos+' | Class of '+D.classYear+'\nLanista: '+D.lanistaScore+' | LS4: '+D.ls4Score+'\nExit Velo: '+D.exitVelo+' mph | Pitch Velo: '+D.pitchVelo+' mph\n30-Yard: '+D.sprint30+'s | Mentality: '+D.mentalityScore+'\nlanistasports.com/player';
+  navigator.clipboard.writeText(t).then(function(){alert('Copied!');});
+}
+function sendToCoach(){
+  var email=prompt('Enter coach/scout email:'); if(!email) return;
+  var s=encodeURIComponent('Player Card — '+D.name+' | Lanista IQ');
+  var b=encodeURIComponent('Coach,\n\n'+D.name+' ('+D.pos+', Class of '+D.classYear+')\nLanista Score: '+D.lanistaScore+' | LS4: '+D.ls4Score+'\nExit Velocity: '+D.exitVelo+' mph\nPitch Velocity: '+D.pitchVelo+' mph\n30-Yard Dash: '+D.sprint30+'s\nMentality: '+D.mentalityScore+'/100\n\nFull profile: https://lanistasports.com/player');
+  window.open('mailto:'+encodeURIComponent(email)+'?subject='+s+'&body='+b);
+}
+function addHL(){
+  var lbl=(document.getElementById('gcLabel')||{}).value||'';
+  var url=(document.getElementById('gcUrl')||{}).value||'';
+  if(!lbl||!url){alert('Enter both a label and URL.');return;}
+  D.highlights.push({label:lbl,url:url}); save();
+  document.getElementById('gcLabel').value=''; document.getElementById('gcUrl').value='';
+  renderGCLinks();
+}
+function removeHL(i){ D.highlights.splice(i,1); save(); renderGCLinks(); }
+function renderGCLinks(){
+  var el=document.getElementById('gcLinks');
+  if(!D.highlights.length){el.innerHTML='<div style="font-size:12px;color:#888">No highlights added yet.</div>';return;}
+  el.innerHTML=D.highlights.map(function(h,i){
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #1a1a1a">' +
+      '<a href="'+h.url+'" target="_blank" class="gc-link">'+h.label+'</a>' +
+      '<button onclick="removeHL('+i+')" style="background:none;border:none;color:#888;cursor:pointer;font-size:12px">✕</button></div>';
+  }).join('');
+}
+
+// ── CHECK-IN ─────────────────────────────────────────────────
+var checkinAnswers = {};
+function openCheckin(){
+  checkinAnswers = {};
+  document.getElementById('checkinContent').innerHTML =
+    '<div style="margin-bottom:16px"><p style="color:#888;font-size:13px;margin-bottom:20px">Rate yourself honestly — this data builds your LS4 mentality profile.</p>' +
+    ['How is your focus today?','How confident do you feel?','How well are you handling pressure?',
+     'How receptive are you to coaching?','How is your effort and grit?'].map(function(q,i){
+      return '<div style="margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid #1a1a1a">' +
+        '<div style="font-size:13px;color:#fff;margin-bottom:10px">'+(i+1)+'. '+q+'</div>' +
+        '<div style="display:flex;gap:8px">' +
+        [1,2,3,4,5].map(function(v){
+          return '<label style="cursor:pointer">' +
+            '<input type="radio" name="ci'+i+'" value="'+v+'" onchange="checkinAnswers['+i+']='+v+'" style="display:none"/>' +
+            '<div style="width:40px;height:40px;border:2px solid #333;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:\'Bebas Neue\',cursive;font-size:16px;color:#888;cursor:pointer;transition:all .15s" onclick="this.style.background=\'#C9A84C\';this.style.color=\'#000\';this.style.borderColor=\'#C9A84C\';document.querySelectorAll(\'[data-ci='+i+']\').forEach(function(x){if(x!==this.parentElement.previousSibling){x.style.background=\'\';x.style.color=\'#888\';x.style.borderColor=\'#333\';}}.bind(this))" data-ci="'+i+'">'+v+'</div>' +
+            '</label>';
+        }).join('') +
+        '</div></div>';
+    }).join('') +
+    '<button onclick="submitCheckin()" style="background:#C9A84C;color:#000;border:none;padding:12px 28px;font-family:\'Bebas Neue\',cursive;font-size:16px;cursor:pointer;width:100%;margin-top:8px;letter-spacing:1px">SUBMIT CHECK-IN</button></div>';
+  document.getElementById('checkinOverlay').classList.add('open');
+}
+function closeCheckin(){ document.getElementById('checkinOverlay').classList.remove('open'); }
+function submitCheckin(){
+  closeCheckin();
+  alert('✅ Check-in complete! Your LS4 mentality profile has been updated.');
+}
+
+// ── GLADIUS ──────────────────────────────────────────────────
+function toggleGladius(){
+  var p=document.getElementById('gladiusPanel');
+  p.classList.toggle('open');
+  if(p.classList.contains('open') && !document.querySelector('#gladiusMsgs .g-msg')){
+    addGMsg('Gladius','Hey '+D.name.split(' ')[0]+'! I\'m Gladius — your AI performance coach. Built from 1,000+ MLB and college player surveys. Ask me anything about your metrics, drills, or recruiting.','bot');
+  }
+}
+function addGMsg(sender,text,cls){
+  var el=document.getElementById('gladiusMsgs');
+  var d=document.createElement('div'); d.className='g-msg '+cls;
+  d.innerHTML='<span class="g-sender">'+sender+'</span>'+text;
+  el.appendChild(d); el.scrollTop=el.scrollHeight;
+}
+function sendGladius(){
+  var inp=document.getElementById('gladiusInput');
+  var msg=inp.value.trim(); if(!msg) return; inp.value='';
+  addGMsg('You',msg,'user');
+  var ctx='You are Gladius, an elite AI performance coach for Lanista Sports, built from 1,000+ MLB and college player surveys. '+D.name+' ('+D.pos+', Class of '+D.classYear+'): Lanista '+D.lanistaScore+', LS4 '+D.ls4Score+', Exit Velo '+D.exitVelo+' mph (avg 87), Pitch Velo '+D.pitchVelo+' mph (avg 78), 30-Yard '+D.sprint30+'s, Mentality '+D.mentalityScore+'/100. Be concise, specific, one actionable tip.';
+  fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({message:msg,context:ctx})})
+  .then(function(r){return r.json();}).then(function(d){
+    if(d.type==='error'&&d.error&&d.error.type==='authentication_error'){
+      addGMsg('Gladius','API key not configured. Contact your admin.','bot error');
+    } else {
+      addGMsg('Gladius',d.response||d.content||'No response.','bot');
+    }
+  }).catch(function(){addGMsg('Gladius','Connection error. Try again.','bot error');});
+}
+document.addEventListener('keydown',function(e){
+  if(e.target===document.getElementById('gladiusInput')&&e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendGladius();}
+});
+
+// ── INIT ─────────────────────────────────────────────────────
+renderOverview();
+renderDevPlan();
+</script>
+</body>
+</html>
