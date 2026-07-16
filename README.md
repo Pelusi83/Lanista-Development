@@ -3,40 +3,43 @@
 Lanista Sports — athlete development platform. Marketing site + the unified
 **LANISTA IQ** athlete intelligence dashboard for Players, Coaches, and Admins.
 
-Deployed as a Cloudflare Worker with static assets.
+Deployed on **Vercel** (static assets + serverless functions).
 
 ## Structure
 
 ```
-public/
-  index.html      Marketing site            ->  /
-  iq.html         Unified LANISTA IQ         ->  /iq        (NEW – Player/Coach/Admin)
-  player.html     Legacy Player Dashboard    ->  /player    (kept for reference)
-  dashboard.html  Legacy Platform 2.0        ->  /dashboard (kept for reference)
-src/
-  worker.js       Router + Gladius AI proxy (/api/chat, /api/auth)
-wrangler.toml     Cloudflare Worker config
+index.html        Marketing site            ->  /
+iq.html           Unified LANISTA IQ         ->  /iq        (NEW – Player/Coach/Admin)
+player.html       Legacy Player Dashboard    ->  /player    (kept for reference)
+dashboard.html    Legacy Platform 2.0        ->  /dashboard (kept for reference)
+api/
+  chat.js         Gladius AI proxy (Anthropic Claude)  ->  /api/chat
+  auth.js         Gladius access-code check            ->  /api/auth
+vercel.json       Routing (rewrites)
 ```
 
 ## Develop
 
 ```bash
 npm install
-npm run dev        # wrangler dev
+npm run dev        # vercel dev (serves static files + /api functions locally)
 ```
 
 ## Deploy
 
 ```bash
-npm run deploy     # wrangler deploy
+npm run deploy     # vercel deploy --prod
 ```
 
-### Secrets
+### Environment variables
 
-```bash
-wrangler secret put CLAUDE_API_KEY      # Anthropic key for Gladius AI
-wrangler secret put GLADIUS_PASSWORD    # admin Gladius console access code
-```
+Set these in the Vercel project (Settings → Environment Variables):
+
+| Name               | Purpose                                          |
+| ------------------ | ------------------------------------------------ |
+| `CLAUDE_API_KEY`   | Anthropic API key for the Gladius AI assistant   |
+| `GLADIUS_PASSWORD` | Access code for the admin Gladius console        |
+| `CLAUDE_MODEL`     | (optional) override the default Claude model     |
 
 ## LANISTA IQ
 

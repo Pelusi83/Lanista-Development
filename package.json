@@ -2,13 +2,13 @@
   "name": "lanista-sports-dev",
   "version": "1.0.0",
   "private": true,
-  "description": "Lanista Sports marketing site + unified LANISTA IQ athlete intelligence platform (Cloudflare Worker).",
+  "description": "Lanista Sports marketing site + unified LANISTA IQ athlete intelligence platform (Vercel).",
   "scripts": {
-    "dev": "wrangler dev",
-    "start": "wrangler dev",
-    "deploy": "wrangler deploy"
+    "dev": "vercel dev",
+    "start": "vercel dev",
+    "deploy": "vercel deploy --prod"
   },
   "devDependencies": {
-    "wrangler": "^3.90.0"
+    "vercel": "^39.0.0"
   }
 }
