@@ -1,0 +1,2956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Lanista IQ Platform — v2.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#080808;--dark:#0f0f0f;--dark2:#141414;--dark3:#1c1c1c;--dark4:#242424;
+  --gold:#C9A84C;--gold2:#E8C96B;--gold3:#F5DFA0;--golddim:#8a6d2e;
+  --steel:#8A9BA8;--silver:#C5C8CC;--white:#F5F5F5;
+  --green:#4ade80;--red:#f87171;--blue:#60a5fa;--purple:#a78bfa;--orange:#f97316;
+  --font-d:'Barlow Condensed',sans-serif;--font-b:'Barlow',sans-serif;--font-m:'IBM Plex Mono',monospace;
+  --ease:cubic-bezier(.4,0,.2,1);
+  --card-bg:rgba(20,20,20,.95);--card-border:rgba(255,255,255,.06);
+  --rookie:#8A9BA8;--prospect:#60a5fa;--rising:#a78bfa;--elite:#C9A84C;--legend:#f97316;
+}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--white);font-family:var(--font-b);font-size:15px;line-height:1.6;min-height:100vh}
+a{color:inherit;text-decoration:none}
+button{font-family:var(--font-b);border:none;outline:none;cursor:pointer}
+canvas{display:block}
+.hidden{display:none!important}
+
+/* ── TOPBAR ── */
+.topbar{position:sticky;top:0;z-index:200;background:rgba(8,8,8,.97);backdrop-filter:blur(20px);border-bottom:1px solid rgba(201,168,76,.12);height:58px;display:flex;align-items:center;padding:0 20px;gap:14px}
+.topbar-logo{font-family:var(--font-d);font-size:17px;font-weight:900;letter-spacing:3px;text-transform:uppercase;background:linear-gradient(135deg,#F5E090,#C9A84C,#9a7020);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap}
+.topbar-sep{width:1px;height:22px;background:rgba(255,255,255,.1)}
+.topbar-badge{font-family:var(--font-m);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:3px 10px;border-radius:3px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);color:var(--gold)}
+.role-switcher{margin-left:auto;display:flex;gap:4px}
+.role-btn{padding:6px 14px;font-family:var(--font-m);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;border-radius:4px;border:1px solid rgba(255,255,255,.1);color:var(--steel);background:transparent;transition:all .2s}
+.role-btn.active{background:var(--gold);color:var(--black);border-color:var(--gold)}
+.role-btn:hover:not(.active){color:var(--white);border-color:rgba(201,168,76,.3)}
+.back-link{font-family:var(--font-m);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--steel);padding:6px 12px;border:1px solid rgba(255,255,255,.1);border-radius:3px;transition:all .2s}
+.back-link:hover{color:var(--gold);border-color:rgba(201,168,76,.35)}
+
+/* ── ROLE SELECTOR ── */
+#roleSelector{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;gap:32px}
+.role-sel-logo{font-family:var(--font-d);font-size:28px;font-weight:900;letter-spacing:6px;text-transform:uppercase;background:linear-gradient(135deg,#F5E090,#C9A84C,#9a7020);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.role-sel-sub{font-family:var(--font-m);font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--steel);margin-top:-20px}
+.role-cards{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.role-card{background:var(--dark2);border:1px solid var(--card-border);border-radius:12px;padding:32px 28px;text-align:center;cursor:pointer;transition:all .25s;min-width:180px}
+.role-card:hover{border-color:rgba(201,168,76,.35);background:rgba(20,20,20,1);transform:translateY(-3px)}
+.role-card-icon{font-size:36px;margin-bottom:12px}
+.role-card-title{font-family:var(--font-d);font-size:20px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--white);margin-bottom:4px}
+.role-card-desc{font-size:12px;color:var(--steel)}
+
+/* ── DASHBOARD WRAP ── */
+.dash-wrap{max-width:1300px;margin:0 auto;padding:24px 20px 60px}
+
+/* ── PLAYER HEADER ── */
+.player-header{background:var(--dark2);border:1px solid var(--card-border);border-top:3px solid var(--gold);border-radius:8px;padding:20px 24px;margin-bottom:20px}
+.ph-top{display:flex;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+.ph-avatar{width:60px;height:60px;border-radius:50%;background:rgba(201,168,76,.1);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:20px;font-weight:900;color:var(--gold);flex-shrink:0}
+.ph-info{flex:1;min-width:160px}
+.ph-name{font-family:var(--font-d);font-size:26px;font-weight:900;letter-spacing:1px;text-transform:uppercase;line-height:1}
+.ph-sub{font-size:12px;color:var(--steel);margin-top:4px;display:flex;gap:14px;flex-wrap:wrap}
+.ph-sub strong{color:var(--white)}
+.ph-badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.level-badge{font-family:var(--font-m);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:3px 10px;border-radius:20px;border:1px solid}
+.level-rookie{color:var(--rookie);border-color:rgba(138,155,168,.3);background:rgba(138,155,168,.08)}
+.level-prospect{color:var(--prospect);border-color:rgba(96,165,250,.3);background:rgba(96,165,250,.08)}
+.level-rising{color:var(--rising);border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.08)}
+.level-elite{color:var(--elite);border-color:rgba(201,168,76,.3);background:rgba(201,168,76,.08)}
+.level-legend{color:var(--legend);border-color:rgba(249,115,22,.3);background:rgba(249,115,22,.08)}
+.ph-actions{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
+.ph-action-btn{padding:8px 16px;font-family:var(--font-d);font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;border-radius:6px;border:1px solid rgba(201,168,76,.35);color:var(--white);background:rgba(201,168,76,.07);transition:all .2s}
+.ph-action-btn:hover{background:rgba(201,168,76,.15);border-color:rgba(201,168,76,.6)}
+.ph-action-btn.primary{background:var(--gold);color:var(--black);border-color:var(--gold)}
+.ph-action-btn.primary:hover{background:var(--gold2)}
+/* XP Bar */
+.xp-bar-wrap{display:flex;align-items:center;gap:12px}
+.xp-label{font-family:var(--font-m);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--steel);white-space:nowrap}
+.xp-track{flex:1;height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden}
+.xp-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width 1s var(--ease)}
+.xp-next{font-family:var(--font-m);font-size:9px;color:var(--steel);white-space:nowrap}
+.streak-display{display:flex;align-items:center;gap:6px;font-family:var(--font-m);font-size:11px;font-weight:700}
+.streak-flame{font-size:16px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+
+/* ── TABS ── */
+.tab-nav{display:flex;gap:4px;margin-bottom:20px;overflow-x:auto;padding-bottom:2px}
+.tab-nav::-webkit-scrollbar{height:2px}
+.tab-nav::-webkit-scrollbar-thumb{background:rgba(201,168,76,.3)}
+.tab-btn{padding:8px 16px;font-family:var(--font-m);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;border-radius:4px;white-space:nowrap;transition:all .2s;color:var(--steel);background:transparent;border:1px solid rgba(255,255,255,.07)}
+.tab-btn.active{background:var(--gold);color:var(--black);border-color:var(--gold)}
+.tab-btn:hover:not(.active){color:var(--white);border-color:rgba(201,168,76,.3)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* ── CARDS ── */
+.card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;overflow:hidden;transition:border-color .25s}
+.card:hover{border-color:rgba(201,168,76,.13)}
+.card-body{padding:18px 20px}
+.card-label{font-family:var(--font-m);font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--steel);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card-title{font-family:var(--font-d);font-size:14px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--silver);margin-bottom:14px}
+
+/* ── METRIC CARD ── */
+.metric-card{background:var(--dark3);border:1px solid var(--card-border);border-radius:8px;padding:14px 16px;position:relative;transition:border-color .2s}
+.metric-card:hover{border-color:rgba(201,168,76,.15)}
+.mc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.mc-label{font-family:var(--font-m);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--steel)}
+.info-btn{width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--steel);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;flex-shrink:0}
+.info-btn:hover{background:rgba(201,168,76,.15);border-color:rgba(201,168,76,.4);color:var(--gold)}
+.mc-value-row{display:flex;align-items:flex-end;gap:6px;margin-bottom:8px}
+.mc-value{font-family:var(--font-m);font-size:24px;font-weight:700;color:var(--gold);line-height:1}
+.mc-unit{font-family:var(--font-m);font-size:11px;color:var(--steel);margin-bottom:2px}
+.mc-trend{margin-left:auto;font-family:var(--font-m);font-size:10px;font-weight:700;display:flex;align-items:center;gap:2px}
+.trend-up{color:var(--green)}.trend-down{color:var(--red)}.trend-flat{color:var(--steel)}
+.mc-prev{font-family:var(--font-m);font-size:9px;color:rgba(138,155,168,.6);margin-left:4px}
+/* Score bar */
+.score-bar-track{height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;margin-bottom:8px}
+.score-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width .8s var(--ease)}
+.score-bar-fill.green{background:linear-gradient(90deg,#16a34a,var(--green))}
+.score-bar-fill.blue{background:linear-gradient(90deg,#1d4ed8,var(--blue))}
+.score-bar-fill.red{background:linear-gradient(90deg,#991b1b,var(--red))}
+/* PR row */
+.pr-row{display:flex;align-items:center;gap:8px;padding-top:6px;border-top:1px solid rgba(255,255,255,.04);margin-top:4px}
+.pr-lbl{font-family:var(--font-m);font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(201,168,76,.5)}
+.pr-val{font-family:var(--font-m);font-size:10px;font-weight:700;color:var(--gold2)}
+.pr-date{font-family:var(--font-m);font-size:8px;color:var(--steel);margin-left:auto}
+.pr-delta{font-family:var(--font-m);font-size:8px;color:var(--green)}
+
+/* ── GRIDS ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.g6{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.g21{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+.g12{display:grid;grid-template-columns:1fr 2fr;gap:14px}
+.mb12{margin-bottom:12px}.mb16{margin-bottom:16px}.mb20{margin-bottom:20px}.mb24{margin-bottom:24px}
+.space-y>*+*{margin-top:12px}
+
+/* ── STRENGTH / IMPROVE CARDS ── */
+.insight-card{border-radius:8px;padding:16px 18px}
+.insight-card.strengths{background:rgba(74,222,128,.04);border:1px solid rgba(74,222,128,.15);border-left:3px solid var(--green)}
+.insight-card.improve{background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.15);border-left:3px solid var(--gold)}
+.insight-title{font-family:var(--font-d);font-size:12px;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.insight-item{font-size:13px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:flex-start;gap:8px}
+.insight-item:last-child{border-bottom:none}
+.insight-num{font-family:var(--font-m);font-size:9px;font-weight:700;color:var(--steel);margin-top:3px;flex-shrink:0}
+
+/* ── GAMIFICATION ── */
+/* Badge Gallery */
+.badge-grid{display:flex;flex-wrap:wrap;gap:10px}
+.badge-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 12px;border-radius:8px;border:1px solid var(--card-border);background:var(--dark3);min-width:72px;cursor:default;transition:all .2s}
+.badge-item.earned{border-color:rgba(201,168,76,.25);background:rgba(201,168,76,.06)}
+.badge-item.earned:hover{border-color:rgba(201,168,76,.5);box-shadow:0 0 12px rgba(201,168,76,.15)}
+.badge-item.locked{opacity:.4;filter:grayscale(1)}
+.badge-icon{font-size:22px}
+.badge-name{font-family:var(--font-m);font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--steel);text-align:center}
+.badge-item.earned .badge-name{color:var(--gold)}
+
+/* Challenges */
+.challenge-card{background:var(--dark3);border:1px solid var(--card-border);border-radius:8px;padding:14px 16px;display:flex;align-items:center;gap:12px;transition:all .2s}
+.challenge-card.completed{border-color:rgba(74,222,128,.2);background:rgba(74,222,128,.04)}
+.challenge-icon{font-size:20px;flex-shrink:0}
+.challenge-text{flex:1;font-size:13px;font-weight:500}
+.challenge-xp{font-family:var(--font-m);font-size:10px;font-weight:700;color:var(--gold);white-space:nowrap}
+.challenge-btn{padding:6px 14px;font-family:var(--font-m);font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:4px;border:1px solid rgba(201,168,76,.35);color:var(--gold);background:rgba(201,168,76,.07);cursor:pointer;transition:all .2s;white-space:nowrap}
+.challenge-btn:hover{background:rgba(201,168,76,.15)}
+.challenge-btn.done{border-color:rgba(74,222,128,.3);color:var(--green);background:rgba(74,222,128,.08);cursor:default}
+.challenge-card.completed .challenge-btn{pointer-events:none}
+
+/* Progress ring */
+.progress-ring-wrap{display:flex;flex-direction:column;align-items:center;gap:6px}
+.progress-ring-label{font-family:var(--font-m);font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--steel);text-align:center}
+
+/* ── HEATMAP ── */
+.hm-table{width:100%;border-collapse:separate;border-spacing:3px}
+.hm-table th{font-family:var(--font-m);font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--steel);padding:4px 6px;text-align:center}
+.hm-table td{border-radius:4px;padding:8px 4px;text-align:center;font-family:var(--font-m);font-size:10px;font-weight:700;transition:transform .15s;cursor:default}
+.hm-table td:hover{transform:scale(1.1)}
+.hm-table .row-label{color:var(--steel);font-size:9px;text-align:left;background:transparent!important;padding-right:8px}
+.hm-1{background:rgba(248,113,113,.25);color:#f87171}
+.hm-2{background:rgba(251,146,60,.2);color:#fb923c}
+.hm-3{background:rgba(250,204,21,.15);color:#facc15}
+.hm-4{background:rgba(74,222,128,.18);color:#4ade80}
+.hm-5{background:rgba(74,222,128,.32);color:#4ade80}
+.hm-inv-1{background:rgba(74,222,128,.32);color:#4ade80}
+.hm-inv-5{background:rgba(248,113,113,.25);color:#f87171}
+
+/* ── MENTALITY LIKERT ── */
+.likert-q{background:var(--dark3);border:1px solid var(--card-border);border-radius:8px;padding:16px 18px;margin-bottom:12px}
+.likert-q-text{font-size:13px;font-weight:600;margin-bottom:12px;display:flex;align-items:flex-start;gap:8px}
+.likert-anchors{display:flex;justify-content:space-between;font-family:var(--font-m);font-size:8px;color:var(--steel);margin-bottom:8px;letter-spacing:.5px}
+.likert-btns{display:flex;gap:8px}
+.likert-btn{flex:1;aspect-ratio:1;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--steel);font-family:var(--font-m);font-size:16px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center}
+.likert-btn:hover{background:rgba(201,168,76,.1);border-color:rgba(201,168,76,.35);color:var(--white)}
+.likert-btn.selected{background:var(--gold);border-color:var(--gold);color:var(--black)}
+.likert-counter{font-family:var(--font-m);font-size:11px;font-weight:700;color:var(--steel);text-align:center;margin-bottom:14px}
+.likert-counter span{color:var(--gold)}
+
+/* ── DEV PLAN ── */
+.goal-card{background:var(--dark3);border-radius:8px;padding:16px 18px;border:1px solid;margin-bottom:12px}
+.goal-card.on-track{border-color:rgba(74,222,128,.2);background:rgba(74,222,128,.03)}
+.goal-card.at-risk{border-color:rgba(201,168,76,.25);background:rgba(201,168,76,.04)}
+.goal-card.overdue{border-color:rgba(248,113,113,.25);background:rgba(248,113,113,.04)}
+.goal-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.goal-title{font-size:13px;font-weight:600;flex:1}
+.status-pill{font-family:var(--font-m);font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 9px;border-radius:20px}
+.pill-on{background:rgba(74,222,128,.1);color:var(--green);border:1px solid rgba(74,222,128,.2)}
+.pill-risk{background:rgba(201,168,76,.1);color:var(--gold);border:1px solid rgba(201,168,76,.2)}
+.pill-over{background:rgba(248,113,113,.1);color:var(--red);border:1px solid rgba(248,113,113,.2)}
+.goal-progress-row{display:flex;align-items:center;gap:10px}
+.goal-progress-track{flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.goal-progress-fill{height:100%;border-radius:3px;transition:width .8s var(--ease)}
+.fill-on{background:linear-gradient(90deg,#16a34a,var(--green))}
+.fill-risk{background:linear-gradient(90deg,var(--golddim),var(--gold))}
+.fill-over{background:linear-gradient(90deg,#991b1b,var(--red))}
+.goal-pct{font-family:var(--font-m);font-size:11px;font-weight:700;color:var(--silver);width:34px;text-align:right}
+.goal-meta{display:flex;gap:16px;margin-top:8px;font-family:var(--font-m);font-size:9px;color:var(--steel)}
+
+/* ── RESOURCES ── */
+.resource-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.resource-card{background:var(--dark3);border:1px solid var(--card-border);border-radius:8px;padding:14px 16px;cursor:pointer;transition:all .2s}
+.resource-card:hover{border-color:rgba(201,168,76,.25);background:var(--dark4)}
+.resource-card.locked{opacity:.7}
+.res-type-icon{font-size:20px;margin-bottom:8px}
+.res-title{font-size:12px;font-weight:600;margin-bottom:6px;line-height:1.4}
+.res-source{font-size:10px;color:var(--steel);margin-bottom:6px}
+.res-tags{display:flex;gap:5px;flex-wrap:wrap}
+.res-tag{font-family:var(--font-m);font-size:8px;font-weight:700;padding:2px 7px;border-radius:3px;background:rgba(201,168,76,.08);color:var(--gold);border:1px solid rgba(201,168,76,.15)}
+.res-tier-badge{font-family:var(--font-m);font-size:8px;font-weight:700;letter-spacing:1px;padding:2px 7px;border-radius:3px}
+.tier-free{background:rgba(138,155,168,.08);color:var(--steel);border:1px solid rgba(138,155,168,.15)}
+.tier-pro{background:rgba(96,165,250,.1);color:var(--blue);border:1px solid rgba(96,165,250,.2)}
+.tier-elite{background:rgba(201,168,76,.1);color:var(--gold);border:1px solid rgba(201,168,76,.2)}
+
+/* Pricing */
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
+.pricing-card{background:var(--dark3);border:1px solid var(--card-border);border-radius:10px;padding:24px 20px;text-align:center}
+.pricing-card.popular{border-color:rgba(201,168,76,.35);background:rgba(201,168,76,.04)}
+.pricing-name{font-family:var(--font-d);font-size:18px;font-weight:900;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+.pricing-price{font-family:var(--font-m);font-size:28px;font-weight:700;color:var(--gold);margin-bottom:4px}
+.pricing-price span{font-size:12px;color:var(--steel)}
+.pricing-features{list-style:none;text-align:left;margin:16px 0;display:flex;flex-direction:column;gap:6px}
+.pricing-features li{font-size:12px;display:flex;align-items:flex-start;gap:6px}
+.pricing-features li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0}
+.pricing-btn{width:100%;padding:10px;font-family:var(--font-d);font-size:13px;font-weight:800;letter-spacing:2px;text-transform:uppercase;border-radius:6px;border:1px solid rgba(255,255,255,.1);color:var(--white);background:transparent;cursor:pointer;transition:all .2s;margin-top:8px}
+.pricing-btn.current{opacity:.5;cursor:default}
+.pricing-btn.cta{background:var(--gold);color:var(--black);border-color:var(--gold)}
+.pricing-btn.cta:hover{background:var(--gold2)}
+
+/* ── COACH ── */
+.team-header{background:var(--dark2);border:1px solid var(--card-border);border-top:3px solid var(--blue);border-radius:8px;padding:20px 24px;margin-bottom:20px}
+.th-top{display:flex;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+.th-team-name{font-family:var(--font-d);font-size:26px;font-weight:900;letter-spacing:1px;text-transform:uppercase}
+.th-stats{display:flex;gap:20px;flex-wrap:wrap}
+.th-stat{text-align:center}
+.th-stat-val{font-family:var(--font-m);font-size:18px;font-weight:700;color:var(--gold);line-height:1}
+.th-stat-lbl{font-family:var(--font-m);font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--steel);margin-top:2px}
+.eng-score{display:flex;flex-direction:column;align-items:center;padding:12px 20px;background:rgba(96,165,250,.05);border:1px solid rgba(96,165,250,.15);border-radius:8px;margin-left:auto}
+.eng-score-num{font-family:var(--font-d);font-size:40px;font-weight:900;color:var(--blue);line-height:1}
+.eng-score-lbl{font-family:var(--font-m);font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(96,165,250,.6)}
+
+/* Roster Table */
+.roster-table-wrap{overflow-x:auto}
+.roster-table{width:100%;border-collapse:collapse;font-size:13px}
+.roster-table th{font-family:var(--font-m);font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--steel);padding:10px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,.06);cursor:pointer;white-space:nowrap;user-select:none}
+.roster-table th:hover{color:var(--gold)}
+.roster-table td{padding:12px 12px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+.roster-table tr:hover td{background:rgba(201,168,76,.03)}
+.roster-table tr:last-child td{border-bottom:none}
+.player-name-cell{font-weight:600}
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+.dot-green{background:var(--green)}.dot-yellow{background:#facc15}.dot-red{background:var(--red)}
+.row-action-btn{padding:4px 10px;font-family:var(--font-m);font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:3px;border:1px solid rgba(255,255,255,.1);color:var(--steel);background:transparent;cursor:pointer;transition:all .15s}
+.row-action-btn:hover{color:var(--gold);border-color:rgba(201,168,76,.3)}
+
+/* ── ADMIN ── */
+.admin-header{background:var(--dark2);border:1px solid var(--card-border);border-top:3px solid var(--purple);border-radius:8px;padding:18px 24px;margin-bottom:20px}
+.health-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.health-card{background:var(--dark3);border-radius:8px;padding:14px 16px;border:1px solid}
+.health-card.ok{border-color:rgba(74,222,128,.2)}
+.health-card.warn{border-color:rgba(201,168,76,.25)}
+.health-card.alert{border-color:rgba(248,113,113,.25)}
+.health-val{font-family:var(--font-m);font-size:22px;font-weight:700;margin-bottom:4px}
+.health-card.ok .health-val{color:var(--green)}
+.health-card.warn .health-val{color:var(--gold)}
+.health-card.alert .health-val{color:var(--red)}
+.health-lbl{font-family:var(--font-m);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--steel)}
+.log-feed{font-family:var(--font-m);font-size:10px;display:flex;flex-direction:column;gap:6px}
+.log-row{display:flex;gap:10px;padding:6px 8px;border-radius:4px;background:rgba(255,255,255,.02)}
+.log-time{color:var(--steel);flex-shrink:0;width:80px}
+.log-event{flex:1}
+.log-level-info{color:var(--blue)}.log-level-warn{color:var(--gold)}.log-level-error{color:var(--red)}
+.admin-table{width:100%;border-collapse:collapse;font-size:12px}
+.admin-table th{font-family:var(--font-m);font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--steel);padding:8px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,.06)}
+.admin-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+.plan-badge{font-family:var(--font-m);font-size:8px;font-weight:700;letter-spacing:1px;padding:2px 8px;border-radius:3px}
+.plan-free{background:rgba(138,155,168,.08);color:var(--steel)}
+.plan-pro{background:rgba(96,165,250,.1);color:var(--blue)}
+.plan-elite{background:rgba(201,168,76,.1);color:var(--gold)}
+
+/* ── MODALS ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.hidden{display:none}
+.modal{background:#141414;border:1px solid rgba(201,168,76,.2);border-radius:14px;padding:28px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;position:relative}
+.modal-title{font-family:var(--font-d);font-size:22px;font-weight:900;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+.modal-sub{font-size:12px;color:var(--steel);margin-bottom:20px}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--steel);font-size:20px;cursor:pointer;padding:4px;line-height:1}
+.modal-close:hover{color:var(--white)}
+.modal-input{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:6px;color:var(--white);font-family:var(--font-b);font-size:13px;padding:10px 12px;outline:none;transition:border-color .2s;margin-bottom:12px}
+.modal-input:focus{border-color:rgba(201,168,76,.4)}
+.modal-btn{padding:10px 22px;font-family:var(--font-d);font-size:13px;font-weight:800;letter-spacing:2px;text-transform:uppercase;border-radius:6px;cursor:pointer;transition:all .2s}
+.modal-btn.primary{background:var(--gold);color:var(--black);border:1px solid var(--gold)}
+.modal-btn.primary:hover{background:var(--gold2)}
+.modal-btn.secondary{background:transparent;color:var(--steel);border:1px solid rgba(255,255,255,.12)}
+.modal-btn.secondary:hover{color:var(--white);border-color:rgba(255,255,255,.25)}
+.modal-btn:disabled{opacity:.35;cursor:not-allowed}
+
+/* Success screen */
+.success-screen{text-align:center;padding:24px}
+.success-icon{font-size:56px;margin-bottom:16px}
+.success-title{font-family:var(--font-d);font-size:24px;font-weight:900;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.success-sub{font-size:13px;color:var(--steel)}
+.xp-toast-inline{display:inline-flex;align-items:center;gap:6px;margin-top:14px;padding:8px 16px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);border-radius:20px;font-family:var(--font-m);font-size:11px;font-weight:700;color:var(--gold)}
+
+/* ── TOOLTIP ── */
+#infoTooltip{position:fixed;z-index:1000;background:#1a1a1a;border:1px solid rgba(201,168,76,.25);border-radius:8px;padding:12px 14px;max-width:260px;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.6)}
+.tt-title{font-family:var(--font-d);font-size:13px;font-weight:900;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;color:var(--white)}
+.tt-desc{font-size:11px;color:var(--silver);line-height:1.5;margin-bottom:8px}
+.tt-scale{display:flex;flex-direction:column;gap:3px}
+.tt-scale-row{font-family:var(--font-m);font-size:9px;font-weight:700}
+.tt-elite{color:var(--green)}.tt-avg{color:var(--gold)}.tt-below{color:var(--red)}
+.tt-source{font-family:var(--font-m);font-size:8px;color:rgba(138,155,168,.5);margin-top:6px;border-top:1px solid rgba(255,255,255,.06);padding-top:6px}
+
+/* ── TOAST ── */
+.toast-container{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:2000;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{background:#1a1a1a;border:1px solid rgba(201,168,76,.3);border-radius:20px;padding:10px 18px;font-family:var(--font-m);font-size:11px;font-weight:700;color:var(--gold);display:flex;align-items:center;gap:8px;animation:toastIn .3s var(--ease);box-shadow:0 4px 16px rgba(0,0,0,.5)}
+.toast.badge-toast{border-color:rgba(167,139,250,.3);color:var(--purple)}
+@keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── LEADERBOARD ── */
+.lb-table{width:100%;border-collapse:collapse}
+.lb-table tr{border-bottom:1px solid rgba(255,255,255,.04)}
+.lb-table td{padding:10px 12px;font-size:13px;vertical-align:middle}
+.lb-rank{font-family:var(--font-m);font-size:12px;font-weight:700;width:28px;color:var(--steel)}
+.lb-rank.gold{color:var(--gold)}.lb-rank.silver{color:#a0aec0}.lb-rank.bronze{color:#cd7f32}
+.lb-name{font-weight:600;flex:1}
+.lb-val{font-family:var(--font-m);font-size:13px;font-weight:700;color:var(--gold);text-align:right}
+
+/* ── SUB TOGGLE (Pitcher/Hitter) ── */
+.sub-toggle{display:flex;gap:6px;margin-bottom:16px}
+.sub-btn{padding:8px 22px;font-family:var(--font-d);font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;border-radius:6px;border:1px solid rgba(255,255,255,.1);color:var(--steel);background:transparent;cursor:pointer;transition:all .2s}
+.sub-btn.active{background:var(--dark3);border-color:rgba(201,168,76,.35);color:var(--white)}
+.sub-panel{display:none}.sub-panel.active{display:block}
+
+/* ── METRIC ROW (compact) ── */
+.metric-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.metric-row:last-child{border-bottom:none}
+.metric-row-name{font-family:var(--font-m);font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--steel);width:130px;flex-shrink:0}
+.metric-row-bar{flex:1;height:5px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden}
+.metric-row-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.metric-row-val{font-family:var(--font-m);font-size:12px;font-weight:700;color:var(--gold);width:48px;text-align:right;flex-shrink:0}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){.g4{grid-template-columns:repeat(2,1fr)}.g6{grid-template-columns:repeat(3,1fr)}.g21,.g12{grid-template-columns:1fr}.resource-grid{grid-template-columns:repeat(2,1fr)}.health-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){.dash-wrap{padding:16px 14px 40px}.g2,.g3{grid-template-columns:1fr}.g4{grid-template-columns:1fr 1fr}.g6{grid-template-columns:repeat(2,1fr)}.resource-grid{grid-template-columns:1fr}.pricing-grid{grid-template-columns:1fr}.health-grid{grid-template-columns:1fr}.ph-top{flex-direction:column;align-items:flex-start}.ph-actions{margin-left:0}.role-cards{flex-direction:column}}
+@media(max-width:480px){.g4,.g6{grid-template-columns:1fr 1fr}.topbar{padding:0 14px;gap:8px}.topbar-logo{font-size:14px}}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-logo">Lanista IQ</div>
+  <div class="topbar-sep"></div>
+  <div class="topbar-badge" id="topbarBadge">Platform v2.0</div>
+  <a href="/" class="back-link" style="margin-left:8px">← Site</a>
+  <div class="role-switcher">
+    <button class="role-btn active" onclick="switchRole('player')">⚾ Player</button>
+    <button class="role-btn" onclick="switchRole('coach')">📋 Coach</button>
+    <button class="role-btn" onclick="switchRole('admin')">⚙️ Admin</button>
+  </div>
+</div>
+
+<!-- ROLE SELECTOR -->
+<div id="roleSelector" class="hidden">
+  <div class="role-sel-logo">Lanista IQ Platform</div>
+  <div class="role-sel-sub">v2.0 — Gamification Edition</div>
+  <div class="role-cards">
+    <div class="role-card" onclick="switchRole('player')"><div class="role-card-icon">⚾</div><div class="role-card-title">Player</div><div class="role-card-desc">Personal performance hub</div></div>
+    <div class="role-card" onclick="switchRole('coach')"><div class="role-card-icon">📋</div><div class="role-card-title">Coach</div><div class="role-card-desc">Team aggregate & management</div></div>
+    <div class="role-card" onclick="switchRole('admin')"><div class="role-card-icon">⚙️</div><div class="role-card-title">Admin</div><div class="role-card-desc">Platform backend & health</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PLAYER DASHBOARD
+═══════════════════════════════════════ -->
+<div id="playerDash" class="dashboard">
+<div class="dash-wrap">
+
+  <!-- Player Header -->
+  <div class="player-header">
+    <div class="ph-top">
+      <div class="ph-avatar" id="ph-avatar">MR</div>
+      <div class="ph-info">
+        <div class="ph-name" id="ph-name">Marcus Rivera</div>
+        <div class="ph-sub">
+          <span>#14 · 3B/SS · RHP</span>
+          <span>11th Grade · <strong>Westlake HS</strong></span>
+          <span>GPA: <strong>3.7</strong></span>
+          <span>Class of <strong>2027</strong></span>
+        </div>
+        <div class="ph-badges">
+          <span class="level-badge level-prospect" id="ph-level-badge">⭐ Prospect</span>
+          <span class="streak-display"><span class="streak-flame">🔥</span><span id="ph-streak">4</span> week streak</span>
+          <span class="level-badge level-elite" style="font-size:11px;padding:4px 12px">LANISTA <strong style="color:var(--gold)">91</strong></span>
+          <span class="level-badge level-elite" style="font-size:11px;padding:4px 12px">LS4 <strong style="color:var(--gold)">87</strong></span>
+        </div>
+      </div>
+      <div class="ph-actions">
+        <button class="ph-action-btn primary" onclick="openCheckin()">✓ Check-In</button>
+        <button class="ph-action-btn" onclick="switchPlayerTab('playercard')">👤 Player Card</button>
+      </div>
+    </div>
+    <div class="xp-bar-wrap">
+      <span class="xp-label">XP</span>
+      <span id="ph-xp-val" style="font-family:var(--font-m);font-size:10px;font-weight:700;color:var(--gold);white-space:nowrap">245 / 300</span>
+      <div class="xp-track"><div class="xp-fill" id="ph-xp-bar" style="width:81%"></div></div>
+      <span class="xp-next" id="ph-level-next">55 XP to Rising Star</span>
+    </div>
+  </div>
+
+  <!-- Player Tab Nav -->
+  <div class="tab-nav" id="playerTabNav">
+    <button class="tab-btn active" data-ptab="overview">Overview</button>
+    <button class="tab-btn" data-ptab="athletic">Athletic</button>
+    <button class="tab-btn" data-ptab="skillset">Skillset</button>
+    <button class="tab-btn" data-ptab="mentality">Mentality</button>
+    <button class="tab-btn" data-ptab="devplan">Dev Plan</button>
+    <button class="tab-btn" data-ptab="resources">Resources</button>
+    <button class="tab-btn" data-ptab="playercard" style="color:var(--gold)">⚡ Card</button>
+  </div>
+
+  <!-- TAB: OVERVIEW -->
+  <div class="tab-panel active" id="ptab-overview">
+    <!-- Top 6 key metrics -->
+    <div class="g3 mb20" id="overview-metrics"></div>
+
+    <!-- Gamification summary -->
+    <div class="g3 mb20">
+      <div class="card card-body">
+        <div class="card-label">🏆 Badges Earned</div>
+        <div class="badge-grid" id="overview-badges"></div>
+      </div>
+      <div class="card card-body">
+        <div class="card-label">⚡ Daily Challenges</div>
+        <div id="daily-challenges"></div>
+      </div>
+      <div class="card card-body">
+        <div class="card-label">🎯 Weekly Challenge</div>
+        <div id="weekly-challenge"></div>
+      </div>
+    </div>
+
+    <!-- Strengths & Improvements -->
+    <div class="g2 mb20">
+      <div class="insight-card strengths">
+        <div class="insight-title" style="color:var(--green)">✅ 3 Strengths</div>
+        <div class="insight-item"><span class="insight-num">01</span><span>Elite exit velocity (94.2 mph) — Top 12% nationally for 17u</span></div>
+        <div class="insight-item"><span class="insight-num">02</span><span>LS4 Focus score of 88 — high-level composure under pressure</span></div>
+        <div class="insight-item"><span class="insight-num">03</span><span>FB velocity trending up +3.2 mph over 6 months — consistent gains</span></div>
+      </div>
+      <div class="insight-card improve">
+        <div class="insight-title" style="color:var(--gold)">📈 3 Areas to Improve</div>
+        <div class="insight-item"><span class="insight-num">01</span><span>Changeup command at 52% — target 60% by March 2026</span></div>
+        <div class="insight-item"><span class="insight-num">02</span><span>LS4 Coachability at 76 — below team target of 85+</span></div>
+        <div class="insight-item"><span class="insight-num">03</span><span>60-Yard dash 6.82s — approaching target but needs acceleration work</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: ATHLETIC -->
+  <div class="tab-panel" id="ptab-athletic">
+    <div class="g3 mb20" id="athletic-metrics"></div>
+    <div class="card card-body mb20">
+      <div class="card-label">Athletic Performance vs. Benchmark</div>
+      <div style="height:220px"><canvas id="athleticChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- TAB: SKILLSET -->
+  <div class="tab-panel" id="ptab-skillset">
+    <div class="sub-toggle">
+      <button class="sub-btn active" onclick="switchSkillset('pitcher',this)">⚾ Pitcher</button>
+      <button class="sub-btn" onclick="switchSkillset('hitter',this)">🏏 Hitter</button>
+    </div>
+    <div class="sub-panel active" id="sp-pitcher">
+      <div class="g3 mb20" id="pitcher-metrics"></div>
+    </div>
+    <div class="sub-panel" id="sp-hitter">
+      <div class="g3 mb20" id="hitter-metrics"></div>
+    </div>
+  </div>
+
+  <!-- TAB: MENTALITY -->
+  <div class="tab-panel" id="ptab-mentality">
+    <div class="g21 mb20">
+      <div class="card card-body">
+        <div class="card-label">🔥 Check-In Streak — <span id="mentality-streak-val" style="color:var(--gold)">4 Weeks</span></div>
+        <div style="font-size:13px;color:var(--steel);margin-bottom:16px">Keep your streak alive — check in before Sunday each week to maintain momentum.</div>
+        <button class="ph-action-btn primary" onclick="openCheckin()" style="margin-bottom:20px">+ New Check-In</button>
+        <div class="card-label" style="margin-top:8px">Mentality Trends</div>
+        <div id="mentality-metrics" class="g2"></div>
+      </div>
+      <div class="card card-body">
+        <div class="card-label">LS4 Trend</div>
+        <div style="height:180px"><canvas id="mentalityTrendChart"></canvas></div>
+      </div>
+    </div>
+    <div class="card card-body mb20">
+      <div class="card-label">Historical Heatmap — 8 Weeks</div>
+      <div class="overflow-x:auto"><table class="hm-table" id="mentality-heatmap"></table></div>
+    </div>
+  </div>
+
+  <!-- TAB: DEV PLAN -->
+  <div class="tab-panel" id="ptab-devplan">
+    <div class="g2 mb20">
+      <div>
+        <div class="card-label mb12">Active Goals</div>
+        <div id="devplan-goals"></div>
+      </div>
+      <div class="card card-body" style="align-self:flex-start">
+        <div class="card-label">Goal Progress Summary</div>
+        <div style="height:180px"><canvas id="devPlanChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: RESOURCES -->
+  <div class="tab-panel" id="ptab-resources">
+    <div class="resource-grid mb20" id="resource-grid"></div>
+    <div class="card card-body" style="margin-top:28px">
+      <div class="card-label" style="font-size:12px;margin-bottom:4px">⬆️ Upgrade / Unlock More</div>
+      <div class="pricing-grid" id="pricing-grid"></div>
+    </div>
+  </div>
+
+  <!-- TAB: PLAYER CARD -->
+  <div class="tab-panel" id="ptab-playercard">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px">
+      <button class="ph-action-btn primary" onclick="printPlayerCard()">📄 Save PDF</button>
+      <button class="ph-action-btn" onclick="emailPlayerCard()">✉️ Email</button>
+      <button class="ph-action-btn" onclick="copyPlayerCard(this)">📋 Copy Text</button>
+    </div>
+    <div id="player-card-preview"></div>
+  </div>
+
+</div>
+</div><!-- /playerDash -->
+
+<!-- ═══════════════════════════════════════
+     COACH DASHBOARD
+═══════════════════════════════════════ -->
+<div id="coachDash" class="dashboard hidden">
+<div class="dash-wrap">
+  <div class="team-header">
+    <div class="th-top">
+      <div>
+        <div class="th-team-name">Westlake Warriors</div>
+        <div style="font-size:12px;color:var(--steel);margin-top:4px">Coach: Dave Rivera · 2026 Season · 18-7 Record</div>
+      </div>
+      <div class="th-stats">
+        <div class="th-stat"><div class="th-stat-val">89.1</div><div class="th-stat-lbl">Avg Exit Velo</div></div>
+        <div class="th-stat"><div class="th-stat-val">83.4</div><div class="th-stat-lbl">Avg Arm Velo</div></div>
+        <div class="th-stat"><div class="th-stat-val">3.4</div><div class="th-stat-lbl">Team GPA</div></div>
+        <div class="th-stat"><div class="th-stat-val" style="color:var(--green)">84%</div><div class="th-stat-lbl">Check-In Rate</div></div>
+        <div class="th-stat"><div class="th-stat-val" style="color:var(--gold)">2</div><div class="th-stat-lbl">At-Risk</div></div>
+      </div>
+      <div class="eng-score">
+        <div class="eng-score-lbl">Engagement Score</div>
+        <div class="eng-score-num">78</div>
+        <div style="font-family:var(--font-m);font-size:9px;color:rgba(96,165,250,.5);margin-top:2px">▲ +4 vs last month</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-nav" id="coachTabNav">
+    <button class="tab-btn active" data-ctab="team">Team Overview</button>
+    <button class="tab-btn" data-ctab="roster">Roster</button>
+    <button class="tab-btn" data-ctab="mentality-c">Mentality</button>
+    <button class="tab-btn" data-ctab="devplans-c">Dev Plans</button>
+    <button class="tab-btn" data-ctab="gamification-c">Gamification</button>
+    <button class="tab-btn" data-ctab="resources-c">Resources</button>
+  </div>
+
+  <!-- COACH TAB: TEAM OVERVIEW -->
+  <div class="tab-panel active" id="ctab-team">
+    <div class="g2 mb20">
+      <div class="insight-card strengths">
+        <div class="insight-title" style="color:var(--green)">✅ Team Strengths</div>
+        <div class="insight-item"><span class="insight-num">01</span><span>Arm strength trending up across 4 pitchers — avg arm velo +2.1 mph this cycle</span></div>
+        <div class="insight-item"><span class="insight-num">02</span><span>Exit velocity improving — 6 of 10 hitters above 90 mph avg EV</span></div>
+        <div class="insight-item"><span class="insight-num">03</span><span>Check-in engagement at 84% — highest of the season</span></div>
+      </div>
+      <div class="insight-card improve">
+        <div class="insight-title" style="color:var(--gold)">📈 Team Areas to Improve</div>
+        <div class="insight-item"><span class="insight-num">01</span><span>3 players with mentality scores below 3.0 — review coachability focus</span></div>
+        <div class="insight-item"><span class="insight-num">02</span><span>Zone% team avg at 58% — target 64% by end of month</span></div>
+        <div class="insight-item"><span class="insight-num">03</span><span>Speed plateau: 4 players with no 60-yard improvement in 2+ cycles</span></div>
+      </div>
+    </div>
+    <div class="g3 mb20">
+      <div class="card card-body">
+        <div class="card-label">Exit Velocity Distribution</div>
+        <div style="height:200px"><canvas id="coachEVChart"></canvas></div>
+      </div>
+      <div class="card card-body">
+        <div class="card-label">Mentality Trend — Team Avg</div>
+        <div style="height:200px"><canvas id="coachMentalChart"></canvas></div>
+      </div>
+      <div class="card card-body">
+        <div class="card-label">Check-In Completion Rate</div>
+        <div style="height:200px"><canvas id="coachCheckinChart"></canvas></div>
+      </div>
+    </div>
+    <div class="card card-body mb20">
+      <div class="card-label">Culture Summary — Week of June 30</div>
+      <div style="font-size:13px;line-height:1.8;color:var(--silver)">
+        <strong style="color:var(--white)">Engagement:</strong> Team check-in rate at 84%, up from 76% last week. 3 players on a 7+ week streak.<br>
+        <strong style="color:var(--white)">Mentality Trends:</strong> Average confidence score 4.1 (+0.3), average stress down to 2.4 (improvement). Focus and morale trending positive across the board.<br>
+        <strong style="color:var(--white)">Development:</strong> 14 of 18 active dev plan goals on track. 2 high-priority goals at risk — Changeup Command and Coachability.<br>
+        <strong style="color:var(--red)">Red Flags:</strong> Player J. Sanchez mentality score dropped to 2.1 — recommend 1-on-1 check-in. Player T. Kim missed 2 consecutive check-ins.
+      </div>
+    </div>
+  </div>
+
+  <!-- COACH TAB: ROSTER -->
+  <div class="tab-panel" id="ctab-roster">
+    <div class="card mb20" style="overflow:hidden">
+      <div class="card-body" style="padding-bottom:8px;display:flex;align-items:center;gap:12px">
+        <div class="card-label" style="margin-bottom:0">Roster — 10 Players</div>
+        <select style="background:var(--dark3);border:1px solid rgba(255,255,255,.1);color:var(--steel);font-family:var(--font-m);font-size:9px;padding:4px 8px;border-radius:4px;outline:none" onchange="filterRoster(this.value)">
+          <option value="">All Positions</option>
+          <option value="P">Pitcher</option>
+          <option value="C">Catcher</option>
+          <option value="IF">Infield</option>
+          <option value="OF">Outfield</option>
+        </select>
+      </div>
+      <div class="roster-table-wrap">
+        <table class="roster-table" id="rosterTable">
+          <thead><tr>
+            <th onclick="sortRoster('name')">Player</th>
+            <th onclick="sortRoster('pos')">Pos</th>
+            <th onclick="sortRoster('exitVelo')">Exit Velo</th>
+            <th onclick="sortRoster('armVelo')">Arm Velo</th>
+            <th onclick="sortRoster('mentality')">Mentality</th>
+            <th onclick="sortRoster('streak')">Streak</th>
+            <th onclick="sortRoster('level')">XP Level</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr></thead>
+          <tbody id="rosterBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- COACH TAB: MENTALITY -->
+  <div class="tab-panel" id="ctab-mentality-c">
+    <div class="card card-body mb20">
+      <div class="card-label">Team Mentality Heatmap — 8 Weeks</div>
+      <table class="hm-table" id="team-heatmap"></table>
+    </div>
+    <div class="g2">
+      <div class="card card-body">
+        <div class="card-label">Dimension Averages</div>
+        <div class="metric-row"><div class="metric-row-name">Confidence</div><div class="metric-row-bar"><div class="metric-row-bar-fill" style="width:82%"></div></div><div class="metric-row-val">4.1</div></div>
+        <div class="metric-row"><div class="metric-row-name">Stress (inv)</div><div class="metric-row-bar"><div class="metric-row-bar-fill" style="width:68%;background:var(--green)"></div></div><div class="metric-row-val">2.4</div></div>
+        <div class="metric-row"><div class="metric-row-name">Mindset</div><div class="metric-row-bar"><div class="metric-row-bar-fill" style="width:86%"></div></div><div class="metric-row-val">4.3</div></div>
+        <div class="metric-row"><div class="metric-row-name">Morale</div><div class="metric-row-bar"><div class="metric-row-bar-fill" style="width:78%"></div></div><div class="metric-row-val">3.9</div></div>
+        <div class="metric-row"><div class="metric-row-name">Wellness</div><div class="metric-row-bar"><div class="metric-row-bar-fill" style="width:74%"></div></div><div class="metric-row-val">3.7</div></div>
+      </div>
+      <div class="card card-body">
+        <div class="card-label">At-Risk Players (Score &lt; 3.0)</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+          <div style="padding:10px 12px;background:rgba(248,113,113,.05);border:1px solid rgba(248,113,113,.15);border-radius:6px;font-size:12px"><strong>J. Sanchez</strong> — Avg 2.1 · Confidence 1 · Morale 2 <span style="color:var(--red);font-family:var(--font-m);font-size:9px;margin-left:8px">HIGH RISK</span></div>
+          <div style="padding:10px 12px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.15);border-radius:6px;font-size:12px"><strong>T. Kim</strong> — Missed 2 check-ins · Streak broken <span style="color:var(--gold);font-family:var(--font-m);font-size:9px;margin-left:8px">MONITOR</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COACH TAB: DEV PLANS -->
+  <div class="tab-panel" id="ctab-devplans-c">
+    <div class="card mb20" style="overflow:hidden">
+      <table class="admin-table">
+        <thead><tr><th>Player</th><th>Goal</th><th>Progress</th><th>Deadline</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Marcus Rivera</td><td>FB Velocity 90+ mph</td><td><div style="display:flex;align-items:center;gap:8px"><div class="goal-progress-track" style="width:100px"><div class="goal-progress-fill fill-on" style="width:72%"></div></div><span style="font-family:var(--font-m);font-size:10px;color:var(--gold)">72%</span></div></td><td style="font-family:var(--font-m);font-size:10px;color:var(--steel)">Aug 1</td><td><span class="status-pill pill-on">On Track</span></td></tr>
+          <tr><td>Marcus Rivera</td><td>Changeup Command 60%</td><td><div style="display:flex;align-items:center;gap:8px"><div class="goal-progress-track" style="width:100px"><div class="goal-progress-fill fill-risk" style="width:45%"></div></div><span style="font-family:var(--font-m);font-size:10px;color:var(--gold)">45%</span></div></td><td style="font-family:var(--font-m);font-size:10px;color:var(--steel)">Jul 15</td><td><span class="status-pill pill-risk">At Risk</span></td></tr>
+          <tr><td>J. Sanchez</td><td>Exit Velocity 95+ mph</td><td><div style="display:flex;align-items:center;gap:8px"><div class="goal-progress-track" style="width:100px"><div class="goal-progress-fill fill-on" style="width:88%"></div></div><span style="font-family:var(--font-m);font-size:10px;color:var(--gold)">88%</span></div></td><td style="font-family:var(--font-m);font-size:10px;color:var(--steel)">Jul 1</td><td><span class="status-pill pill-on">On Track</span></td></tr>
+          <tr><td>T. Kim</td><td>60-Yard Dash 6.6s</td><td><div style="display:flex;align-items:center;gap:8px"><div class="goal-progress-track" style="width:100px"><div class="goal-progress-fill fill-over" style="width:20%"></div></div><span style="font-family:var(--font-m);font-size:10px;color:var(--red)">20%</span></div></td><td style="font-family:var(--font-m);font-size:10px;color:var(--steel)">Jun 30</td><td><span class="status-pill pill-over">Overdue</span></td></tr>
+          <tr><td>D. Parker</td><td>Arm Velocity 88+ mph</td><td><div style="display:flex;align-items:center;gap:8px"><div class="goal-progress-track" style="width:100px"><div class="goal-progress-fill fill-on" style="width:90%"></div></div><span style="font-family:var(--font-m);font-size:10px;color:var(--gold)">90%</span></div></td><td style="font-family:var(--font-m);font-size:10px;color:var(--steel)">Aug 15</td><td><span class="status-pill pill-on">On Track</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- COACH TAB: GAMIFICATION -->
+  <div class="tab-panel" id="ctab-gamification-c">
+    <div class="g2 mb20">
+      <div class="card card-body">
+        <div class="card-label">🏆 Roster Leaderboard</div>
+        <div style="margin-bottom:10px;display:flex;gap:6px;flex-wrap:wrap" id="lb-toggle">
+          <button class="challenge-btn active" onclick="setLeaderboard('exitVelo',this)">Exit Velo</button>
+          <button class="challenge-btn" onclick="setLeaderboard('streak',this)">Streak</button>
+          <button class="challenge-btn" onclick="setLeaderboard('xp',this)">XP</button>
+          <button class="challenge-btn" onclick="setLeaderboard('mentality',this)">Mentality</button>
+        </div>
+        <table class="lb-table" id="leaderboard-table"></table>
+      </div>
+      <div class="card card-body">
+        <div class="card-label">🎯 Team Challenge</div>
+        <div style="margin-bottom:14px">
+          <div style="font-size:13px;font-weight:600;margin-bottom:6px">All players complete check-in this week</div>
+          <div style="font-size:11px;color:var(--steel);margin-bottom:10px">Deadline: Sunday June 30</div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="goal-progress-track" style="flex:1"><div class="goal-progress-fill fill-on" style="width:70%"></div></div>
+            <span style="font-family:var(--font-m);font-size:11px;color:var(--gold)">7/10</span>
+          </div>
+        </div>
+        <div class="card-label" style="margin-top:16px">⭐ Player of the Week</div>
+        <div style="padding:12px;background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.15);border-radius:6px;display:flex;align-items:center;gap:12px">
+          <div class="ph-avatar" style="width:44px;height:44px;font-size:15px">MR</div>
+          <div><div style="font-weight:600">Marcus Rivera</div><div style="font-size:11px;color:var(--steel)">+3.2 mph FB velo · LS4 Focus 88</div></div>
+          <span style="margin-left:auto;font-size:20px">⭐</span>
+        </div>
+        <div class="card-label" style="margin-top:16px">Coach Badges</div>
+        <div class="badge-grid">
+          <div class="badge-item earned"><div class="badge-icon">📊</div><div class="badge-name">Data Coach</div></div>
+          <div class="badge-item earned"><div class="badge-icon">🔥</div><div class="badge-name">Culture Builder</div></div>
+          <div class="badge-item locked"><div class="badge-icon">🎯</div><div class="badge-name">Goal Setter</div></div>
+          <div class="badge-item locked"><div class="badge-icon">⭐</div><div class="badge-name">MVP Spotter</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COACH TAB: RESOURCES -->
+  <div class="tab-panel" id="ctab-resources-c">
+    <div class="card card-body mb16">
+      <div class="card-label">Assign Resources to Players</div>
+      <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+        <select class="modal-input" style="margin-bottom:0;width:auto;flex:1">
+          <option>Select Player...</option>
+          <option>Marcus Rivera</option><option>J. Sanchez</option><option>T. Kim</option><option>D. Parker</option>
+        </select>
+        <select class="modal-input" style="margin-bottom:0;width:auto;flex:1">
+          <option>Select Resource...</option>
+          <option>Fastball Mechanics: Adding 3-5 mph</option>
+          <option>Changeup Grip &amp; Release</option>
+          <option>Mental Routine Builder</option>
+        </select>
+        <button class="modal-btn primary" style="white-space:nowrap">Assign →</button>
+      </div>
+    </div>
+    <div class="resource-grid" id="coach-resource-grid"></div>
+  </div>
+
+</div>
+</div><!-- /coachDash -->
+
+<!-- ═══════════════════════════════════════
+     ADMIN DASHBOARD
+═══════════════════════════════════════ -->
+<div id="adminDash" class="dashboard hidden">
+<div class="dash-wrap">
+  <div class="admin-header">
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+      <div>
+        <div style="font-family:var(--font-d);font-size:22px;font-weight:900;letter-spacing:2px;text-transform:uppercase">Platform Admin</div>
+        <div style="font-size:12px;color:var(--steel);margin-top:4px">Lanista IQ v2.0 · <span style="color:var(--green)">●</span> All Systems Operational</div>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:12px;flex-wrap:wrap">
+        <div class="th-stat"><div class="th-stat-val" style="color:var(--green)">247</div><div class="th-stat-lbl">Active Users</div></div>
+        <div class="th-stat"><div class="th-stat-val">99.8%</div><div class="th-stat-lbl">API Uptime</div></div>
+        <div class="th-stat"><div class="th-stat-val" style="color:var(--gold)">14</div><div class="th-stat-lbl">Pending Upgrades</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-nav">
+    <button class="tab-btn active" data-atab="users">Users</button>
+    <button class="tab-btn" data-atab="health">Site Health</button>
+    <button class="tab-btn" data-atab="content">Content Hub</button>
+    <button class="tab-btn" data-atab="gAdmin">Gamification</button>
+  </div>
+
+  <!-- ADMIN TAB: USERS -->
+  <div class="tab-panel active" id="atab-users">
+    <div class="card mb16" style="padding:16px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <input type="text" placeholder="Search users..." class="modal-input" style="margin-bottom:0;max-width:240px" oninput="filterUsers(this.value)"/>
+      <select class="modal-input" style="margin-bottom:0;width:auto" onchange="filterUsersByPlan(this.value)">
+        <option value="">All Plans</option><option>Free</option><option>Pro</option><option>Elite</option>
+      </select>
+      <button class="modal-btn primary" onclick="openAddUser()" style="margin-left:auto">+ Add User</button>
+    </div>
+    <div class="card" style="overflow:hidden">
+      <table class="admin-table" id="usersTable">
+        <thead><tr><th>Name</th><th>Role</th><th>Plan</th><th>Last Active</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="usersBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ADMIN TAB: HEALTH -->
+  <div class="tab-panel" id="atab-health">
+    <div class="health-grid mb20">
+      <div class="health-card ok"><div class="health-val">99.8%</div><div class="health-lbl">API Uptime</div></div>
+      <div class="health-card ok"><div class="health-val">142ms</div><div class="health-lbl">Avg Response Time</div></div>
+      <div class="health-card ok"><div class="health-val">247</div><div class="health-lbl">Active Users (7d)</div></div>
+      <div class="health-card warn"><div class="health-val">4.2 GB</div><div class="health-lbl">Storage Used</div></div>
+      <div class="health-card ok"><div class="health-val">3</div><div class="health-lbl">Failed Logins (24h)</div></div>
+      <div class="health-card warn"><div class="health-val">14</div><div class="health-lbl">Pending Upgrades</div></div>
+    </div>
+    <div class="card card-body">
+      <div class="card-label">System Log Feed</div>
+      <div class="log-feed">
+        <div class="log-row"><span class="log-time log-level-info">14:32:01</span><span class="log-event">Player check-in submitted — user #1042 (Marcus Rivera)</span></div>
+        <div class="log-row"><span class="log-time log-level-info">14:28:44</span><span class="log-event">Resource downloaded — "Fastball Mechanics" — user #1042</span></div>
+        <div class="log-row"><span class="log-time log-level-warn">14:15:22</span><span class="log-event">Failed login attempt — IP 192.168.1.44 — 2 attempts</span></div>
+        <div class="log-row"><span class="log-time log-level-info">13:55:10</span><span class="log-event">New user registered — T. Kim — plan: Free</span></div>
+        <div class="log-row"><span class="log-time log-level-info">13:40:02</span><span class="log-event">Badge unlocked — "Hot Streak" — user #1042</span></div>
+        <div class="log-row"><span class="log-time log-level-error">12:18:33</span><span class="log-event">API timeout — /player/1088/metrics — retried successfully</span></div>
+        <div class="log-row"><span class="log-time log-level-info">11:52:14</span><span class="log-event">Plan upgrade — user #1033 — Free → Pro</span></div>
+        <div class="log-row"><span class="log-time log-level-info">10:04:58</span><span class="log-event">Dev plan goal completed — user #1042 — "Arm Accuracy 90+"</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN TAB: CONTENT HUB -->
+  <div class="tab-panel" id="atab-content">
+    <div class="card card-body mb16" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <div class="card-label" style="margin-bottom:0">Content Library — 8 Resources</div>
+      <button class="modal-btn primary" style="margin-left:auto" onclick="openUploadResource()">+ Upload Resource</button>
+    </div>
+    <div class="card" style="overflow:hidden">
+      <table class="admin-table">
+        <thead><tr><th>Title</th><th>Type</th><th>Tier</th><th>Tags</th><th>Views</th><th>Downloads</th><th>Actions</th></tr></thead>
+        <tbody id="contentBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ADMIN TAB: GAMIFICATION ADMIN -->
+  <div class="tab-panel" id="atab-gAdmin">
+    <div class="g2 mb20">
+      <div class="card card-body">
+        <div class="card-label">Badge Management</div>
+        <div id="admin-badge-list" style="display:flex;flex-direction:column;gap:8px"></div>
+        <button class="modal-btn primary" style="margin-top:14px;width:100%" onclick="openCreateBadge()">+ Create Badge</button>
+      </div>
+      <div class="card card-body">
+        <div class="card-label">Platform Challenges</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px">
+          <div style="padding:10px 12px;background:var(--dark4);border:1px solid var(--card-border);border-radius:6px;font-size:12px">
+            <div style="font-weight:600;margin-bottom:4px">2x XP Week — July 4–11</div>
+            <div style="color:var(--steel);font-size:11px">All XP earning actions doubled · 247 eligible users</div>
+            <div style="font-family:var(--font-m);font-size:9px;color:var(--gold);margin-top:4px">ACTIVE</div>
+          </div>
+          <div style="padding:10px 12px;background:var(--dark4);border:1px solid var(--card-border);border-radius:6px;font-size:12px">
+            <div style="font-weight:600;margin-bottom:4px">Season Finale Badge Event</div>
+            <div style="color:var(--steel);font-size:11px">Earn "Season Champion" badge for top 10% EV · Aug 30</div>
+            <div style="font-family:var(--font-m);font-size:9px;color:var(--steel);margin-top:4px">SCHEDULED</div>
+          </div>
+        </div>
+        <button class="modal-btn primary" style="width:100%" onclick="openCreateChallenge()">+ Create Challenge Event</button>
+        <div class="card-label" style="margin-top:20px">XP Multiplier Controls</div>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:8px">
+          <span style="font-family:var(--font-m);font-size:12px;color:var(--steel)">Current multiplier:</span>
+          <select class="modal-input" style="margin-bottom:0;width:auto">
+            <option>1x (Standard)</option><option selected>2x (Active Event)</option><option>3x (Special)</option>
+          </select>
+          <button class="modal-btn primary">Apply</button>
+        </div>
+      </div>
+    </div>
+    <div class="card card-body">
+      <div class="card-label">Badge Earn Stats — Platform Wide</div>
+      <div style="height:200px"><canvas id="adminBadgeChart"></canvas></div>
+    </div>
+  </div>
+
+</div>
+</div><!-- /adminDash -->
+
+<!-- ═══════════════════════════════════════
+     MODALS
+═══════════════════════════════════════ -->
+
+<!-- LIKERT CHECK-IN MODAL -->
+<div class="modal-overlay hidden" id="checkinModal" onclick="closeModalOutside(event,'checkinModal')">
+  <div class="modal" style="max-width:600px">
+    <button class="modal-close" onclick="closeModal('checkinModal')">✕</button>
+    <div id="checkin-form-screen">
+      <div class="modal-title">Daily Check-In</div>
+      <div class="modal-sub">Rate each dimension honestly — this data stays between you and your coach.</div>
+      <div class="likert-counter">Questions answered: <span id="likert-count">0</span>/5</div>
+      <div id="likert-questions"></div>
+      <button class="modal-btn primary" id="checkin-submit-btn" onclick="submitCheckin()" disabled style="width:100%;margin-top:8px">Submit Check-In</button>
+    </div>
+    <div class="hidden" id="checkin-success-screen">
+      <div class="success-screen">
+        <div class="success-icon">🎯</div>
+        <div class="success-title">Check-In Complete!</div>
+        <div class="success-sub">Your mental performance data has been logged and your streak updated.</div>
+        <div class="xp-toast-inline">⚡ +10 XP Earned</div>
+        <div id="checkin-streak-msg" style="margin-top:12px;font-family:var(--font-m);font-size:11px;color:var(--green)"></div>
+        <button class="modal-btn primary" onclick="closeModal('checkinModal')" style="margin-top:20px;width:100%">Done</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RESOURCE MODAL -->
+<div class="modal-overlay hidden" id="resourceModal" onclick="closeModalOutside(event,'resourceModal')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('resourceModal')">✕</button>
+    <div id="resource-modal-content"></div>
+  </div>
+</div>
+
+<!-- ADD USER MODAL -->
+<div class="modal-overlay hidden" id="addUserModal" onclick="closeModalOutside(event,'addUserModal')">
+  <div class="modal" style="max-width:420px">
+    <button class="modal-close" onclick="closeModal('addUserModal')">✕</button>
+    <div class="modal-title">Add User</div>
+    <div class="modal-sub">New user will receive an invite email.</div>
+    <label style="font-family:var(--font-m);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--steel);display:block;margin-bottom:6px">Full Name</label>
+    <input class="modal-input" placeholder="First Last"/>
+    <label style="font-family:var(--font-m);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--steel);display:block;margin-bottom:6px">Email</label>
+    <input class="modal-input" placeholder="player@school.edu" type="email"/>
+    <label style="font-family:var(--font-m);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--steel);display:block;margin-bottom:6px">Role</label>
+    <select class="modal-input"><option>Player</option><option>Coach</option><option>Admin</option></select>
+    <label style="font-family:var(--font-m);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--steel);display:block;margin-bottom:6px">Plan</label>
+    <select class="modal-input"><option>Free</option><option>Pro</option><option>Elite</option></select>
+    <div style="display:flex;gap:10px"><button class="modal-btn primary" style="flex:1">Send Invite →</button><button class="modal-btn secondary" onclick="closeModal('addUserModal')">Cancel</button></div>
+  </div>
+</div>
+
+<!-- INFO TOOLTIP -->
+<div id="infoTooltip" class="hidden">
+  <div class="tt-title" id="tt-title"></div>
+  <div class="tt-desc" id="tt-desc"></div>
+  <div class="tt-scale" id="tt-scale"></div>
+  <div class="tt-source" id="tt-source"></div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ══════════════════════════════════════════
+// DATA & STATE
+// ══════════════════════════════════════════
+
+var BADGES_DEF = [
+  {id:'hot_streak',name:'Hot Streak',icon:'🔥',desc:'7 consecutive check-ins',xp:50},
+  {id:'power_surge',name:'Power Surge',icon:'💪',desc:'Exit velo improved 3+ mph',xp:30},
+  {id:'zone_cmd',name:'Zone Commander',icon:'🎯',desc:'Zone% reaches 65%+',xp:40},
+  {id:'mental_edge',name:'Mental Edge',icon:'🧠',desc:'Avg mentality 4.5+ for 4 weeks',xp:40},
+  {id:'rising',name:'Rising Prospect',icon:'📈',desc:'3 metrics trending up simultaneously',xp:35},
+  {id:'goal_crusher',name:'Goal Crusher',icon:'🏆',desc:'Complete 3 dev plan goals in one month',xp:60},
+  {id:'scholar',name:'Resource Scholar',icon:'📚',desc:'Download 10 resources',xp:25},
+  {id:'allstar',name:'All-Star Week',icon:'⭐',desc:'All 6 athletic metrics at personal best',xp:100}
+];
+
+var INFO_DEFS = {
+  thirtyYard:{title:'30-Yard Dash',desc:'Measures overall speed and acceleration, approximating the distance from home to second base. Lower time is better.',scale:[['Elite','< 6.4s','elite'],['Average','6.7 – 7.0s','avg'],['Below','> 7.0s','below']],source:'Dashr / Stopwatch'},
+  exitVelo:{title:'Exit Velocity',desc:'Maximum ball speed off the bat at the point of contact, measured via Trackman or similar radar. Higher is better.',scale:[['Elite','100+ mph','elite'],['Average','88 – 94 mph','avg'],['Below','< 82 mph','below']],source:'Trackman / HitTrax'},
+  armVelo:{title:'Arm Velocity',desc:'Peak throw speed measured via radar. Key indicator of arm strength and recruitment interest for corner positions.',scale:[['Elite','90+ mph','elite'],['Average','78 – 84 mph','avg'],['Below','< 74 mph','below']],source:'Stalker / Radar Gun'},
+  vertJump:{title:'Vertical Jump',desc:'Lower-body explosive power measured from standing position. Correlates with sprint speed and first-step quickness.',scale:[['Elite','32"+','elite'],['Average','24 – 27"','avg'],['Below','< 22"','below']],source:'Vertec / Force Plate'},
+  broadJump:{title:'Broad Jump',desc:'Linear power output measured horizontally. Strong predictor of sprint mechanics and overall athleticism.',scale:[['Elite',"9'6\"+","elite"],['Average',"8' – 8'6\"","avg"],['Below',"< 7'10\"","below"]],source:'Tape Measure'},
+  grip:{title:'Grip Strength',desc:'Upper-body relative strength measured via reps or dynamometer. Indicator of bat speed potential and arm endurance.',scale:[['Elite','20+ reps','elite'],['Average','10 – 14 reps','avg'],['Below','< 8 reps','below']],source:'Dynamometer / Reps'},
+  fbVelo:{title:'Fastball Velocity',desc:'Average 4-seam fastball velocity across a session. Primary recruiting metric for pitchers at every level.',scale:[['Elite','95+ mph (HS: 88+)','elite'],['Average','85 – 89 mph','avg'],['Below','< 80 mph','below']],source:'Trackman / Rapsodo'},
+  spinRate:{title:'Spin Rate (FB)',desc:'Revolutions per minute on the fastball. Higher spin typically produces more rise and swing-and-miss potential.',scale:[['Elite','2,400+ rpm','elite'],['Average','2,000 – 2,200 rpm','avg'],['Below','< 1,800 rpm','below']],source:'Rapsodo / Trackman'},
+  command:{title:'Command (Zone%)',desc:'Percentage of pitches landing in the strike zone. Elite command separates good from great pitchers at any level.',scale:[['Elite','68%+','elite'],['Average','55 – 62%','avg'],['Below','< 50%','below']],source:'Trackman / Video'},
+  whiffRate:{title:'Whiff Rate',desc:'Percentage of swings that result in a miss. High whiff rate indicates elite pitch movement or deception.',scale:[['Elite','35%+','elite'],['Average','20 – 27%','avg'],['Below','< 15%','below']],source:'Trackman / Rapsodo'},
+  kbb:{title:'K/BB Ratio',desc:'Strikeouts per walk issued. Best single-stat indicator of overall pitching effectiveness and control.',scale:[['Elite','4.0+','elite'],['Average','2.0 – 3.0','avg'],['Below','< 1.5','below']],source:'Scorebook / Trackman'},
+  babip:{title:'BABIP Against',desc:'Batting Average on Balls In Play against you. Luck-adjusted measure of how often batted balls fall for hits.',scale:[['Elite','< .270','elite'],['Average','.290 – .310','avg'],['Below','> .330','below']],source:'Trackman / Scorebook'},
+  batSpeed:{title:'Bat Speed',desc:'Barrel speed through the hitting zone at contact. Directly correlates with exit velocity potential and power.',scale:[['Elite','75+ mph','elite'],['Average','63 – 69 mph','avg'],['Below','< 58 mph','below']],source:'Diamond Kinetics / Blast'},
+  launchAngle:{title:'Launch Angle',desc:'Average vertical angle of ball exit. Optimal range produces line drives and hard-hit fly balls rather than grounders.',scale:[['Optimal','10 – 20°','elite'],['Line Drive zone','8 – 25°','avg'],['Avoid','< 5° or > 35°','below']],source:'Trackman / HitTrax'},
+  contactRate:{title:'Contact Rate',desc:'Percentage of swings making contact with the ball. Elite contact rate with high EV is the ideal combination.',scale:[['Elite','85%+','elite'],['Average','72 – 78%','avg'],['Below','< 65%','below']],source:'Trackman / Video'},
+  hardHit:{title:'Hard Hit %',desc:'Percentage of batted balls with exit velocity 95+ mph. Best single-stat predictor of offensive production.',scale:[['Elite','45%+','elite'],['Average','28 – 37%','avg'],['Below','< 22%','below']],source:'Trackman / Statcast'},
+  chaseRate:{title:'Chase Rate',desc:'Percentage of swings at pitches outside the strike zone. Lower is better — elite hitters rarely chase.',scale:[['Elite','< 25%','elite'],['Average','28 – 33%','avg'],['Below','> 36%','below']],source:'Trackman / Video'},
+  xba:{title:'Expected Batting Average',desc:'Batting average predicted by exit velocity and launch angle, removing fielder luck from the equation.',scale:[['Elite','.320+','elite'],['Average','.250 – .280','avg'],['Below','< .220','below']],source:'Trackman / Statcast'},
+  confidence:{title:'Confidence',desc:'Self-belief in your ability to perform. Strong confidence correlates with better decision-making and pressure performance.',scale:[['Elite','5 – Very High','elite'],['Average','3 – Moderate','avg'],['Low','1 – Very Low','below']],source:'Lanista LS4 Check-In'},
+  stress:{title:'Stress',desc:'Perceived pressure from baseball and school combined. Lower stress scores are better — high stress impairs performance.',scale:[['Low (Good)','1 – None','elite'],['Moderate','3 – Manageable','avg'],['High','5 – Extreme (bad)','below']],source:'Lanista LS4 Check-In'},
+  mindset:{title:'Mindset',desc:'Growth vs. fixed orientation. A growth mindset athlete sees challenges as opportunities rather than threats.',scale:[['Elite','5 – Strong Growth','elite'],['Average','3 – Mixed','avg'],['Fixed','1 – Fixed Mindset','below']],source:'Lanista LS4 Check-In'},
+  morale:{title:'Morale',desc:'Team connection and motivation level. High morale players show up harder, communicate better, and execute under pressure.',scale:[['Elite','5 – Energized','elite'],['Average','3 – Neutral','avg'],['Low','1 – Disengaged','below']],source:'Lanista LS4 Check-In'},
+  wellness:{title:'Wellness',desc:'Physical and mental recovery state. Low wellness predicts injury risk and reduced performance output.',scale:[['Elite','5 – Excellent','elite'],['Average','3 – Moderate','avg'],['Poor','1 – Poor Recovery','below']],source:'Lanista LS4 Check-In'}
+};
+
+var RESOURCES = [
+  {id:'r1',title:'Fastball Mechanics: Adding 3–5 mph',type:'video',tier:'free',tags:['VELOCITY'],source:'Driveline Baseball',duration:'18 min',views:142,downloads:0,url:'https://youtube.com'},
+  {id:'r2',title:'Changeup Grip & Release Mastery',type:'video',tier:'pro',tags:['COMMAND'],source:'Lanista Academy',duration:'12 min',views:88,downloads:0,url:'https://youtube.com'},
+  {id:'r3',title:'Weighted Ball Protocol — 8-Week Program',type:'pdf',tier:'pro',tags:['STRENGTH'],source:'Lanista Tools',size:'2.4 MB',views:64,downloads:31},
+  {id:'r4',title:'60-Yard Dash Training: Acceleration Phase',type:'video',tier:'free',tags:['SPEED'],source:'Dashr Academy',duration:'22 min',views:201,downloads:0,url:'https://youtube.com'},
+  {id:'r5',title:'Coachability: The Mental Skill Coaches Recruit First',type:'pdf',tier:'free',tags:['MENTAL'],source:'Lanista Research',size:'1.1 MB',views:176,downloads:89},
+  {id:'r6',title:'Pre-Game Mental Routine Builder',type:'pdf',tier:'elite',tags:['MENTAL'],source:'LS4 Tools',size:'0.8 MB',views:55,downloads:22},
+  {id:'r7',title:'Bat Speed Development: Diamond Kinetics Protocol',type:'video',tier:'pro',tags:['HITTING'],source:'Diamond Kinetics',duration:'15 min',views:112,downloads:0,url:'https://youtube.com'},
+  {id:'r8',title:'2026 D1 Baseball Recruiting Calendar',type:'pdf',tier:'free',tags:['RECRUITING'],source:'Lanista Recruiting',size:'0.5 MB',views:334,downloads:198}
+];
+
+var ROSTER = [
+  {name:'Marcus Rivera',pos:'3B/SS',exitVelo:94.2,armVelo:84.5,mentality:4.1,streak:4,xp:245,level:'Prospect',status:'green'},
+  {name:'J. Sanchez',pos:'1B/OF',exitVelo:96.8,armVelo:78.2,mentality:2.1,streak:1,xp:180,level:'Prospect',status:'red'},
+  {name:'T. Kim',pos:'CF',exitVelo:88.4,armVelo:82.0,mentality:3.4,streak:0,xp:90,level:'Rookie',status:'yellow'},
+  {name:'D. Parker',pos:'RHP',exitVelo:82.1,armVelo:87.6,mentality:4.4,streak:8,xp:410,level:'Rising Star',status:'green'},
+  {name:'K. Johnson',pos:'C',exitVelo:90.2,armVelo:83.4,mentality:3.8,streak:5,xp:320,level:'Rising Star',status:'green'},
+  {name:'A. Torres',pos:'LHP',exitVelo:79.8,armVelo:85.2,mentality:4.2,streak:6,xp:275,level:'Prospect',status:'green'},
+  {name:'M. Williams',pos:'2B',exitVelo:87.6,armVelo:76.8,mentality:3.6,streak:3,xp:155,level:'Prospect',status:'green'},
+  {name:'B. Chen',pos:'RHP',exitVelo:80.4,armVelo:88.9,mentality:4.5,streak:11,xp:620,level:'Elite',status:'green'},
+  {name:'L. Garcia',pos:'SS',exitVelo:91.5,armVelo:80.2,mentality:3.9,streak:2,xp:198,level:'Prospect',status:'green'},
+  {name:'R. Patel',pos:'3B/RHP',exitVelo:85.3,armVelo:83.8,mentality:4.0,streak:7,xp:340,level:'Rising Star',status:'green'}
+];
+
+var ADMIN_USERS = [
+  {name:'Marcus Rivera',role:'Player',plan:'Pro',lastActive:'Today',status:'Active'},
+  {name:'Dave Rivera',role:'Coach',plan:'Elite',lastActive:'Today',status:'Active'},
+  {name:'J. Sanchez',role:'Player',plan:'Free',lastActive:'3 days ago',status:'Active'},
+  {name:'T. Kim',role:'Player',plan:'Free',lastActive:'1 week ago',status:'Inactive'},
+  {name:'D. Parker',role:'Player',plan:'Pro',lastActive:'Today',status:'Active'},
+  {name:'K. Johnson',role:'Player',plan:'Pro',lastActive:'Yesterday',status:'Active'},
+  {name:'A. Torres',role:'Player',plan:'Free',lastActive:'2 days ago',status:'Active'},
+  {name:'Platform Admin',role:'Admin',plan:'Elite',lastActive:'Today',status:'Active'}
+];
+
+// Daily/Weekly challenges
+var DAILY = [
+  {id:'d1',text:'Log your mentality check-in today',icon:'🧠',xp:10,type:'checkin'},
+  {id:'d2',text:'Watch 1 resource video',icon:'▶️',xp:15,type:'resource'},
+  {id:'d3',text:'Review your dev plan goals',icon:'📋',xp:5,type:'devplan'}
+];
+var WEEKLY = [{id:'w1',text:'Complete all 5 check-in dimensions with an avg of 4.0+ this week',icon:'⭐',xp:50}];
+
+// Mentality check-in questions
+var CHECKIN_QS = [
+  {key:'confidence',text:'How confident do you feel in your ability to perform today?',low:'Very Low',high:'Very High',info:'confidence'},
+  {key:'stress',text:'How stressed are you feeling about baseball / school right now?',low:'None at all',high:'Extremely stressed',info:'stress'},
+  {key:'mindset',text:'How growth-focused is your mindset today?',low:'Fixed mindset',high:'Strong growth',info:'mindset'},
+  {key:'morale',text:'How connected and motivated do you feel about the team?',low:'Disengaged',high:'Energized',info:'morale'},
+  {key:'wellness',text:'How recovered and physically well do you feel?',low:'Poor recovery',high:'Excellent',info:'wellness'}
+];
+
+var MENTALITY_HISTORY = [
+  {week:'Wk 1',confidence:3,stress:4,mindset:3,morale:3,wellness:3},
+  {week:'Wk 2',confidence:3,stress:3,mindset:4,morale:4,wellness:4},
+  {week:'Wk 3',confidence:4,stress:3,mindset:4,morale:4,wellness:3},
+  {week:'Wk 4',confidence:4,stress:2,mindset:5,morale:4,wellness:4},
+  {week:'Wk 5',confidence:3,stress:3,mindset:4,morale:3,wellness:3},
+  {week:'Wk 6',confidence:4,stress:2,mindset:5,morale:5,wellness:4},
+  {week:'Wk 7',confidence:5,stress:2,mindset:5,morale:5,wellness:5},
+  {week:'Wk 8',confidence:4,stress:2,mindset:4,morale:4,wellness:4}
+];
+
+// ══════════════════════════════════════════
+// STATE MANAGEMENT (localStorage)
+// ══════════════════════════════════════════
+function getState() {
+  try {
+    var s = JSON.parse(localStorage.getItem('lanista_iq_state') || 'null');
+    if (!s) return defaultState();
+    return s;
+  } catch(e) { return defaultState(); }
+}
+function defaultState() {
+  return {
+    // Identity
+    name:'Marcus Rivera', position:'RHP / 3B·SS', gradYear:'2026', school:'Westlake HS',
+    // Gamification
+    xp:245, level:'Prospect', streakWeeks:4, checkinStreak:4, lastCheckin:null,
+    badges:['hot_streak','power_surge'],
+    dailyCompleted:{}, weeklyCompleted:{},
+    checkinAnswers:[],
+    mentalityHistory: MENTALITY_HISTORY,
+    // Overall
+    lanistaScore:91, ls4Score:87,
+    // Athletic metrics
+    exitVelo:94, armVelo:84, pitchVelo:94, sprintSpeed:29.5,
+    popTime:1.92, vertJump:28, broadJump:104, grip:16,
+    sprint30:6.58, agility:6.52, firstToThird:12.1, rsi:81,
+    // PR markers
+    prExitVelo:94, prArmVelo:84, prPitchVelo:94, prSprint:29.5, prVert:28,
+    // Hitting
+    batSpeed:72, launchAngle:18, hardHit:47,
+    // Mentality
+    mentalityScore:88, mindset:86, grit:89, resilience:88, confidence:91, eq:84, stress:32, morale:90,
+    focus:88, composure:85, coachability:87, effort:90, wellness:84,
+    // Dev plan
+    devPlan:[
+      {title:'FB Velocity to 95+ mph',target:'Aug 1, 2026',progress:72,status:'on-track'},
+      {title:'Changeup Command to 60%',target:'Jul 15, 2026',progress:45,status:'at-risk'},
+      {title:'60-Yard Dash under 6.5s',target:'Sep 1, 2026',progress:60,status:'on-track'},
+      {title:'LS4 Coachability to 90+',target:'Jul 15, 2026',progress:55,status:'on-track'},
+      {title:'Exit Velocity to 98+ mph',target:'Oct 1, 2026',progress:80,status:'on-track'},
+      {title:'Arm Accuracy to 90+',target:'Aug 15, 2026',progress:90,status:'on-track'}
+    ],
+    resources:{downloaded:{},viewed:{}}
+  };
+}
+function saveState(s) { localStorage.setItem('lanista_iq_state', JSON.stringify(s)); }
+
+var STATE = getState();
+
+// XP levels
+var LEVELS = [{name:'Rookie',min:0,max:99},{name:'Prospect',min:100,max:299},{name:'Rising Star',min:300,max:599},{name:'Elite',min:600,max:999},{name:'Legend',min:1000,max:9999}];
+function getLevel(xp) { return LEVELS.filter(function(l){return xp>=l.min})[LEVELS.filter(function(l){return xp>=l.min}).length-1]; }
+function levelClass(name) { return 'level-'+name.toLowerCase().replace(' ','-').replace('rising-star','rising'); }
+
+function awardXP(amt, reason) {
+  STATE.xp += amt;
+  var lvl = getLevel(STATE.xp);
+  var oldLvl = STATE.level;
+  STATE.level = lvl.name;
+  saveState(STATE);
+  showToast('⚡ +'+amt+' XP — '+reason, 'xp');
+  if (STATE.level !== oldLvl) { setTimeout(function(){ showToast('🎉 Level Up! You are now '+STATE.level, 'badge'); },600); }
+  updateXPBar();
+}
+
+function updateXPBar() {
+  var lvl = getLevel(STATE.xp);
+  var pct = ((STATE.xp - lvl.min) / (lvl.max - lvl.min)) * 100;
+  var bar = document.getElementById('ph-xp-bar');
+  var val = document.getElementById('ph-xp-val');
+  var nxt = document.getElementById('ph-level-next');
+  var badge = document.getElementById('ph-level-badge');
+  var streak = document.getElementById('ph-streak');
+  if (bar) bar.style.width = Math.min(pct,100) + '%';
+  if (val) val.textContent = STATE.xp + ' / ' + lvl.max;
+  if (nxt) { var next = LEVELS[LEVELS.indexOf(lvl)+1]; nxt.textContent = next ? (lvl.max-STATE.xp+1)+' XP to '+next.name : '⭐ MAX LEVEL'; }
+  if (badge) { badge.textContent = lvl.name; badge.className = 'level-badge ' + levelClass(lvl.name); }
+  if (streak) streak.textContent = STATE.streakWeeks;
+}
+
+// ══════════════════════════════════════════
+// ROLE SWITCHING
+// ══════════════════════════════════════════
+function switchRole(role) {
+  document.querySelectorAll('.dashboard').forEach(function(d){ d.classList.add('hidden'); });
+  document.querySelectorAll('.role-btn').forEach(function(b){ b.classList.remove('active'); });
+  var dash = document.getElementById(role+'Dash');
+  if (dash) dash.classList.remove('hidden');
+  var btn = document.querySelector('[onclick="switchRole(\''+role+'\')"]');
+  if (btn) btn.classList.add('active');
+  document.getElementById('topbarBadge').textContent = role.charAt(0).toUpperCase()+role.slice(1)+' View';
+  if (role==='coach') { renderRoster(); renderLeaderboard('exitVelo'); renderTeamHeatmap(); renderCoachResources(); }
+  if (role==='admin') { renderAdminUsers(); renderAdminBadges(); renderContentTable(); renderAdminBadgeChart(); }
+}
+
+// ══════════════════════════════════════════
+// PLAYER TAB SWITCHING
+// ══════════════════════════════════════════
+document.getElementById('playerTabNav').addEventListener('click', function(e) {
+  var btn = e.target.closest('[data-ptab]');
+  if (!btn) return;
+  switchPlayerTab(btn.dataset.ptab);
+});
+function switchPlayerTab(tab) {
+  document.querySelectorAll('#playerTabNav [data-ptab]').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('#playerDash .tab-panel').forEach(function(p){ p.classList.remove('active'); });
+  var btn = document.querySelector('#playerTabNav [data-ptab="'+tab+'"]');
+  var panel = document.getElementById('ptab-'+tab);
+  if (btn) btn.classList.add('active');
+  if (panel) panel.classList.add('active');
+  if (tab==='athletic') initAthleticChart();
+  if (tab==='mentality') { buildMentalityHeatmap(); initMentalityChart(); }
+  if (tab==='devplan') initDevPlanChart();
+  if (tab==='playercard') renderPlayerCardPreview();
+}
+
+// Coach tabs
+document.getElementById('coachTabNav').addEventListener('click', function(e) {
+  var btn = e.target.closest('[data-ctab]');
+  if (!btn) return;
+  document.querySelectorAll('#coachTabNav [data-ctab]').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('#coachDash .tab-panel').forEach(function(p){ p.classList.remove('active'); });
+  btn.classList.add('active');
+  var panel = document.getElementById('ctab-'+btn.dataset.ctab);
+  if (panel) panel.classList.add('active');
+});
+
+// Admin tabs
+document.querySelectorAll('.tab-nav button[data-atab]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('.tab-nav button[data-atab]').forEach(function(b){ b.classList.remove('active'); });
+    document.querySelectorAll('#adminDash .tab-panel').forEach(function(p){ p.classList.remove('active'); });
+    btn.classList.add('active');
+    var panel = document.getElementById('atab-'+btn.dataset.atab);
+    if (panel) panel.classList.add('active');
+  });
+});
+
+function switchSkillset(type, btn) {
+  document.querySelectorAll('.sub-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.sub-panel').forEach(function(p){ p.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById('sp-'+type).classList.add('active');
+}
+</script>
+
+<script>
+// ══════════════════════════════════════════
+// INFO TOOLTIP SYSTEM
+// ══════════════════════════════════════════
+var tooltip = document.getElementById('infoTooltip');
+document.addEventListener('click', function(e) {
+  var icon = e.target.closest('.info-icon');
+  if (icon) {
+    e.stopPropagation();
+    var key = icon.dataset.info;
+    var def = INFO_DEFS[key];
+    if (!def) return;
+    var html = '<strong>' + def.title + '</strong><p>' + def.desc + '</p>';
+    if (def.scale) html += '<div class="tooltip-scale">' + def.scale + '</div>';
+    if (def.source) html += '<div class="tooltip-source">Source: ' + def.source + '</div>';
+    tooltip.innerHTML = html;
+    tooltip.classList.add('active');
+    var rect = icon.getBoundingClientRect();
+    var ttW = 260;
+    var left = rect.left + window.scrollX - ttW/2 + rect.width/2;
+    var top = rect.bottom + window.scrollY + 6;
+    if (left < 8) left = 8;
+    if (left + ttW > window.innerWidth - 8) left = window.innerWidth - ttW - 8;
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+    return;
+  }
+  if (!tooltip.contains(e.target)) tooltip.classList.remove('active');
+});
+
+// ══════════════════════════════════════════
+// TOAST SYSTEM
+// ══════════════════════════════════════════
+function showToast(msg, type) {
+  var container = document.getElementById('toastContainer');
+  var t = document.createElement('div');
+  t.className = 'toast' + (type ? ' toast-' + type : '');
+  t.textContent = msg;
+  container.appendChild(t);
+  setTimeout(function(){ t.classList.add('show'); }, 10);
+  setTimeout(function(){
+    t.classList.remove('show');
+    setTimeout(function(){ t.remove(); }, 400);
+  }, 3500);
+}
+
+// ══════════════════════════════════════════
+// METRIC RENDERING — OVERVIEW
+// ══════════════════════════════════════════
+function pct(val, min, max) { return Math.round(Math.max(0, Math.min(100, (val - min) / (max - min) * 100))); }
+
+function scoreBar(val, min, max, infoKey) {
+  var p = pct(val, min, max);
+  var cls = p >= 75 ? 'elite' : p >= 50 ? 'avg' : 'low';
+  var info = infoKey ? '<span class="info-icon" data-info="' + infoKey + '">ⓘ</span>' : '';
+  return '<div class="score-bar-wrap">' + info +
+    '<div class="score-bar"><div class="score-fill ' + cls + '" style="width:' + p + '%"></div></div>' +
+    '<span class="score-val">' + val + '</span></div>';
+}
+
+function renderOverviewMetrics() {
+  var s = STATE;
+  // Key Strengths
+  var strengths = [];
+  if (s.exitVelo >= 85) strengths.push({ label: 'Exit Velocity', val: s.exitVelo + ' mph', icon: '💥' });
+  if (s.sprintSpeed >= 27) strengths.push({ label: 'Sprint Speed', val: s.sprintSpeed + ' ft/s', icon: '⚡' });
+  if (s.armVelo >= 80) strengths.push({ label: 'Arm Velocity', val: s.armVelo + ' mph', icon: '🎯' });
+  if (s.pitchVelo >= 75) strengths.push({ label: 'Pitch Velocity', val: s.pitchVelo + ' mph', icon: '🔥' });
+  if (s.mentalityScore >= 75) strengths.push({ label: 'Mentality Score', val: s.mentalityScore + '/100', icon: '🧠' });
+  if (strengths.length === 0) strengths.push({ label: 'Keep building — strengths unlock at key milestones!', val: '', icon: '🌟' });
+  var topThree = strengths.slice(0, 3);
+  var ksEl = document.getElementById('keyStrengthsList');
+  if (ksEl) {
+    ksEl.innerHTML = topThree.map(function(s) {
+      return '<div class="strength-item"><span class="strength-icon">' + s.icon + '</span>' +
+        '<div><div class="strength-label">' + s.label + '</div>' +
+        (s.val ? '<div class="strength-val">' + s.val + '</div>' : '') + '</div></div>';
+    }).join('');
+  }
+
+  // Overview metric cards
+  var el = document.getElementById('overviewMetrics');
+  if (!el) return;
+  var items = [
+    { label: 'Exit Velocity', val: s.exitVelo + ' mph', info: 'exitVelo', p: pct(s.exitVelo, 60, 110) },
+    { label: 'Arm Velocity', val: s.armVelo + ' mph', info: 'armVelo', p: pct(s.armVelo, 50, 100) },
+    { label: 'Sprint Speed', val: s.sprintSpeed + ' ft/s', info: 'sprintSpeed', p: pct(s.sprintSpeed, 20, 35) },
+    { label: 'Pitch Velocity', val: s.pitchVelo + ' mph', info: 'pitchVelo', p: pct(s.pitchVelo, 50, 95) },
+    { label: 'Mentality', val: s.mentalityScore + '/100', info: 'mentalityScore', p: pct(s.mentalityScore, 0, 100) },
+    { label: 'Pop Time', val: s.popTime + 's', info: 'popTime', p: pct(2.2 - s.popTime, 0, 0.7) }
+  ];
+  el.innerHTML = items.map(function(item) {
+    var cls = item.p >= 75 ? 'elite' : item.p >= 50 ? 'avg' : 'low';
+    return '<div class="metric-card">' +
+      '<div class="metric-header"><span class="metric-label">' + item.label + '</span>' +
+      '<span class="info-icon" data-info="' + item.info + '">ⓘ</span></div>' +
+      '<div class="metric-val">' + item.val + '</div>' +
+      '<div class="score-bar"><div class="score-fill ' + cls + '" style="width:' + item.p + '%"></div></div>' +
+      '</div>';
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// ATHLETIC TAB
+// ══════════════════════════════════════════
+function renderAthleticMetrics() {
+  var s = STATE;
+  var el = document.getElementById('athleticMetrics');
+  if (!el) return;
+  var rows = [
+    { label: 'Exit Velocity', val: s.exitVelo, unit: 'mph', min: 60, max: 110, info: 'exitVelo', nat: '87', pr: s.prExitVelo },
+    { label: 'Arm Velocity', val: s.armVelo, unit: 'mph', min: 50, max: 100, info: 'armVelo', nat: '78', pr: s.prArmVelo },
+    { label: 'Sprint Speed (60yd)', val: s.sprintSpeed, unit: 'ft/s', min: 20, max: 35, info: 'sprintSpeed', nat: '27.5', pr: s.prSprint },
+    { label: 'Pitch Velocity', val: s.pitchVelo, unit: 'mph', min: 50, max: 95, info: 'pitchVelo', nat: '78', pr: s.prPitchVelo },
+    { label: 'Pop Time', val: s.popTime, unit: 's', min: 1.5, max: 2.2, info: 'popTime', nat: '2.0', pr: null, lowerBetter: true },
+    { label: 'Vertical Jump', val: s.vertJump, unit: '"', min: 10, max: 36, info: 'vertJump', nat: '24"', pr: s.prVert }
+  ];
+  el.innerHTML = rows.map(function(r) {
+    var p = r.lowerBetter ? pct(r.max - r.val, 0, r.max - r.min) : pct(r.val, r.min, r.max);
+    var cls = p >= 75 ? 'elite' : p >= 50 ? 'avg' : 'low';
+    var prHtml = r.pr ? '<div class="pr-row">🏆 PR: ' + r.pr + ' ' + r.unit + '</div>' : '';
+    return '<div class="metric-row">' +
+      '<div class="metric-row-label"><span>' + r.label + '</span><span class="info-icon" data-info="' + r.info + '">ⓘ</span></div>' +
+      '<div class="metric-row-body">' +
+      '<div class="score-bar"><div class="score-fill ' + cls + '" style="width:' + p + '%"></div></div>' +
+      '<div class="metric-row-nums"><span class="metric-now">' + r.val + ' ' + r.unit + '</span>' +
+      '<span class="metric-nat">Nat. Avg: ' + r.nat + ' ' + r.unit + '</span></div>' +
+      prHtml + '</div></div>';
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// SKILLSET TAB (Pitcher / Hitter)
+// ══════════════════════════════════════════
+function renderPitcherMetrics() {
+  var s = STATE;
+  var el = document.getElementById('pitcherMetrics');
+  if (!el) return;
+  var rows = [
+    { label: 'Fastball Velocity', val: s.pitchVelo, unit: 'mph', min: 55, max: 95, info: 'pitchVelo', nat: '78' },
+    { label: 'Spin Rate', val: s.spinRate, unit: 'rpm', min: 1800, max: 2800, info: 'spinRate', nat: '2300' },
+    { label: 'Strike %', val: s.strikeZonePct, unit: '%', min: 40, max: 75, info: 'strikeZonePct', nat: '62' },
+    { label: 'K/9', val: s.kPer9, unit: '', min: 3, max: 12, info: 'kPer9', nat: '7.5' },
+    { label: 'BB/9', val: s.bbPer9, unit: '', min: 1, max: 8, info: 'bbPer9', nat: '3.2', lowerBetter: true },
+    { label: 'Whiff %', val: s.whiffPct, unit: '%', min: 10, max: 40, info: 'whiffPct', nat: '24' }
+  ];
+  el.innerHTML = rows.map(function(r) {
+    var p = r.lowerBetter ? pct(r.max - r.val, 0, r.max - r.min) : pct(r.val, r.min, r.max);
+    var cls = p >= 75 ? 'elite' : p >= 50 ? 'avg' : 'low';
+    return '<div class="metric-row">' +
+      '<div class="metric-row-label"><span>' + r.label + '</span><span class="info-icon" data-info="' + r.info + '">ⓘ</span></div>' +
+      '<div class="metric-row-body">' +
+      '<div class="score-bar"><div class="score-fill ' + cls + '" style="width:' + p + '%"></div></div>' +
+      '<div class="metric-row-nums"><span class="metric-now">' + r.val + ' ' + r.unit + '</span>' +
+      '<span class="metric-nat">Nat. Avg: ' + r.nat + '</span></div></div></div>';
+  }).join('');
+}
+
+function renderHitterMetrics() {
+  var s = STATE;
+  var el = document.getElementById('hitterMetrics');
+  if (!el) return;
+  var rows = [
+    { label: 'Exit Velocity', val: s.exitVelo, unit: 'mph', min: 60, max: 110, info: 'exitVelo', nat: '87' },
+    { label: 'Launch Angle', val: s.launchAngle, unit: '°', min: -10, max: 40, info: 'launchAngle', nat: '12' },
+    { label: 'Bat Speed', val: s.batSpeed, unit: 'mph', min: 50, max: 90, info: 'batSpeed', nat: '68' },
+    { label: 'Hard Hit %', val: s.hardHitPct, unit: '%', min: 20, max: 60, info: 'hardHitPct', nat: '38' },
+    { label: 'Chase Rate', val: s.chaseRate, unit: '%', min: 15, max: 50, info: 'chaseRate', nat: '30', lowerBetter: true },
+    { label: 'Contact %', val: s.contactPct, unit: '%', min: 60, max: 95, info: 'contactPct', nat: '78' }
+  ];
+  el.innerHTML = rows.map(function(r) {
+    var p = r.lowerBetter ? pct(r.max - r.val, 0, r.max - r.min) : pct(r.val, r.min, r.max);
+    var cls = p >= 75 ? 'elite' : p >= 50 ? 'avg' : 'low';
+    return '<div class="metric-row">' +
+      '<div class="metric-row-label"><span>' + r.label + '</span><span class="info-icon" data-info="' + r.info + '">ⓘ</span></div>' +
+      '<div class="metric-row-body">' +
+      '<div class="score-bar"><div class="score-fill ' + cls + '" style="width:' + p + '%"></div></div>' +
+      '<div class="metric-row-nums"><span class="metric-now">' + r.val + ' ' + r.unit + '</span>' +
+      '<span class="metric-nat">Nat. Avg: ' + r.nat + '</span></div></div></div>';
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// MENTALITY TAB
+// ══════════════════════════════════════════
+function renderMentalityMetrics() {
+  var s = STATE;
+  var el = document.getElementById('mentalityMetrics');
+  if (!el) return;
+  var dims = [
+    { key: 'focus', label: 'Focus', info: 'focus' },
+    { key: 'confidence', label: 'Confidence', info: 'confidence' },
+    { key: 'composure', label: 'Composure Under Pressure', info: 'composure' },
+    { key: 'coachability', label: 'Coachability', info: 'coachability' },
+    { key: 'effort', label: 'Effort & Grit', info: 'effort' }
+  ];
+  var latest = MENTALITY_HISTORY[MENTALITY_HISTORY.length - 1];
+  el.innerHTML = dims.map(function(d) {
+    var val = latest ? latest[d.key] : s[d.key] || 70;
+    var p = pct(val, 0, 100);
+    var cls = p >= 75 ? 'elite' : p >= 50 ? 'avg' : 'low';
+    return '<div class="metric-row">' +
+      '<div class="metric-row-label"><span>' + d.label + '</span><span class="info-icon" data-info="' + d.info + '">ⓘ</span></div>' +
+      '<div class="metric-row-body">' +
+      '<div class="score-bar"><div class="score-fill ' + cls + '" style="width:' + p + '%"></div></div>' +
+      '<div class="metric-row-nums"><span class="metric-now">' + val + '/100</span>' +
+      '<span class="metric-nat">Nat. Avg: 65</span></div></div></div>';
+  }).join('');
+}
+
+// Mentality Heatmap
+function buildMentalityHeatmap() {
+  var el = document.getElementById('mentalityHeatmap');
+  if (!el) return;
+  var dims = ['focus','confidence','composure','coachability','effort'];
+  var labels = ['Focus','Confidence','Composure','Coachability','Effort'];
+  var html = '<table class="heatmap-table"><thead><tr><th>Week</th>';
+  labels.forEach(function(l){ html += '<th>' + l + '</th>'; });
+  html += '</tr></thead><tbody>';
+  MENTALITY_HISTORY.forEach(function(row, i) {
+    html += '<tr><td>Wk ' + (i+1) + '</td>';
+    dims.forEach(function(d) {
+      var v = row[d];
+      var cls = v >= 80 ? 'heat-elite' : v >= 65 ? 'heat-avg' : 'heat-low';
+      html += '<td class="' + cls + '">' + v + '</td>';
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  el.innerHTML = html;
+}
+</script>
+
+<script>
+// ══════════════════════════════════════════
+// LIKERT CHECK-IN
+// ══════════════════════════════════════════
+function openCheckin() {
+  var modal = document.getElementById('checkinModal');
+  if (!modal) return;
+  // Check if already done today
+  var today = new Date().toDateString();
+  if (STATE.lastCheckin === today) {
+    showToast('Already checked in today! Come back tomorrow.', 'info');
+    return;
+  }
+  renderCheckinForm();
+  modal.classList.add('active');
+}
+
+function renderCheckinForm() {
+  var formEl = document.getElementById('checkinForm');
+  if (!formEl) return;
+  var html = '';
+  CHECKIN_QS.forEach(function(q, i) {
+    html += '<div class="likert-question" id="lq-' + i + '">' +
+      '<div class="likert-q-text">' + (i+1) + '. ' + q.text +
+      '<span class="info-icon" data-info="' + q.info + '">ⓘ</span></div>' +
+      '<div class="likert-labels"><span>' + q.low + '</span><span>' + q.high + '</span></div>' +
+      '<div class="likert-scale">';
+    for (var v = 1; v <= 5; v++) {
+      html += '<label class="likert-option">' +
+        '<input type="radio" name="lq_' + i + '" value="' + v + '" onchange="likertChanged()">' +
+        '<span class="likert-pip">' + v + '</span></label>';
+    }
+    html += '</div></div>';
+  });
+  formEl.innerHTML = html;
+  updateCheckinCounter();
+}
+
+function likertChanged() {
+  updateCheckinCounter();
+}
+
+function updateCheckinCounter() {
+  var answered = 0;
+  CHECKIN_QS.forEach(function(q, i) {
+    var checked = document.querySelector('input[name="lq_' + i + '"]:checked');
+    if (checked) answered++;
+  });
+  var counter = document.getElementById('checkinCounter');
+  if (counter) counter.textContent = answered + '/' + CHECKIN_QS.length + ' answered';
+  var btn = document.getElementById('checkinSubmitBtn');
+  if (btn) btn.disabled = (answered < CHECKIN_QS.length);
+}
+
+function submitCheckin() {
+  var answers = {};
+  var allAnswered = true;
+  CHECKIN_QS.forEach(function(q, i) {
+    var checked = document.querySelector('input[name="lq_' + i + '"]:checked');
+    if (checked) {
+      answers[q.key] = parseInt(checked.value);
+    } else {
+      allAnswered = false;
+    }
+  });
+  if (!allAnswered) { showToast('Please answer all questions.', 'warning'); return; }
+
+  // Update mentality dimensions (scale 1-5 → 0-100)
+  var newRow = { week: MENTALITY_HISTORY.length + 1 };
+  CHECKIN_QS.forEach(function(q) {
+    newRow[q.key] = Math.round((answers[q.key] / 5) * 100);
+  });
+  // Compute overall mentality score
+  var dims = ['focus','confidence','composure','coachability','effort'];
+  var sum = 0;
+  dims.forEach(function(d){ sum += newRow[d] || 65; });
+  STATE.mentalityScore = Math.round(sum / dims.length);
+
+  MENTALITY_HISTORY.push(newRow);
+  STATE.lastCheckin = new Date().toDateString();
+  STATE.checkinStreak = (STATE.checkinStreak || 0) + 1;
+  saveState(STATE);
+
+  awardXP(10, 'Daily Check-In');
+
+  // Show success screen
+  var formEl = document.getElementById('checkinForm');
+  var successEl = document.getElementById('checkinSuccess');
+  if (formEl) formEl.style.display = 'none';
+  if (successEl) {
+    successEl.style.display = 'block';
+    successEl.innerHTML = '<div class="checkin-success-icon">✅</div>' +
+      '<h3>Check-in Complete!</h3>' +
+      '<p>+10 XP earned. Streak: ' + STATE.checkinStreak + ' days 🔥</p>' +
+      '<p>Mentality Score updated to <strong>' + STATE.mentalityScore + '/100</strong></p>';
+  }
+
+  // Refresh mentality if tab is open
+  renderMentalityMetrics();
+  buildMentalityHeatmap();
+  if (document.getElementById('mentalityTrendChart')) initMentalityChart();
+}
+
+function closeCheckin() {
+  var modal = document.getElementById('checkinModal');
+  if (modal) modal.classList.remove('active');
+  // Reset form for next open
+  var formEl = document.getElementById('checkinForm');
+  var successEl = document.getElementById('checkinSuccess');
+  if (formEl) formEl.style.display = '';
+  if (successEl) successEl.style.display = 'none';
+}
+
+// ══════════════════════════════════════════
+// BADGE SYSTEM
+// ══════════════════════════════════════════
+function evaluateBadges() {
+  var s = STATE;
+  var earned = s.badges || [];
+  var newBadges = [];
+
+  BADGES_DEF.forEach(function(b) {
+    if (earned.indexOf(b.id) > -1) return;
+    var unlock = false;
+    if (b.id === 'first_checkin' && s.lastCheckin) unlock = true;
+    if (b.id === 'streak_7' && (s.checkinStreak || 0) >= 7) unlock = true;
+    if (b.id === 'ev90' && s.exitVelo >= 90) unlock = true;
+    if (b.id === 'arm85' && s.armVelo >= 85) unlock = true;
+    if (b.id === 'speed29' && s.sprintSpeed >= 29) unlock = true;
+    if (b.id === 'mentality80' && s.mentalityScore >= 80) unlock = true;
+    if (b.id === 'first_pr' && (s.prExitVelo || s.prArmVelo || s.prPitchVelo)) unlock = true;
+    if (b.id === 'level3' && (s.xp || 0) >= 300) unlock = true;
+    if (unlock) {
+      earned.push(b.id);
+      newBadges.push(b);
+      awardXP(b.xp, 'Badge: ' + b.name);
+      showToast('🏅 Badge Unlocked: ' + b.name, 'badge');
+    }
+  });
+
+  STATE.badges = earned;
+  saveState(STATE);
+  renderBadges();
+}
+
+function renderBadges() {
+  var el = document.getElementById('badgeGallery');
+  if (!el) return;
+  var earned = STATE.badges || [];
+  el.innerHTML = BADGES_DEF.map(function(b) {
+    var has = earned.indexOf(b.id) > -1;
+    return '<div class="badge-card' + (has ? ' earned' : ' locked') + '">' +
+      '<div class="badge-icon">' + b.icon + '</div>' +
+      '<div class="badge-name">' + b.name + '</div>' +
+      '<div class="badge-desc">' + b.desc + '</div>' +
+      (has ? '<div class="badge-xp">+' + b.xp + ' XP</div>' : '<div class="badge-locked-msg">🔒 Locked</div>') +
+      '</div>';
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// CHALLENGES
+// ══════════════════════════════════════════
+function renderDailyChallenges() {
+  var el = document.getElementById('dailyChallenges');
+  if (!el) return;
+  var completed = STATE.completedChallenges || [];
+  el.innerHTML = DAILY.map(function(c) {
+    var done = completed.indexOf(c.id) > -1;
+    return '<div class="challenge-card' + (done ? ' done' : '') + '">' +
+      '<div class="challenge-icon">' + c.icon + '</div>' +
+      '<div class="challenge-body">' +
+      '<div class="challenge-title">' + c.title + '</div>' +
+      '<div class="challenge-desc">' + c.desc + '</div>' +
+      '</div>' +
+      (done
+        ? '<div class="challenge-done-badge">✅ Done</div>'
+        : '<button class="btn-sm btn-primary" onclick="completeChallenge(\'' + c.id + '\',' + c.xp + ')">Complete +' + c.xp + ' XP</button>'
+      ) + '</div>';
+  }).join('');
+}
+
+function renderWeeklyChallenge() {
+  var el = document.getElementById('weeklyChallenge');
+  if (!el) return;
+  var completed = STATE.completedChallenges || [];
+  var c = WEEKLY[0];
+  var done = completed.indexOf(c.id) > -1;
+  el.innerHTML = '<div class="challenge-card weekly' + (done ? ' done' : '') + '">' +
+    '<div class="challenge-icon">' + c.icon + '</div>' +
+    '<div class="challenge-body">' +
+    '<div class="challenge-title">⭐ ' + c.title + '</div>' +
+    '<div class="challenge-desc">' + c.desc + '</div>' +
+    '</div>' +
+    (done
+      ? '<div class="challenge-done-badge">✅ Done</div>'
+      : '<button class="btn-sm btn-primary" onclick="completeChallenge(\'' + c.id + '\',' + c.xp + ')">Complete +' + c.xp + ' XP</button>'
+    ) + '</div>';
+}
+
+function completeChallenge(id, xp) {
+  var completed = STATE.completedChallenges || [];
+  if (completed.indexOf(id) > -1) return;
+  completed.push(id);
+  STATE.completedChallenges = completed;
+  saveState(STATE);
+  awardXP(xp, 'Challenge Completed');
+  renderDailyChallenges();
+  renderWeeklyChallenge();
+  evaluateBadges();
+}
+</script>
+
+<script>
+// ══════════════════════════════════════════
+// RESOURCES
+// ══════════════════════════════════════════
+function renderResources() {
+  var el = document.getElementById('resourceGrid');
+  if (!el) return;
+  var plan = STATE.plan || 'free';
+  el.innerHTML = RESOURCES.map(function(r) {
+    var locked = (r.tier === 'pro' && plan === 'free') || (r.tier === 'elite' && plan !== 'elite');
+    var typeIcon = r.type === 'video' ? '🎬' : r.type === 'pdf' ? '📄' : '🔧';
+    return '<div class="resource-card' + (locked ? ' locked' : '') + '">' +
+      '<div class="resource-type">' + typeIcon + ' ' + r.type.toUpperCase() + '</div>' +
+      '<div class="resource-title">' + r.title + '</div>' +
+      '<div class="resource-meta">' + r.views + ' views · ' + r.tier + '</div>' +
+      '<div class="resource-tags">' + r.tags.map(function(t){ return '<span class="tag">' + t + '</span>'; }).join('') + '</div>' +
+      (locked
+        ? '<button class="btn-sm btn-outline" onclick="showUpgradeModal()">🔒 Upgrade to Unlock</button>'
+        : '<button class="btn-sm btn-primary" onclick="openResourceModal(\'' + r.id + '\')">Open Resource</button>'
+      ) + '</div>';
+  }).join('');
+}
+
+function openResourceModal(id) {
+  var r = RESOURCES.find(function(x){ return x.id === id; });
+  if (!r) return;
+  var modal = document.getElementById('resourceModal');
+  var titleEl = document.getElementById('resourceModalTitle');
+  var bodyEl = document.getElementById('resourceModalBody');
+  if (!modal) return;
+  if (titleEl) titleEl.textContent = r.title;
+  if (bodyEl) {
+    if (r.type === 'video') {
+      bodyEl.innerHTML = '<div class="resource-video-placeholder"><div class="video-icon">▶️</div>' +
+        '<p>' + r.title + '</p><p class="muted">Video content loads from your training library.</p></div>';
+    } else if (r.type === 'pdf') {
+      bodyEl.innerHTML = '<div class="resource-pdf-placeholder"><div class="pdf-icon">📄</div>' +
+        '<p>' + r.title + '</p>' +
+        '<button class="btn-sm btn-primary" onclick="downloadResource(\'' + id + '\')">Download PDF</button></div>';
+    } else {
+      bodyEl.innerHTML = '<div class="resource-tool-placeholder"><div>🔧</div><p>' + r.title + '</p>' +
+        '<p class="muted">Interactive tool — open in full screen for best experience.</p></div>';
+    }
+  }
+  awardXP(5, 'Opened Resource');
+  modal.classList.add('active');
+}
+
+function downloadResource(id) {
+  showToast('+5 XP — Resource downloaded!', 'xp');
+  awardXP(5, 'Downloaded Resource');
+}
+
+function showUpgradeModal() {
+  showToast('Upgrade your plan to unlock premium resources!', 'info');
+  // Scroll to pricing
+  var el = document.getElementById('ptab-resources');
+  if (el) {
+    var pricing = el.querySelector('.pricing-grid');
+    if (pricing) pricing.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+// ══════════════════════════════════════════
+// PRICING GRID
+// ══════════════════════════════════════════
+function renderPricingGrid() {
+  var el = document.getElementById('pricingGrid');
+  if (!el) return;
+  var plans = [
+    {
+      name: 'Free', price: '$0', period: '/mo',
+      features: ['Basic Athletic Metrics', 'Daily Check-in', '3 Resources', 'Player Card'],
+      cta: 'Current Plan', current: true
+    },
+    {
+      name: 'Pro', price: '$19', period: '/mo',
+      features: ['All Athletic Metrics', 'Full Skillset Analysis', 'All Resources', 'Gladius AI Coach', 'Badge System', 'Leaderboards'],
+      cta: 'Upgrade to Pro', current: false, highlight: true
+    },
+    {
+      name: 'Elite', price: '$39', period: '/mo',
+      features: ['Everything in Pro', 'Coach Portal Access', 'Recruiting Profile', 'Video Analysis', 'Priority Support', 'Team Challenges'],
+      cta: 'Go Elite', current: false
+    }
+  ];
+  el.innerHTML = plans.map(function(p) {
+    return '<div class="pricing-card' + (p.highlight ? ' highlight' : '') + '">' +
+      '<div class="pricing-name">' + p.name + '</div>' +
+      '<div class="pricing-price">' + p.price + '<span class="pricing-period">' + p.period + '</span></div>' +
+      '<ul class="pricing-features">' + p.features.map(function(f){ return '<li>✓ ' + f; }).join('') + '</ul>' +
+      (p.current
+        ? '<button class="btn-outline" disabled>Current Plan</button>'
+        : '<button class="btn-primary" onclick="showToast(\'Redirecting to checkout...\', \'info\')">' + p.cta + '</button>'
+      ) + '</div>';
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// ROSTER TABLE (Coach)
+// ══════════════════════════════════════════
+var rosterSort = { col: 'name', dir: 1 };
+
+function renderRoster() {
+  var el = document.getElementById('rosterBody');
+  if (!el) return;
+  var filter = (document.getElementById('rosterFilter') || {}).value || '';
+  var data = ROSTER.filter(function(p) {
+    return !filter || p.name.toLowerCase().includes(filter.toLowerCase()) || p.position.toLowerCase().includes(filter.toLowerCase());
+  });
+  data.sort(function(a, b) {
+    var av = a[rosterSort.col], bv = b[rosterSort.col];
+    if (typeof av === 'string') return av.localeCompare(bv) * rosterSort.dir;
+    return (av - bv) * rosterSort.dir;
+  });
+  el.innerHTML = data.map(function(p) {
+    var lvl = getLevel(p.xp);
+    var mentalCls = p.mentality >= 80 ? 'elite' : p.mentality >= 65 ? 'avg' : 'low';
+    var statusCls = p.status === 'Active' ? 'status-active' : p.status === 'Injured' ? 'status-injured' : 'status-watch';
+    return '<tr>' +
+      '<td><strong>' + p.name + '</strong></td>' +
+      '<td>' + p.position + '</td>' +
+      '<td>' + p.exitVelo + ' mph</td>' +
+      '<td>' + p.armVelo + ' mph</td>' +
+      '<td><span class="mentality-badge ' + mentalCls + '">' + p.mentality + '</span></td>' +
+      '<td>' + p.streak + '🔥</td>' +
+      '<td><span class="level-badge">' + lvl.name + '</span></td>' +
+      '<td><span class="status-dot ' + statusCls + '">' + p.status + '</span></td>' +
+      '</tr>';
+  }).join('');
+}
+
+function sortRoster(col) {
+  if (rosterSort.col === col) { rosterSort.dir *= -1; }
+  else { rosterSort.col = col; rosterSort.dir = 1; }
+  renderRoster();
+}
+
+// ══════════════════════════════════════════
+// LEADERBOARD
+// ══════════════════════════════════════════
+var leaderMetric = 'exitVelo';
+
+function renderLeaderboard(metric) {
+  if (metric) leaderMetric = metric;
+  var el = document.getElementById('leaderboardBody');
+  if (!el) return;
+  var data = ROSTER.slice().sort(function(a, b) { return b[leaderMetric] - a[leaderMetric]; });
+  var labels = { exitVelo: 'Exit Velo', armVelo: 'Arm Velo', mentality: 'Mentality', xp: 'XP', streak: 'Streak' };
+  var unit = { exitVelo: 'mph', armVelo: 'mph', mentality: '/100', xp: 'XP', streak: 'd' };
+  el.innerHTML = data.map(function(p, i) {
+    var medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i+1) + '.';
+    return '<tr>' +
+      '<td>' + medal + '</td>' +
+      '<td><strong>' + p.name + '</strong></td>' +
+      '<td>' + p.position + '</td>' +
+      '<td>' + p[leaderMetric] + ' ' + (unit[leaderMetric] || '') + '</td>' +
+      '</tr>';
+  }).join('');
+
+  // Update active button
+  document.querySelectorAll('[data-lbmetric]').forEach(function(btn) {
+    btn.classList.toggle('active', btn.dataset.lbmetric === leaderMetric);
+  });
+}
+
+function setLeaderboard(metric) { renderLeaderboard(metric); }
+</script>
+
+<script>
+// ══════════════════════════════════════════
+// ADMIN RENDERING
+// ══════════════════════════════════════════
+function renderAdminUsers() {
+  var el = document.getElementById('adminUserBody');
+  if (!el) return;
+  var filter = (document.getElementById('adminUserSearch') || {}).value || '';
+  var planFilter = (document.getElementById('adminPlanFilter') || {}).value || '';
+  var data = ADMIN_USERS.filter(function(u) {
+    var matchName = !filter || u.name.toLowerCase().includes(filter.toLowerCase()) || u.email.toLowerCase().includes(filter.toLowerCase());
+    var matchPlan = !planFilter || u.plan === planFilter;
+    return matchName && matchPlan;
+  });
+  el.innerHTML = data.map(function(u) {
+    var statusCls = u.status === 'Active' ? 'status-active' : u.status === 'Inactive' ? 'status-watch' : 'status-injured';
+    return '<tr>' +
+      '<td><strong>' + u.name + '</strong></td>' +
+      '<td>' + u.email + '</td>' +
+      '<td>' + u.role + '</td>' +
+      '<td><span class="plan-badge plan-' + u.plan + '">' + u.plan + '</span></td>' +
+      '<td><span class="status-dot ' + statusCls + '">' + u.status + '</span></td>' +
+      '<td><button class="btn-sm btn-outline" onclick="editUser(\'' + u.email + '\')">Edit</button></td>' +
+      '</tr>';
+  }).join('');
+  // Update summary counters
+  var total = ADMIN_USERS.length;
+  var active = ADMIN_USERS.filter(function(u){ return u.status === 'Active'; }).length;
+  var pro = ADMIN_USERS.filter(function(u){ return u.plan === 'pro' || u.plan === 'elite'; }).length;
+  var el2 = document.getElementById('adminUserCount');
+  if (el2) el2.textContent = total + ' users · ' + active + ' active · ' + pro + ' paid';
+}
+
+function editUser(email) {
+  showToast('Edit user: ' + email, 'info');
+}
+
+function openAddUser() {
+  var modal = document.getElementById('addUserModal');
+  if (modal) modal.classList.add('active');
+}
+
+function openUploadResource() {
+  showToast('Resource upload coming soon!', 'info');
+}
+
+function openCreateBadge() {
+  showToast('Badge creator coming soon!', 'info');
+}
+
+function openCreateChallenge() {
+  showToast('Challenge creator coming soon!', 'info');
+}
+
+function saveNewUser() {
+  var name = (document.getElementById('newUserName') || {}).value || '';
+  var email = (document.getElementById('newUserEmail') || {}).value || '';
+  var role = (document.getElementById('newUserRole') || {}).value || 'player';
+  var plan = (document.getElementById('newUserPlan') || {}).value || 'free';
+  if (!name || !email) { showToast('Name and email required.', 'warning'); return; }
+  ADMIN_USERS.push({ name: name, email: email, role: role, plan: plan, status: 'Active' });
+  closeModal('addUserModal');
+  renderAdminUsers();
+  showToast('User ' + name + ' added!', 'xp');
+}
+
+function renderAdminBadgeChart() {
+  // Summary cards
+  var total = ADMIN_USERS.length;
+  var active = ADMIN_USERS.filter(function(u){ return u.status === 'Active'; }).length;
+  var pro = ADMIN_USERS.filter(function(u){ return u.plan === 'pro'; }).length;
+  var elite = ADMIN_USERS.filter(function(u){ return u.plan === 'elite'; }).length;
+  var statsEl = document.getElementById('adminEngagementStats');
+  if (statsEl) {
+    statsEl.innerHTML =
+      '<div class="admin-stat"><div class="stat-val">' + total + '</div><div class="stat-lbl">Total Users</div></div>' +
+      '<div class="admin-stat"><div class="stat-val">' + active + '</div><div class="stat-lbl">Active</div></div>' +
+      '<div class="admin-stat"><div class="stat-val">' + pro + '</div><div class="stat-lbl">Pro Plan</div></div>' +
+      '<div class="admin-stat"><div class="stat-val">' + elite + '</div><div class="stat-lbl">Elite Plan</div></div>';
+  }
+}
+
+function renderContentTable() {
+  var el = document.getElementById('contentTable');
+  if (!el) return;
+  el.innerHTML = RESOURCES.map(function(r) {
+    return '<tr>' +
+      '<td>' + r.title + '</td>' +
+      '<td>' + r.type + '</td>' +
+      '<td>' + r.tier + '</td>' +
+      '<td>' + r.views + '</td>' +
+      '<td><button class="btn-sm btn-outline">Edit</button></td>' +
+      '</tr>';
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// MODAL HELPERS
+// ══════════════════════════════════════════
+function openModal(id) {
+  var modal = document.getElementById(id);
+  if (modal) modal.classList.add('active');
+}
+
+function closeModal(id) {
+  var modal = document.getElementById(id);
+  if (modal) modal.classList.remove('active');
+}
+
+// Close modal on backdrop click
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('modal-overlay')) {
+    e.target.classList.remove('active');
+  }
+});
+
+// ══════════════════════════════════════════
+// CHART INITIALIZATIONS
+// ══════════════════════════════════════════
+var _charts = {};
+
+function initAthleticChart() {
+  var canvas = document.getElementById('athleticChart');
+  if (!canvas) return;
+  if (_charts.athletic) { _charts.athletic.destroy(); }
+  var s = STATE;
+  _charts.athletic = new Chart(canvas.getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: ['Exit Velo', 'Arm Velo', 'Sprint Speed', 'Pitch Velo', 'Vert Jump'],
+      datasets: [
+        {
+          label: 'You',
+          data: [s.exitVelo, s.armVelo, s.sprintSpeed, s.pitchVelo, s.vertJump],
+          backgroundColor: 'rgba(212,175,55,0.8)',
+          borderColor: '#d4af37',
+          borderWidth: 2
+        },
+        {
+          label: 'National Avg',
+          data: [87, 78, 27.5, 78, 24],
+          backgroundColor: 'rgba(255,255,255,0.15)',
+          borderColor: 'rgba(255,255,255,0.4)',
+          borderWidth: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { labels: { color: '#fff' } } },
+      scales: {
+        x: { ticks: { color: '#aaa' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+        y: { ticks: { color: '#aaa' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+      }
+    }
+  });
+}
+
+function initMentalityChart() {
+  var canvas = document.getElementById('mentalityTrendChart');
+  if (!canvas) return;
+  if (_charts.mentality) { _charts.mentality.destroy(); }
+  var weeks = MENTALITY_HISTORY.map(function(r, i){ return 'Wk ' + (i+1); });
+  var dims = [
+    { key: 'focus', label: 'Focus', color: '#d4af37' },
+    { key: 'confidence', label: 'Confidence', color: '#4fc3f7' },
+    { key: 'composure', label: 'Composure', color: '#81c784' },
+    { key: 'coachability', label: 'Coachability', color: '#ce93d8' },
+    { key: 'effort', label: 'Effort', color: '#ff8a65' }
+  ];
+  _charts.mentality = new Chart(canvas.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: weeks,
+      datasets: dims.map(function(d) {
+        return {
+          label: d.label,
+          data: MENTALITY_HISTORY.map(function(r){ return r[d.key]; }),
+          borderColor: d.color,
+          backgroundColor: 'transparent',
+          tension: 0.3,
+          pointRadius: 4
+        };
+      })
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { labels: { color: '#fff', boxWidth: 12 } } },
+      scales: {
+        x: { ticks: { color: '#aaa' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+        y: { min: 0, max: 100, ticks: { color: '#aaa' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+      }
+    }
+  });
+}
+
+function initDevPlanChart() {
+  var canvas = document.getElementById('devPlanChart');
+  if (!canvas) return;
+  if (_charts.devplan) { _charts.devplan.destroy(); }
+  var goals = STATE.devGoals || [];
+  var done = goals.filter(function(g){ return g.done; }).length;
+  var remaining = goals.length - done;
+  if (goals.length === 0) { done = 0; remaining = 3; }
+  _charts.devplan = new Chart(canvas.getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Completed', 'Remaining'],
+      datasets: [{
+        data: [done, remaining],
+        backgroundColor: ['#d4af37', 'rgba(255,255,255,0.1)'],
+        borderColor: ['#b8960c', 'rgba(255,255,255,0.05)'],
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      cutout: '70%',
+      plugins: { legend: { labels: { color: '#fff' } } }
+    }
+  });
+}
+
+function initCoachCharts() {
+  // EV Distribution
+  var evCanvas = document.getElementById('coachEVChart');
+  if (evCanvas && !_charts.coachEV) {
+    var evData = ROSTER.map(function(p){ return p.exitVelo; });
+    var evLabels = ROSTER.map(function(p){ return p.name.split(' ')[0]; });
+    _charts.coachEV = new Chart(evCanvas.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: evLabels,
+        datasets: [{ label: 'Exit Velo (mph)', data: evData, backgroundColor: 'rgba(212,175,55,0.7)', borderColor: '#d4af37', borderWidth: 1 }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#aaa', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+          y: { ticks: { color: '#aaa' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+        }
+      }
+    });
+  }
+
+  // Mentality Radar or Bar
+  var menCanvas = document.getElementById('coachMentalChart');
+  if (menCanvas && !_charts.coachMental) {
+    var menData = ROSTER.map(function(p){ return p.mentality; });
+    var menLabels = ROSTER.map(function(p){ return p.name.split(' ')[0]; });
+    _charts.coachMental = new Chart(menCanvas.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: menLabels,
+        datasets: [{ label: 'Mentality Score', data: menData, backgroundColor: 'rgba(79,195,247,0.7)', borderColor: '#4fc3f7', borderWidth: 1 }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#aaa', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+          y: { min: 0, max: 100, ticks: { color: '#aaa' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+        }
+      }
+    });
+  }
+
+  // Check-in completion
+  var ciCanvas = document.getElementById('coachCheckinChart');
+  if (ciCanvas && !_charts.coachCheckin) {
+    _charts.coachCheckin = new Chart(ciCanvas.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{ label: 'Check-ins', data: [8,7,9,6,8,5,3], backgroundColor: 'rgba(129,199,132,0.7)', borderColor: '#81c784', borderWidth: 1 }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#aaa' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+          y: { ticks: { color: '#aaa' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+        }
+      }
+    });
+  }
+}
+</script>
+
+<script>
+// ══════════════════════════════════════════
+// DEV PLAN
+// ══════════════════════════════════════════
+function renderDevPlan() {
+  var el = document.getElementById('devPlanList');
+  if (!el) return;
+  var goals = STATE.devGoals || [
+    { id: 'g1', title: 'Reach 90 mph Exit Velocity', desc: 'Focus on hip rotation and bat speed drills', done: false, xp: 50 },
+    { id: 'g2', title: '7-Day Check-in Streak', desc: 'Build the daily habit with the Likert check-in', done: false, xp: 30 },
+    { id: 'g3', title: 'Improve Composure to 80+', desc: 'Practice pressure simulation in practice', done: false, xp: 40 }
+  ];
+  STATE.devGoals = goals;
+  el.innerHTML = goals.map(function(g) {
+    return '<div class="dev-card' + (g.done ? ' done' : '') + '">' +
+      '<div class="dev-card-header">' +
+      '<span class="dev-title">' + g.title + '</span>' +
+      '<span class="dev-xp">+' + g.xp + ' XP</span></div>' +
+      '<div class="dev-desc">' + g.desc + '</div>' +
+      (g.done
+        ? '<div class="dev-done">✅ Completed!</div>'
+        : '<button class="btn-sm btn-primary" onclick="completeDevGoal(\'' + g.id + '\',' + g.xp + ')">Mark Complete</button>'
+      ) + '</div>';
+  }).join('');
+}
+
+function completeDevGoal(id, xp) {
+  var goals = STATE.devGoals || [];
+  goals.forEach(function(g) { if (g.id === id) g.done = true; });
+  STATE.devGoals = goals;
+  saveState(STATE);
+  awardXP(xp, 'Dev Goal Completed');
+  renderDevPlan();
+  initDevPlanChart();
+  evaluateBadges();
+}
+
+// ══════════════════════════════════════════
+// PLAYER CARD
+// ══════════════════════════════════════════
+function renderPlayerCardPreview() {
+  var el = document.getElementById('playerCardPreview');
+  if (!el) return;
+  var s = STATE;
+  var lvl = getLevel(s.xp || 0);
+  var highlights = s.gcHighlights || [];
+
+  el.innerHTML = '<div class="player-card-inner">' +
+    '<div class="pc-header">' +
+    '<div class="pc-logo">LANISTA IQ</div>' +
+    '<div class="pc-player-name">' + (s.playerName || 'Athlete') + '</div>' +
+    '<div class="pc-position">' + (s.position || 'Baseball') + ' · ' + (s.gradYear || '2026') + '</div>' +
+    '<div class="pc-level">Level: <strong>' + lvl.name + '</strong> · ' + (s.xp || 0) + ' XP</div>' +
+    '</div>' +
+    '<div class="pc-metrics">' +
+    '<div class="pc-metric"><div class="pc-metric-val">' + s.exitVelo + '</div><div class="pc-metric-lbl">Exit Velo (mph)</div></div>' +
+    '<div class="pc-metric"><div class="pc-metric-val">' + s.armVelo + '</div><div class="pc-metric-lbl">Arm Velo (mph)</div></div>' +
+    '<div class="pc-metric"><div class="pc-metric-val">' + s.pitchVelo + '</div><div class="pc-metric-lbl">Pitch Velo (mph)</div></div>' +
+    '<div class="pc-metric"><div class="pc-metric-val">' + s.sprintSpeed + '</div><div class="pc-metric-lbl">Sprint (ft/s)</div></div>' +
+    '<div class="pc-metric"><div class="pc-metric-val">' + s.mentalityScore + '</div><div class="pc-metric-lbl">Mentality /100</div></div>' +
+    '<div class="pc-metric"><div class="pc-metric-val">' + (s.checkinStreak || 0) + '🔥</div><div class="pc-metric-lbl">Day Streak</div></div>' +
+    '</div>' +
+    (highlights.length > 0
+      ? '<div class="pc-highlights"><div class="pc-highlights-title">🎬 GameChanger Highlights</div>' +
+        highlights.map(function(h) {
+          return '<div class="pc-highlight-row"><a href="' + h.url + '" target="_blank">' + h.label + '</a></div>';
+        }).join('') + '</div>'
+      : '<div class="pc-highlights-empty">Add GameChanger highlight links below.</div>'
+    ) +
+    '<div class="pc-footer">Generated by Lanista IQ · lanistasports.com</div>' +
+    '</div>';
+}
+
+function printPlayerCard() {
+  var el = document.getElementById('playerCardPreview');
+  if (!el) return;
+  var win = window.open('', '_blank');
+  win.document.write('<html><head><title>Player Card</title>' +
+    '<style>body{font-family:sans-serif;background:#0d1117;color:#fff;padding:20px;}' +
+    '.player-card-inner{background:#1a1f2e;border:2px solid #d4af37;border-radius:12px;padding:24px;max-width:480px;margin:auto;}' +
+    '.pc-header{text-align:center;margin-bottom:16px;}.pc-logo{color:#d4af37;font-weight:900;font-size:18px;letter-spacing:2px;}' +
+    '.pc-player-name{font-size:24px;font-weight:700;margin:8px 0;}.pc-position{color:#aaa;}.pc-level{margin-top:4px;color:#d4af37;}' +
+    '.pc-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0;}' +
+    '.pc-metric{background:rgba(255,255,255,0.05);border-radius:8px;padding:12px;text-align:center;}' +
+    '.pc-metric-val{font-size:22px;font-weight:700;color:#d4af37;}.pc-metric-lbl{font-size:11px;color:#aaa;margin-top:4px;}' +
+    '.pc-footer{text-align:center;color:#555;font-size:11px;margin-top:16px;}' +
+    '.pc-highlights{margin:12px 0;}.pc-highlights-title{color:#d4af37;margin-bottom:8px;}' +
+    '.pc-highlight-row a{color:#4fc3f7;}</style></head><body>');
+  win.document.write(el.innerHTML);
+  win.document.write('</body></html>');
+  win.document.close();
+  win.print();
+}
+
+function copyPlayerCard() {
+  var s = STATE;
+  var lvl = getLevel(s.xp || 0);
+  var text = 'LANISTA IQ — PLAYER CARD\n' +
+    '═══════════════════════════\n' +
+    (s.playerName || 'Athlete') + '\n' +
+    (s.position || 'Baseball') + ' · ' + (s.gradYear || '2026') + '\n' +
+    'Level: ' + lvl.name + ' (' + (s.xp || 0) + ' XP)\n\n' +
+    'Exit Velocity: ' + s.exitVelo + ' mph\n' +
+    'Arm Velocity: ' + s.armVelo + ' mph\n' +
+    'Pitch Velocity: ' + s.pitchVelo + ' mph\n' +
+    'Sprint Speed: ' + s.sprintSpeed + ' ft/s\n' +
+    'Mentality Score: ' + s.mentalityScore + '/100\n' +
+    'Check-in Streak: ' + (s.checkinStreak || 0) + ' days\n\n' +
+    'Generated by Lanista IQ · lanistasports.com';
+  navigator.clipboard.writeText(text).then(function() {
+    showToast('Player card copied to clipboard!', 'xp');
+  }).catch(function() {
+    showToast('Copy failed — try selecting text manually.', 'warning');
+  });
+}
+
+function emailPlayerCard() {
+  var s = STATE;
+  var subject = encodeURIComponent('My Lanista IQ Player Card — ' + (s.playerName || 'Athlete'));
+  var body = encodeURIComponent(
+    'Check out my Lanista IQ player card!\n\n' +
+    'Exit Velocity: ' + s.exitVelo + ' mph\n' +
+    'Arm Velocity: ' + s.armVelo + ' mph\n' +
+    'Pitch Velocity: ' + s.pitchVelo + ' mph\n' +
+    'Sprint Speed: ' + s.sprintSpeed + ' ft/s\n' +
+    'Mentality Score: ' + s.mentalityScore + '/100\n\n' +
+    'View full profile: https://lanistasports.com/dashboard'
+  );
+  window.open('mailto:?subject=' + subject + '&body=' + body);
+}
+
+function sendToCoach() {
+  var s = STATE;
+  var modal = document.getElementById('sendCoachModal');
+  if (!modal) {
+    // Create inline
+    var overlay = document.createElement('div');
+    overlay.className = 'modal-overlay active';
+    overlay.id = 'sendCoachModal';
+    overlay.innerHTML = '<div class="modal-box">' +
+      '<div class="modal-header"><span>Send to Coach / Scout</span>' +
+      '<button class="modal-close" onclick="closeModal(\'sendCoachModal\')">✕</button></div>' +
+      '<div class="modal-body">' +
+      '<label>Coach / Scout Email</label>' +
+      '<input type="email" id="coachEmail" class="form-input" placeholder="coach@team.com">' +
+      '<label style="margin-top:12px;">Message (optional)</label>' +
+      '<textarea id="coachMsg" class="form-input" rows="3" placeholder="Hi Coach, here are my latest metrics..."></textarea>' +
+      '</div>' +
+      '<div class="modal-footer">' +
+      '<button class="btn-outline" onclick="closeModal(\'sendCoachModal\')">Cancel</button>' +
+      '<button class="btn-primary" onclick="confirmSendToCoach()">Send via Email</button>' +
+      '</div></div>';
+    document.body.appendChild(overlay);
+  } else {
+    modal.classList.add('active');
+  }
+}
+
+function confirmSendToCoach() {
+  var email = (document.getElementById('coachEmail') || {}).value || '';
+  var msg = (document.getElementById('coachMsg') || {}).value || '';
+  if (!email) { showToast('Enter coach email first.', 'warning'); return; }
+  var s = STATE;
+  var subject = encodeURIComponent('Lanista IQ Player Card — ' + (s.playerName || 'Athlete'));
+  var body = encodeURIComponent(
+    (msg ? msg + '\n\n' : '') +
+    'EXIT VELOCITY: ' + s.exitVelo + ' mph\n' +
+    'ARM VELOCITY: ' + s.armVelo + ' mph\n' +
+    'PITCH VELOCITY: ' + s.pitchVelo + ' mph\n' +
+    'SPRINT: ' + s.sprintSpeed + ' ft/s\n' +
+    'MENTALITY: ' + s.mentalityScore + '/100\n\n' +
+    'Full profile: https://lanistasports.com/dashboard'
+  );
+  window.open('mailto:' + encodeURIComponent(email) + '?subject=' + subject + '&body=' + body);
+  closeModal('sendCoachModal');
+  showToast('Email client opened!', 'xp');
+}
+
+// GameChanger Highlights Manager
+function addGCHighlight() {
+  var label = (document.getElementById('gcLabel') || {}).value || '';
+  var url = (document.getElementById('gcUrl') || {}).value || '';
+  if (!label || !url) { showToast('Enter both a label and URL.', 'warning'); return; }
+  var highlights = STATE.gcHighlights || [];
+  highlights.push({ label: label, url: url });
+  STATE.gcHighlights = highlights;
+  saveState(STATE);
+  document.getElementById('gcLabel').value = '';
+  document.getElementById('gcUrl').value = '';
+  renderGCHighlights();
+  renderPlayerCardPreview();
+  showToast('Highlight added!', 'xp');
+}
+
+function removeGCHighlight(i) {
+  var highlights = STATE.gcHighlights || [];
+  highlights.splice(i, 1);
+  STATE.gcHighlights = highlights;
+  saveState(STATE);
+  renderGCHighlights();
+  renderPlayerCardPreview();
+}
+
+function renderGCHighlights() {
+  var el = document.getElementById('gcHighlightsList');
+  if (!el) return;
+  var highlights = STATE.gcHighlights || [];
+  if (highlights.length === 0) {
+    el.innerHTML = '<div class="muted">No highlights added yet. Paste a GameChanger share link above.</div>';
+    return;
+  }
+  el.innerHTML = highlights.map(function(h, i) {
+    return '<div class="gc-highlight-row">' +
+      '<a href="' + h.url + '" target="_blank">' + h.label + '</a>' +
+      '<button class="btn-sm btn-outline danger" onclick="removeGCHighlight(' + i + ')">Remove</button>' +
+      '</div>';
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// TEAM HEATMAP (Coach)
+// ══════════════════════════════════════════
+function renderTeamHeatmap() {
+  var el = document.getElementById('teamHeatmap');
+  if (!el) return;
+  var dims = ['exitVelo', 'armVelo', 'mentality', 'streak'];
+  var labels = ['Exit Velo', 'Arm Velo', 'Mentality', 'Streak'];
+  var html = '<table class="heatmap-table"><thead><tr><th>Player</th>';
+  labels.forEach(function(l){ html += '<th>' + l + '</th>'; });
+  html += '</tr></thead><tbody>';
+  ROSTER.forEach(function(p) {
+    html += '<tr><td>' + p.name.split(' ')[0] + '</td>';
+    var vals = [p.exitVelo, p.armVelo, p.mentality, p.streak * 5];
+    var ranges = [[60,110],[50,100],[0,100],[0,100]];
+    vals.forEach(function(v, i) {
+      var pct = Math.round((v - ranges[i][0]) / (ranges[i][1] - ranges[i][0]) * 100);
+      var cls = pct >= 75 ? 'heat-elite' : pct >= 50 ? 'heat-avg' : 'heat-low';
+      html += '<td class="' + cls + '">' + v + '</td>';
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  el.innerHTML = html;
+}
+
+// ══════════════════════════════════════════
+// GLADIUS AI (Dashboard)
+// ══════════════════════════════════════════
+function sendGladiusMessage() {
+  var input = document.getElementById('gladiusInput');
+  if (!input) return;
+  var msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  appendGladiusMsg('You', msg, 'user');
+  appendGladiusMsg('Gladius', '...', 'bot loading');
+
+  var s = STATE;
+  var context = 'You are Gladius, an elite baseball performance AI built by Lanista Sports. ' +
+    'You were developed by surveying and analyzing data from 1000+ MLB and college players and coaches. ' +
+    'You provide personalized, data-driven feedback. ' +
+    'Current player stats: Exit Velocity ' + s.exitVelo + ' mph (national avg 87), ' +
+    'Arm Velocity ' + s.armVelo + ' mph (national avg 78), ' +
+    'Sprint Speed ' + s.sprintSpeed + ' ft/s (national avg 27.5), ' +
+    'Pitch Velocity ' + s.pitchVelo + ' mph (national avg 78), ' +
+    'Mentality Score ' + s.mentalityScore + '/100 (national avg 65), ' +
+    'Pop Time ' + s.popTime + 's (national avg 2.0), ' +
+    'Vertical Jump ' + s.vertJump + '" (national avg 24), ' +
+    'XP Level: ' + getLevel(s.xp || 0).name + ' (' + (s.xp || 0) + ' XP), ' +
+    'Check-in Streak: ' + (s.checkinStreak || 0) + ' days. ' +
+    'National averages sourced from Perfect Game, Baseball America, and MLB Statcast data. ' +
+    'Be concise, encouraging, and specific. Reference the player\'s actual numbers in your responses.';
+
+  fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: msg, context: context })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    var loadingMsg = document.querySelector('#gladiusMessages .loading');
+    if (loadingMsg) loadingMsg.remove();
+    if (data.error) {
+      appendGladiusMsg('Gladius', 'Error: ' + data.error, 'bot error');
+    } else if (data.type === 'error') {
+      var errMsg = data.error && data.error.type === 'authentication_error'
+        ? 'API key not configured. Ask your coach to set up the Gladius AI key in the platform settings.'
+        : (data.error && data.error.message) || 'An error occurred.';
+      appendGladiusMsg('Gladius', errMsg, 'bot error');
+    } else {
+      appendGladiusMsg('Gladius', data.response || data.content || 'No response.', 'bot');
+    }
+  })
+  .catch(function(err) {
+    var loadingMsg = document.querySelector('#gladiusMessages .loading');
+    if (loadingMsg) loadingMsg.remove();
+    appendGladiusMsg('Gladius', 'Connection error. Check your network and try again.', 'bot error');
+  });
+}
+
+function appendGladiusMsg(sender, text, cls) {
+  var el = document.getElementById('gladiusMessages');
+  if (!el) return;
+  var div = document.createElement('div');
+  div.className = 'gladius-msg ' + cls;
+  div.innerHTML = '<span class="gladius-sender">' + sender + '</span>' +
+    '<span class="gladius-text">' + text + '</span>';
+  el.appendChild(div);
+  el.scrollTop = el.scrollHeight;
+}
+
+document.addEventListener('keydown', function(e) {
+  var input = document.getElementById('gladiusInput');
+  if (input && e.target === input && e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendGladiusMessage();
+  }
+});
+
+// ══════════════════════════════════════════
+// MAIN INIT
+// ══════════════════════════════════════════
+function init() {
+  updateXPBar();
+  renderOverviewMetrics();
+  renderBadges();
+  renderDailyChallenges();
+  renderWeeklyChallenge();
+  renderDevPlan();
+  renderGCHighlights();
+  renderPricingGrid();
+  // Coach
+  renderRoster();
+  renderLeaderboard();
+  renderTeamHeatmap();
+  // Admin
+  renderAdminUsers();
+  renderAdminBadgeChart();
+  renderContentTable();
+  // Evaluate badges on load
+  evaluateBadges();
+  // Coach chart init (when coach dash is visible)
+  if (document.getElementById('coachDash') &&
+      document.getElementById('coachDash').style.display !== 'none') {
+    initCoachCharts();
+  }
+}
+
+// Wire up roster filter input
+var rosterFilterEl = document.getElementById('rosterFilter');
+if (rosterFilterEl) rosterFilterEl.addEventListener('input', renderRoster);
+
+// Wire up admin search
+var adminSearchEl = document.getElementById('adminUserSearch');
+if (adminSearchEl) adminSearchEl.addEventListener('input', renderAdminUsers);
+var adminPlanEl = document.getElementById('adminPlanFilter');
+if (adminPlanEl) adminPlanEl.addEventListener('change', renderAdminUsers);
+
+// Wire up coach tab nav to init charts when analytics tab opens
+document.getElementById('coachTabNav').addEventListener('click', function(e) {
+  var btn = e.target.closest('[data-ctab]');
+  if (btn && btn.dataset.ctab === 'analytics') {
+    setTimeout(initCoachCharts, 100);
+  }
+});
+
+// Run init
+init();
+</script>
+
+<style>
+/* ── METRIC ROW (Athletic / Skillset / Mentality tabs) ── */
+.metric-row-label{display:flex;align-items:center;gap:6px;min-width:160px;font-size:12px;font-weight:600;color:var(--light)}
+.metric-row-body{flex:1;display:flex;flex-direction:column;gap:4px}
+.metric-row-nums{display:flex;justify-content:space-between;font-size:11px}
+.metric-now{font-family:var(--font-m);font-weight:700;color:var(--gold)}
+.metric-nat{color:var(--steel)}
+
+/* ── KEY STRENGTHS ── */
+.strength-item{display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(212,175,55,.06);border:1px solid rgba(212,175,55,.15);border-radius:8px}
+.strength-icon{font-size:22px}
+.strength-label{font-size:13px;font-weight:600;color:var(--light)}
+.strength-val{font-family:var(--font-m);font-size:12px;color:var(--gold);margin-top:2px}
+
+/* ── HEATMAP ── */
+.heatmap-table{width:100%;border-collapse:collapse;font-size:12px}
+.heatmap-table th{padding:6px 10px;background:rgba(255,255,255,.04);color:var(--steel);font-size:10px;letter-spacing:.5px;text-transform:uppercase;text-align:center}
+.heatmap-table td{padding:6px 10px;text-align:center;border-bottom:1px solid rgba(255,255,255,.03)}
+.heat-elite{background:rgba(129,199,132,.18);color:#81c784;font-weight:700}
+.heat-avg{background:rgba(212,175,55,.12);color:#d4af37;font-weight:700}
+.heat-low{background:rgba(255,90,90,.12);color:#ff5a5a;font-weight:700}
+
+/* ── GLADIUS CHAT ── */
+#gladiusMessages{display:flex;flex-direction:column;gap:10px;padding:12px;height:260px;overflow-y:auto;background:rgba(0,0,0,.25);border-radius:8px;border:1px solid rgba(255,255,255,.06)}
+.gladius-msg{display:flex;flex-direction:column;gap:3px;max-width:85%}
+.gladius-msg.user{align-self:flex-end;align-items:flex-end}
+.gladius-msg.bot,.gladius-msg.bot.error{align-self:flex-start}
+.gladius-sender{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--steel)}
+.gladius-text{font-size:12px;line-height:1.5;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.06)}
+.gladius-msg.user .gladius-text{background:rgba(212,175,55,.15);color:var(--gold)}
+.gladius-msg.bot.error .gladius-text{color:#ff8a8a}
+.gladius-msg.loading .gladius-text{color:var(--steel);font-style:italic}
+
+/* ── PLAYER CARD ── */
+.player-card-inner{background:linear-gradient(135deg,#1a1f2e,#0d1117);border:2px solid var(--gold);border-radius:14px;padding:24px;max-width:480px;margin:0 auto}
+.pc-header{text-align:center;margin-bottom:18px}
+.pc-logo{font-family:var(--font-d);font-size:14px;font-weight:900;letter-spacing:3px;color:var(--gold);margin-bottom:8px}
+.pc-player-name{font-size:22px;font-weight:700;color:var(--light)}
+.pc-position{font-size:12px;color:var(--steel);margin-top:2px}
+.pc-level{font-size:11px;color:var(--gold);margin-top:6px}
+.pc-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.pc-metric{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:10px;text-align:center}
+.pc-metric-val{font-family:var(--font-m);font-size:20px;font-weight:700;color:var(--gold)}
+.pc-metric-lbl{font-size:10px;color:var(--steel);margin-top:3px}
+.pc-highlights{margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06)}
+.pc-highlights-title{font-size:11px;font-weight:700;color:var(--gold);margin-bottom:8px;letter-spacing:.5px}
+.pc-highlight-row{font-size:12px;padding:4px 0}
+.pc-highlight-row a{color:#4fc3f7;text-decoration:none}
+.pc-highlight-row a:hover{text-decoration:underline}
+.pc-highlights-empty{font-size:12px;color:var(--steel);font-style:italic;margin-top:12px}
+.pc-footer{text-align:center;font-size:10px;color:var(--steel);margin-top:16px;letter-spacing:.5px}
+.gc-highlight-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px;gap:12px}
+.gc-highlight-row a{color:#4fc3f7;text-decoration:none;flex:1}
+
+/* ── DEV PLAN CARDS ── */
+.dev-card{background:var(--dark3);border:1px solid var(--card-border);border-radius:8px;padding:14px 16px;transition:border-color .2s}
+.dev-card.done{opacity:.6;border-color:rgba(129,199,132,.2)}
+.dev-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px}
+.dev-title{font-size:13px;font-weight:600;color:var(--light);flex:1}
+.dev-xp{font-family:var(--font-m);font-size:10px;font-weight:700;color:var(--gold);white-space:nowrap}
+.dev-desc{font-size:11px;color:var(--steel);margin-bottom:10px}
+.dev-done{font-size:12px;color:#81c784;font-weight:600}
+
+/* ── ADMIN STATS ── */
+#adminEngagementStats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.admin-stat{background:var(--dark3);border:1px solid var(--card-border);border-radius:8px;padding:14px;text-align:center}
+.stat-val{font-family:var(--font-m);font-size:24px;font-weight:700;color:var(--gold)}
+.stat-lbl{font-size:10px;color:var(--steel);margin-top:4px;letter-spacing:.5px;text-transform:uppercase}
+
+/* ── STATUS DOTS & BADGES ── */
+.status-active{color:#81c784}
+.status-active::before{content:'●  ';color:#81c784}
+.status-injured{color:#ff8a8a}
+.status-injured::before{content:'●  ';color:#ff8a8a}
+.status-watch{color:#d4af37}
+.status-watch::before{content:'●  ';color:#d4af37}
+.mentality-badge{font-family:var(--font-m);font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px}
+.mentality-badge.elite{background:rgba(129,199,132,.15);color:#81c784}
+.mentality-badge.avg{background:rgba(212,175,55,.15);color:#d4af37}
+.mentality-badge.low{background:rgba(255,90,90,.15);color:#ff8a8a}
+.plan-badge.plan-free{background:rgba(255,255,255,.08);color:var(--steel)}
+.plan-badge.plan-pro{background:rgba(212,175,55,.15);color:var(--gold)}
+.plan-badge.plan-elite{background:rgba(167,139,250,.15);color:var(--purple)}
+
+/* ── LIKERT CHECK-IN ── */
+.likert-question{margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid rgba(255,255,255,.05)}
+.likert-question:last-child{border-bottom:none;margin-bottom:0}
+.likert-q-text{font-size:13px;font-weight:600;color:var(--light);margin-bottom:10px;display:flex;align-items:flex-start;gap:6px;line-height:1.4}
+.likert-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--steel);margin-bottom:6px}
+.likert-scale{display:flex;gap:8px;justify-content:space-between}
+.likert-option{display:flex;flex-direction:column;align-items:center;cursor:pointer}
+.likert-option input{display:none}
+.likert-pip{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-family:var(--font-m);font-size:13px;font-weight:700;color:var(--steel);transition:all .15s;cursor:pointer}
+.likert-option input:checked + .likert-pip{background:var(--gold);border-color:var(--gold);color:#000}
+.likert-option:hover .likert-pip{border-color:var(--gold);color:var(--gold)}
+
+/* ── CHECK-IN SUCCESS SCREEN ── */
+.checkin-success-icon{font-size:48px;margin-bottom:12px}
+#checkinSuccess{text-align:center;padding:20px}
+#checkinSuccess h3{font-size:18px;color:var(--gold);margin-bottom:8px}
+#checkinSuccess p{font-size:13px;color:var(--steel);margin-bottom:6px}
+
+/* ── CHALLENGE CARDS ── */
+.challenge-done-badge{font-size:12px;color:#81c784;font-weight:700;white-space:nowrap}
+.challenge-card.weekly{background:rgba(212,175,55,.06);border-color:rgba(212,175,55,.25)}
+
+/* ── TOAST VARIANTS ── */
+.toast.show{opacity:1}
+.toast{opacity:0;transition:opacity .3s}
+.toast-xp{border-color:rgba(212,175,55,.4);color:var(--gold)}
+.toast-badge{border-color:rgba(167,139,250,.4);color:var(--purple)}
+.toast-info{border-color:rgba(79,195,247,.4);color:#4fc3f7}
+.toast-warning{border-color:rgba(255,138,101,.4);color:#ff8a65}
+
+/* ── RESOURCE MODALS ── */
+.resource-video-placeholder,.resource-pdf-placeholder,.resource-tool-placeholder{text-align:center;padding:30px;color:var(--steel)}
+.video-icon,.pdf-icon{font-size:48px;margin-bottom:12px}
+
+/* ── SCORE FILLS (elite/avg/low) ── */
+.score-fill.elite{background:linear-gradient(90deg,#81c784,#4caf50)}
+.score-fill.avg{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.score-fill.low{background:linear-gradient(90deg,#ff8a65,#ff5252)}
+
+/* ── ADMIN CHECKIN COUNTER ── */
+#checkinCounter{font-size:11px;color:var(--steel);font-style:italic}
+#adminUserCount{font-size:11px;color:var(--steel);margin-bottom:12px}
+
+/* ── RESPONSIVE ADMIN STATS ── */
+@media(max-width:600px){
+  #adminEngagementStats{grid-template-columns:repeat(2,1fr)}
+  .pc-metrics{grid-template-columns:repeat(2,1fr)}
+  .likert-scale{gap:4px}
+  .likert-pip{width:30px;height:30px;font-size:11px}
+}
+</style>
+
+<style>
+/* Modal fix: support both .hidden removal and .active class */
+.modal-overlay.active{display:flex!important}
+/* Extra leaderboard / roster styles */
+.lb-table{width:100%;border-collapse:collapse;font-size:12px}
+.lb-table tr{border-bottom:1px solid rgba(255,255,255,.04)}
+.lb-table td{padding:8px 6px}
+.lb-table td:first-child{font-size:16px;width:36px}
+</style>
+
+<script>
+// ══════════════════════════════════════════
+// ID ALIASES — map camelCase JS IDs to hyphenated HTML IDs
+// ══════════════════════════════════════════
+(function() {
+  var map = {
+    'overviewMetrics'  : 'overview-metrics',
+    'badgeGallery'     : 'overview-badges',
+    'dailyChallenges'  : 'daily-challenges',
+    'weeklyChallenge'  : 'weekly-challenge',
+    'athleticMetrics'  : 'athletic-metrics',
+    'pitcherMetrics'   : 'pitcher-metrics',
+    'hitterMetrics'    : 'hitter-metrics',
+    'mentalityMetrics' : 'mentality-metrics',
+    'mentalityHeatmap' : 'mentality-heatmap',
+    'devPlanList'      : 'devplan-goals',
+    'resourceGrid'     : 'resource-grid',
+    'pricingGrid'      : 'pricing-grid',
+    'playerCardPreview': 'player-card-preview',
+    'leaderboardBody'  : 'leaderboard-table',
+    'teamHeatmap'      : 'team-heatmap',
+    'adminUserBody'    : 'usersBody',
+    'contentTable'     : 'contentBody',
+    'checkinSuccess'   : 'checkin-success-screen',
+    'checkinSubmitBtn' : 'checkin-submit-btn',
+    'checkinCounter'   : 'likert-count',
+    'rosterFilter'     : 'roster-search'
+  };
+  var _orig = document.getElementById.bind(document);
+  document.getElementById = function(id) {
+    return _orig(map[id] || id) || _orig(id);
+  };
+})();
+
+// ══════════════════════════════════════════
+// MODAL FIX — toggle active (not hidden)
+// ══════════════════════════════════════════
+function openModal(id) {
+  var m = document.getElementById(id);
+  if (m) { m.classList.remove('hidden'); m.classList.add('active'); }
+}
+function closeModal(id) {
+  var m = document.getElementById(id);
+  if (m) { m.classList.remove('active'); m.classList.add('hidden'); }
+}
+function closeModalOutside(e, id) {
+  if (e.target.id === id) closeModal(id);
+}
+
+// Override openCheckin to use the real modal
+function openCheckin() {
+  var today = new Date().toDateString();
+  if (STATE.lastCheckin === today) {
+    showToast('Already checked in today! Come back tomorrow.', 'info');
+    return;
+  }
+  // Show form screen, hide success screen
+  var formScr = document.getElementById('checkin-form-screen');
+  var sucScr  = document.getElementById('checkin-success-screen');
+  if (formScr) formScr.classList.remove('hidden');
+  if (sucScr)  sucScr.classList.add('hidden');
+  // Render questions into likert-questions div
+  var qEl = document.getElementById('likert-questions');
+  if (qEl) {
+    var html = '';
+    CHECKIN_QS.forEach(function(q, i) {
+      html += '<div class="likert-question">' +
+        '<div class="likert-q-text">' + (i+1) + '. ' + q.text +
+        '<span class="info-icon" data-info="' + q.info + '">ⓘ</span></div>' +
+        '<div class="likert-labels"><span>' + q.low + '</span><span>' + q.high + '</span></div>' +
+        '<div class="likert-scale">';
+      for (var v = 1; v <= 5; v++) {
+        html += '<label class="likert-option"><input type="radio" name="lq_' + i + '" value="' + v + '" onchange="updateCheckinCounter()"><span class="likert-pip">' + v + '</span></label>';
+      }
+      html += '</div></div>';
+    });
+    qEl.innerHTML = html;
+  }
+  updateCheckinCounter();
+  openModal('checkinModal');
+}
+
+function updateCheckinCounter() {
+  var answered = 0;
+  CHECKIN_QS.forEach(function(q, i) {
+    if (document.querySelector('input[name="lq_' + i + '"]:checked')) answered++;
+  });
+  var cnt = document.getElementById('likert-count');
+  if (cnt) cnt.textContent = answered;
+  var btn = document.getElementById('checkin-submit-btn');
+  if (btn) btn.disabled = (answered < CHECKIN_QS.length);
+}
+
+function submitCheckin() {
+  var answers = {};
+  var allAnswered = true;
+  CHECKIN_QS.forEach(function(q, i) {
+    var checked = document.querySelector('input[name="lq_' + i + '"]:checked');
+    if (checked) answers[q.key] = parseInt(checked.value);
+    else allAnswered = false;
+  });
+  if (!allAnswered) { showToast('Please answer all questions.', 'warning'); return; }
+
+  var newRow = {};
+  CHECKIN_QS.forEach(function(q) { newRow[q.key] = Math.round((answers[q.key]/5)*100); });
+  var dims = ['focus','confidence','composure','coachability','effort'];
+  var sum = 0;
+  dims.forEach(function(d){ sum += newRow[d] || 65; });
+  STATE.mentalityScore = Math.round(sum / dims.length);
+  MENTALITY_HISTORY.push(newRow);
+  STATE.lastCheckin = new Date().toDateString();
+  STATE.checkinStreak = (STATE.checkinStreak || 0) + 1;
+  saveState(STATE);
+  awardXP(10, 'Daily Check-In');
+
+  // Show success
+  var formScr = document.getElementById('checkin-form-screen');
+  var sucScr  = document.getElementById('checkin-success-screen');
+  if (formScr) formScr.classList.add('hidden');
+  if (sucScr)  {
+    sucScr.classList.remove('hidden');
+    var streakMsg = document.getElementById('checkin-streak-msg');
+    if (streakMsg) streakMsg.textContent = '🔥 Streak: ' + STATE.checkinStreak + ' days · Mentality: ' + STATE.mentalityScore + '/100';
+  }
+  renderMentalityMetrics();
+  buildMentalityHeatmap();
+}
+
+// ══════════════════════════════════════════
+// CHECKIN FORM — fix checkinForm reference
+// ══════════════════════════════════════════
+// renderCheckinForm is overridden by openCheckin above; keep stub
+function renderCheckinForm() { openCheckin(); }
+
+// ══════════════════════════════════════════
+// INJECT MISSING HTML: Gladius + Key Strengths
+// ══════════════════════════════════════════
+(function injectMissingElements() {
+  // 1) Key Strengths — inject after the overview-metrics div in ptab-overview
+  var overviewPanel = document.getElementById('ptab-overview');
+  if (overviewPanel && !document.getElementById('keyStrengthsList')) {
+    var ksDiv = document.createElement('div');
+    ksDiv.className = 'card card-body mb20';
+    ksDiv.innerHTML = '<div class="card-label">⭐ Your Key Strengths</div>' +
+      '<div id="keyStrengthsList" style="display:flex;flex-direction:column;gap:8px;margin-top:8px"></div>';
+    // Insert before first child
+    overviewPanel.insertBefore(ksDiv, overviewPanel.firstChild);
+  }
+
+  // 2) Gladius AI — inject at end of ptab-overview
+  if (!document.getElementById('gladiusMessages')) {
+    var gPanel = document.getElementById('ptab-overview');
+    if (gPanel) {
+      var gDiv = document.createElement('div');
+      gDiv.className = 'card card-body mb20';
+      gDiv.innerHTML =
+        '<div class="card-label" style="display:flex;align-items:center;gap:8px">' +
+        '<span style="font-size:18px">🤖</span> Gladius AI Coach' +
+        '<span style="font-family:var(--font-m);font-size:8px;color:var(--steel);margin-left:auto">Built from 1000+ MLB & college player surveys</span>' +
+        '</div>' +
+        '<div id="gladiusMessages"></div>' +
+        '<div style="display:flex;gap:8px;margin-top:10px">' +
+        '<input id="gladiusInput" class="modal-input" style="margin-bottom:0;flex:1" placeholder="Ask Gladius anything about your performance..." />' +
+        '<button class="modal-btn primary" onclick="sendGladiusMessage()" style="white-space:nowrap">Send</button>' +
+        '</div>';
+      gPanel.appendChild(gDiv);
+      // Seed welcome message
+      setTimeout(function() {
+        appendGladiusMsg('Gladius',
+          'Hey! I\'m Gladius — your AI performance coach. I\'ve analyzed your metrics and I\'m ready to give you personalized feedback. Ask me anything: "How does my exit velocity compare?", "What should I work on?", or "Give me a drill for composure."',
+          'bot');
+      }, 300);
+    }
+  }
+
+  // 3) Admin search — wire admin users tab filters to renderAdminUsers
+  var usersBody = document.getElementById('usersBody');
+  if (usersBody) {
+    // Add a stats bar above the table
+    var statsBar = document.createElement('div');
+    statsBar.id = 'adminEngagementStats';
+    var tableCard = usersBody.closest('.card');
+    if (tableCard) tableCard.parentNode.insertBefore(statsBar, tableCard);
+  }
+  // Wire the admin search inputs (they exist in HTML but call filterUsers/filterUsersByPlan inline)
+  // so renderAdminUsers will be called; no extra wiring needed.
+})();
+
+// Fix filterUsers / filterUsersByPlan (called inline from HTML)
+function filterUsers(val) { renderAdminUsers(); }
+function filterUsersByPlan(val) { renderAdminUsers(); }
+
+// Fix renderAdminUsers to use correct HTML inputs
+var _origRenderAdminUsers = renderAdminUsers;
+renderAdminUsers = function() {
+  var el = document.getElementById('usersBody');
+  if (!el) return;
+  var filterInput = document.querySelector('#atab-users input[type=text]');
+  var planSelect  = document.querySelector('#atab-users select');
+  var filter   = (filterInput || {}).value || '';
+  var planFilt = (planSelect  || {}).value || '';
+
+  var data = ADMIN_USERS.filter(function(u) {
+    var matchName = !filter || u.name.toLowerCase().includes(filter.toLowerCase()) || (u.email||'').toLowerCase().includes(filter.toLowerCase());
+    var matchPlan = !planFilt || u.plan.toLowerCase() === planFilt.toLowerCase();
+    return matchName && matchPlan;
+  });
+  el.innerHTML = data.map(function(u) {
+    var statusCls = u.status === 'Active' ? 'status-active' : u.status === 'Inactive' ? 'status-watch' : 'status-injured';
+    return '<tr>' +
+      '<td><strong>' + u.name + '</strong></td>' +
+      '<td>' + u.role + '</td>' +
+      '<td><span class="plan-badge plan-' + (u.plan||'free').toLowerCase() + '">' + u.plan + '</span></td>' +
+      '<td>' + (u.lastActive||'—') + '</td>' +
+      '<td><span class="' + statusCls + '">' + u.status + '</span></td>' +
+      '<td><button class="btn-sm btn-outline" onclick="editUser(\'' + (u.email||u.name) + '\')">Edit</button></td>' +
+      '</tr>';
+  }).join('');
+
+  // Stats bar
+  var statsEl = document.getElementById('adminEngagementStats');
+  if (statsEl) {
+    var total = ADMIN_USERS.length;
+    var active = ADMIN_USERS.filter(function(u){ return u.status==='Active'; }).length;
+    var pro    = ADMIN_USERS.filter(function(u){ return u.plan==='pro'; }).length;
+    var elite  = ADMIN_USERS.filter(function(u){ return u.plan==='elite'; }).length;
+    statsEl.innerHTML =
+      '<div class="admin-stat"><div class="stat-val">' + total + '</div><div class="stat-lbl">Total</div></div>' +
+      '<div class="admin-stat"><div class="stat-val">' + active + '</div><div class="stat-lbl">Active</div></div>' +
+      '<div class="admin-stat"><div class="stat-val">' + pro + '</div><div class="stat-lbl">Pro</div></div>' +
+      '<div class="admin-stat"><div class="stat-val">' + elite + '</div><div class="stat-lbl">Elite</div></div>';
+  }
+};
+
+// Fix renderAdminBadges → admin-badge-list
+function renderAdminBadgeList() {
+  var el = document.getElementById('admin-badge-list');
+  if (!el) return;
+  el.innerHTML = BADGES_DEF.map(function(b) {
+    var earnedCount = Math.floor(Math.random() * 30);
+    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)">' +
+      '<span style="font-size:18px">' + b.icon + '</span>' +
+      '<div style="flex:1"><div style="font-size:12px;font-weight:600">' + b.name + '</div>' +
+      '<div style="font-size:10px;color:var(--steel)">' + b.desc + '</div></div>' +
+      '<div style="font-family:var(--font-m);font-size:10px;color:var(--gold)">' + earnedCount + ' earned</div>' +
+      '</div>';
+  }).join('');
+}
+
+// Fix contentTable rendering
+var _origRenderContentTable = renderContentTable;
+renderContentTable = function() {
+  var el = document.getElementById('contentBody');
+  if (!el) return;
+  el.innerHTML = RESOURCES.map(function(r) {
+    return '<tr>' +
+      '<td>' + r.title + '</td>' +
+      '<td>' + r.type + '</td>' +
+      '<td><span class="plan-badge plan-' + r.tier + '">' + r.tier + '</span></td>' +
+      '<td>' + r.tags.join(', ') + '</td>' +
+      '<td>' + r.views + '</td>' +
+      '<td>—</td>' +
+      '<td><button class="btn-sm btn-outline">Edit</button></td>' +
+      '</tr>';
+  }).join('');
+};
+
+// Fix leaderboard — lb-table is a <table> so we need tbody
+var _origRenderLeaderboard = renderLeaderboard;
+renderLeaderboard = function(metric) {
+  if (metric) leaderMetric = metric;
+  var el = document.getElementById('leaderboard-table');
+  if (!el) return;
+  var data = ROSTER.slice().sort(function(a,b){ return b[leaderMetric]-a[leaderMetric]; });
+  var unit = { exitVelo:'mph', armVelo:'mph', mentality:'/100', xp:'XP', streak:'d' };
+  el.innerHTML = data.map(function(p,i){
+    var medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
+    return '<tr><td>' + medal + '</td><td><strong>' + p.name + '</strong></td>' +
+      '<td>' + p.position + '</td><td style="color:var(--gold);font-family:var(--font-m)">' +
+      p[leaderMetric] + ' ' + (unit[leaderMetric]||'') + '</td></tr>';
+  }).join('');
+  document.querySelectorAll('[data-lbmetric]').forEach(function(btn){
+    btn.classList.toggle('active', btn.dataset.lbmetric === leaderMetric);
+  });
+};
+
+// Wire leaderboard toggle buttons (they use onclick="setLeaderboard(..., this)")
+function setLeaderboard(metric, btn) {
+  document.querySelectorAll('#lb-toggle .challenge-btn').forEach(function(b){ b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  renderLeaderboard(metric);
+}
+
+// Fix resource modal (HTML has resource-modal-content, not resourceModalTitle/Body)
+var _origOpenResourceModal = openResourceModal;
+openResourceModal = function(id) {
+  var r = RESOURCES.find(function(x){ return x.id===id; });
+  if (!r) return;
+  var el = document.getElementById('resource-modal-content');
+  if (!el) return;
+  var typeIcon = r.type==='video'?'🎬':r.type==='pdf'?'📄':'🔧';
+  el.innerHTML = '<div class="modal-title">' + typeIcon + ' ' + r.title + '</div>' +
+    '<div class="modal-sub">' + r.tags.join(' · ') + '</div>' +
+    (r.type==='video'
+      ? '<div style="text-align:center;padding:30px"><div style="font-size:48px;margin-bottom:12px">▶️</div>' +
+        '<p style="color:var(--steel)">Video content loads from your training library.</p></div>'
+      : r.type==='pdf'
+      ? '<div style="text-align:center;padding:30px"><div style="font-size:48px;margin-bottom:12px">📄</div>' +
+        '<button class="modal-btn primary" onclick="downloadResource(\'' + id + '\')">Download PDF</button></div>'
+      : '<div style="text-align:center;padding:30px"><div style="font-size:48px">🔧</div>' +
+        '<p style="color:var(--steel);margin-top:12px">Interactive tool — best on desktop.</p></div>'
+    );
+  awardXP(5, 'Opened Resource');
+  openModal('resourceModal');
+};
+
+// ══════════════════════════════════════════
+// RE-RUN INIT after all patches are applied
+// ══════════════════════════════════════════
+setTimeout(function() {
+  init();
+  renderAdminBadgeList();
+}, 100);
+</script>

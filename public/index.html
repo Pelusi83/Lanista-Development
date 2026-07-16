@@ -1,0 +1,3808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lanista Sports — Precision Development. Strategized Growth.</title>
+  <meta name="description" content="Lanista Sports is a Pittsburgh-based athlete development platform. We turn data into direction — helping athletes, families, and coaches understand performance, track growth, and find the right fit." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,700&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ═══════════════════════════════════════════
+       RESET & ROOT
+    ═══════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black:    #080808;
+      --dark:     #0f0f0f;
+      --dark2:    #141414;
+      --dark3:    #1a1a1a;
+      --gold:     #C9A84C;
+      --gold2:    #E8C96B;
+      --gold3:    #F5DFA0;
+      --golddim:  #8a6d2e;
+      --steel:    #8A9BA8;
+      --silver:   #C5C8CC;
+      --white:    #F5F5F5;
+      --red:      #C0392B;
+      --font-d:   'Barlow Condensed', sans-serif;
+      --font-b:   'Barlow', sans-serif;
+      --ease:     cubic-bezier(.4,0,.2,1);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font-b);
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+      cursor: none;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: none; font-family: var(--font-b); border: none; outline: none; }
+
+    /* ═══════════════════════════════════════════
+       CUSTOM CURSOR
+    ═══════════════════════════════════════════ */
+    #cursor {
+      position: fixed;
+      width: 10px; height: 10px;
+      background: var(--gold);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99999;
+      transform: translate(-50%, -50%);
+      transition: width .15s var(--ease), height .15s var(--ease), opacity .15s;
+      mix-blend-mode: normal;
+    }
+    #cursor-ring {
+      position: fixed;
+      width: 38px; height: 38px;
+      border: 1.5px solid rgba(201,168,76,.5);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99998;
+      transform: translate(-50%, -50%);
+      transition: width .35s var(--ease), height .35s var(--ease),
+                  border-color .35s, transform .12s var(--ease);
+    }
+    body:hover #cursor { opacity: 1; }
+    @media (hover: none) {
+      #cursor, #cursor-ring { display: none; }
+      body { cursor: auto; }
+      button { cursor: pointer; }
+    }
+
+    /* ═══════════════════════════════════════════
+       NOISE OVERLAY (film grain)
+    ═══════════════════════════════════════════ */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+      opacity: 0.028;
+      pointer-events: none;
+      z-index: 9997;
+    }
+
+    /* ═══════════════════════════════════════════
+       UTILITIES
+    ═══════════════════════════════════════════ */
+    .container { width: 100%; max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+    .section { padding: 100px 0; }
+    .section-sm { padding: 60px 0; }
+    .gold { color: var(--gold); }
+
+    .tag {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-family: var(--font-d);
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 4px; text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+    .tag::before {
+      content: '';
+      display: block;
+      width: 24px; height: 1.5px;
+      background: var(--gold);
+    }
+
+    .section-title {
+      font-family: var(--font-d);
+      font-size: clamp(38px, 6.5vw, 72px);
+      font-weight: 900;
+      line-height: .92;
+      text-transform: uppercase;
+      letter-spacing: -1px;
+    }
+    .section-title.grad {
+      background: linear-gradient(135deg, var(--white) 0%, var(--gold3) 40%, var(--gold) 70%, var(--golddim) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .section-sub {
+      font-size: 17px;
+      color: var(--steel);
+      max-width: 580px;
+      margin-top: 18px;
+      line-height: 1.75;
+    }
+    .divider {
+      width: 48px; height: 3px;
+      background: linear-gradient(90deg, var(--gold), var(--golddim));
+      margin: 22px 0;
+      border-radius: 2px;
+    }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--font-d);
+      font-size: 14px; font-weight: 800;
+      letter-spacing: 2.5px; text-transform: uppercase;
+      padding: 15px 36px;
+      border-radius: 3px;
+      transition: all .25s var(--ease);
+      position: relative; overflow: hidden;
+    }
+    .btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,.07);
+      opacity: 0;
+      transition: opacity .2s;
+    }
+    .btn:hover::after { opacity: 1; }
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold) 0%, var(--golddim) 100%);
+      color: var(--black);
+      box-shadow: 0 4px 20px rgba(201,168,76,.25);
+    }
+    .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(201,168,76,.4); }
+    .btn-outline {
+      border: 1.5px solid rgba(201,168,76,.6);
+      color: var(--gold);
+      background: transparent;
+    }
+    .btn-outline:hover { background: rgba(201,168,76,.08); border-color: var(--gold); transform: translateY(-2px); }
+    .btn-white { background: var(--white); color: var(--black); }
+    .btn-white:hover { background: #ddd; transform: translateY(-2px); }
+    .text-center { text-align: center; }
+
+    /* ═══════════════════════════════════════════
+       NAV
+    ═══════════════════════════════════════════ */
+    #nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      transition: all .3s var(--ease);
+      background: rgba(8,8,8,.6);
+      backdrop-filter: blur(20px) saturate(1.3);
+      -webkit-backdrop-filter: blur(20px) saturate(1.3);
+      border-bottom: 1px solid transparent;
+    }
+    #nav.scrolled {
+      background: rgba(8,8,8,.92);
+      border-bottom-color: rgba(201,168,76,.12);
+      box-shadow: 0 8px 40px rgba(0,0,0,.5);
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 70px; padding: 0 28px;
+      max-width: 1200px; margin: 0 auto;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 0;
+      text-decoration: none;
+    }
+    .nav-logo-name {
+      font-family: var(--font-d);
+      font-size: 20px; font-weight: 900;
+      letter-spacing: 3px; text-transform: uppercase;
+      background: linear-gradient(135deg, #F5E090 0%, #C9A84C 45%, #9a7020 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+    .nav-links { display: flex; gap: 28px; list-style: none; align-items: center; }
+    .nav-links a {
+      font-family: var(--font-d);
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 2.5px; text-transform: uppercase;
+      color: rgba(197,200,204,.7);
+      transition: color .2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0; right: 100%;
+      height: 1px; background: var(--gold);
+      transition: right .25s var(--ease);
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-links a:hover::after { right: 0; }
+    .nav-cta { margin-left: 8px; }
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; padding: 4px; border: none;
+    }
+    .hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--white); border-radius: 1px;
+      transition: all .3s var(--ease);
+    }
+    .mobile-menu {
+      display: none; position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(8,8,8,.98);
+      backdrop-filter: blur(20px);
+      z-index: 999;
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 32px;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      font-family: var(--font-d);
+      font-size: 32px; font-weight: 900;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: var(--white); transition: color .2s;
+    }
+    .mobile-menu a:hover { color: var(--gold); }
+
+    /* ═══════════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════════ */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex; align-items: center;
+      overflow: hidden;
+      background: var(--black);
+    }
+
+    /* Layered background */
+    .hero-bg-base {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 90% 80% at 65% 45%, rgba(201,168,76,.06) 0%, transparent 65%),
+                  radial-gradient(ellipse 50% 60% at 20% 80%, rgba(201,168,76,.03) 0%, transparent 60%);
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(201,168,76,.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,168,76,.045) 1px, transparent 1px);
+      background-size: 70px 70px;
+      mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 30%, transparent 80%);
+    }
+    .hero-glow {
+      position: absolute;
+      top: 30%; left: 55%;
+      width: 700px; height: 700px;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(201,168,76,.09) 0%, transparent 65%);
+      border-radius: 50%;
+      filter: blur(60px);
+      animation: heroGlow 6s ease-in-out infinite alternate;
+    }
+    @keyframes heroGlow {
+      0%   { transform: translate(-50%,-50%) scale(1);   opacity: .7; }
+      100% { transform: translate(-50%,-50%) scale(1.2); opacity: 1; }
+    }
+
+    /* Diagonal scan lines */
+    .hero-lines {
+      position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+    }
+    .hero-lines::before, .hero-lines::after {
+      content: '';
+      position: absolute;
+      width: 1px; height: 100%;
+      background: linear-gradient(180deg, transparent 0%, rgba(201,168,76,.25) 50%, transparent 100%);
+      animation: scanLine 4s ease-in-out infinite;
+    }
+    .hero-lines::before { left: 35%; animation-delay: 0s; }
+    .hero-lines::after  { left: 68%; animation-delay: 2s; opacity: .5; }
+    @keyframes scanLine {
+      0%,100% { transform: scaleY(0) translateY(-100%); opacity: 0; }
+      30%,70% { transform: scaleY(1) translateY(0);     opacity: 1; }
+    }
+
+    /* Hero watermark */
+    .hero-watermark {
+      position: absolute;
+      right: -40px; top: 50%;
+      transform: translateY(-50%);
+      font-family: var(--font-d);
+      font-size: clamp(180px, 24vw, 340px);
+      font-weight: 900;
+      letter-spacing: -8px;
+      text-transform: uppercase;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(201,168,76,.06);
+      line-height: 1;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative; z-index: 2;
+      padding: 130px 28px 100px;
+      max-width: 1180px; margin: 0 auto; width: 100%;
+    }
+    .hero-inner-grid {
+      display: block;
+    }
+    .hero-text-col {}
+    .hero-badge-col { display: none; }
+
+
+
+
+    .hero-eyebrow {
+      font-family: var(--font-d);
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 6px; text-transform: uppercase;
+      color: var(--gold);
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 24px;
+      animation: fadeInLeft .8s var(--ease) both;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: block; width: 48px; height: 1.5px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+    }
+    .hero-title {
+      font-family: var(--font-d);
+      font-size: clamp(72px, 14vw, 160px);
+      font-weight: 900;
+      line-height: .88;
+      text-transform: uppercase;
+      letter-spacing: -3px;
+      margin-bottom: 10px;
+      animation: fadeInLeft .9s var(--ease) .1s both;
+    }
+    .hero-title .line2 {
+      display: block;
+      -webkit-text-stroke: 2px var(--gold);
+      color: transparent;
+      filter: drop-shadow(0 0 30px rgba(201,168,76,.3));
+    }
+    .hero-tagline {
+      font-family: var(--font-d);
+      font-size: clamp(14px, 2.5vw, 22px);
+      font-weight: 600;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: rgba(138,155,168,.8);
+      margin-bottom: 32px;
+      animation: fadeInLeft .9s var(--ease) .2s both;
+    }
+    .hero-desc {
+      font-size: 18px;
+      color: var(--silver);
+      max-width: 620px;
+      line-height: 1.75;
+      margin-bottom: 44px;
+      animation: fadeInLeft .9s var(--ease) .3s both;
+    }
+    .hero-btns {
+      display: flex; gap: 14px; flex-wrap: wrap;
+      animation: fadeInLeft .9s var(--ease) .4s both;
+    }
+
+    /* Hero stat blocks */
+    .hero-stats {
+      display: flex; gap: 0;
+      margin-top: 70px;
+      padding-top: 40px;
+      border-top: 1px solid rgba(255,255,255,.06);
+      animation: fadeInUp .9s var(--ease) .6s both;
+    }
+    .hero-stat {
+      flex: 1;
+      padding: 0 32px 0 0;
+      border-right: 1px solid rgba(255,255,255,.06);
+    }
+    .hero-stat:last-child { border-right: none; padding-right: 0; padding-left: 32px; }
+    .hero-stat:first-child { padding-left: 0; }
+    .hero-stat-num {
+      font-family: var(--font-d);
+      font-size: clamp(32px, 4vw, 48px);
+      font-weight: 900;
+      line-height: 1;
+      background: linear-gradient(135deg, var(--gold2), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 4px;
+    }
+    .hero-stat-label {
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--steel);
+    }
+
+    .hero-scroll {
+      position: absolute; bottom: 36px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      color: rgba(138,155,168,.5);
+      font-family: var(--font-d);
+      font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
+      animation: fadeInUp 1s var(--ease) 1s both;
+    }
+    .scroll-line {
+      width: 1px; height: 48px;
+      background: linear-gradient(transparent, var(--gold), transparent);
+      animation: scrollBounce 2s ease-in-out infinite;
+    }
+    @keyframes scrollBounce {
+      0%,100% { transform: scaleY(.5) translateY(-10px); opacity: .3; }
+      50%      { transform: scaleY(1) translateY(0);      opacity: 1;  }
+    }
+
+    /* ═══════════════════════════════════════════
+       MARQUEE
+    ═══════════════════════════════════════════ */
+    .marquee-wrap {
+      background: linear-gradient(135deg, var(--gold) 0%, #a07d2e 100%);
+      padding: 14px 0;
+      overflow: hidden;
+      white-space: nowrap;
+      border-top: 1px solid rgba(255,255,255,.1);
+      border-bottom: 1px solid rgba(0,0,0,.2);
+    }
+    .marquee-track {
+      display: inline-flex; gap: 0;
+      animation: marquee 28s linear infinite;
+    }
+    .marquee-item {
+      display: inline-flex; align-items: center; gap: 18px;
+      font-family: var(--font-d);
+      font-size: 13px; font-weight: 800;
+      letter-spacing: 4px; text-transform: uppercase;
+      color: rgba(8,8,8,.85);
+      padding: 0 24px;
+    }
+    .marquee-dot {
+      width: 5px; height: 5px;
+      background: rgba(8,8,8,.4);
+      border-radius: 50%;
+    }
+    @keyframes marquee {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ═══════════════════════════════════════════
+       GOLD STATS STRIP
+    ═══════════════════════════════════════════ */
+    #stats {
+      background: var(--dark);
+      padding: 0;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+    }
+    .stats-strip {
+      display: flex; justify-content: space-around; align-items: stretch;
+      flex-wrap: wrap;
+    }
+    .stat-item {
+      flex: 1; min-width: 140px;
+      text-align: center;
+      padding: 36px 20px;
+      border-right: 1px solid rgba(255,255,255,.05);
+      transition: background .25s;
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-item:hover { background: rgba(201,168,76,.04); }
+    .stat-num {
+      font-family: var(--font-d);
+      font-size: 40px; font-weight: 900;
+      line-height: 1;
+      background: linear-gradient(135deg, var(--gold2), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--steel);
+    }
+
+    /* ═══════════════════════════════════════════
+       MISSION
+    ═══════════════════════════════════════════ */
+    #mission { background: var(--dark); }
+    .mission-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 100px;
+      align-items: center;
+    }
+    .mission-quote {
+      position: relative;
+      font-family: var(--font-d);
+      font-size: clamp(20px, 2.5vw, 27px);
+      font-weight: 600;
+      line-height: 1.45;
+      color: var(--white);
+      padding: 32px 28px;
+      margin: 32px 0;
+      background: rgba(201,168,76,.04);
+      border-left: 3px solid var(--gold);
+      border-radius: 0 4px 4px 0;
+    }
+    .mission-quote::before {
+      content: '\201C';
+      position: absolute;
+      top: -10px; left: 18px;
+      font-size: 80px; line-height: 1;
+      color: rgba(201,168,76,.15);
+      font-family: Georgia, serif;
+    }
+    .pillar-badges { display: flex; flex-direction: column; gap: 16px; }
+    .pillar-badge {
+      display: flex; align-items: flex-start; gap: 18px;
+      background: var(--dark2);
+      border: 1px solid rgba(255,255,255,.05);
+      border-radius: 6px;
+      padding: 22px 22px;
+      transition: all .3s var(--ease);
+      position: relative; overflow: hidden;
+    }
+    .pillar-badge::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform .35s var(--ease);
+    }
+    .pillar-badge:hover::before { transform: scaleX(1); }
+    .pillar-badge:hover { border-color: rgba(201,168,76,.2); transform: translateX(6px); }
+    .pillar-badge-icon {
+      flex-shrink: 0; width: 46px; height: 46px;
+      border-radius: 10px;
+      background: rgba(201,168,76,.1);
+      border: 1px solid rgba(201,168,76,.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .pillar-badge-title {
+      font-family: var(--font-d);
+      font-size: 16px; font-weight: 800;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 5px;
+    }
+    .pillar-badge-text { font-size: 14px; color: var(--steel); line-height: 1.55; }
+
+    /* ═══════════════════════════════════════════
+       CORE 4 / LS4
+    ═══════════════════════════════════════════ */
+    #core4 { background: var(--black); }
+    .core4-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2px;
+      margin-top: 60px;
+    }
+    .core4-item {
+      padding: 44px 40px;
+      background: var(--dark2);
+      position: relative; overflow: hidden;
+      transition: background .3s var(--ease);
+    }
+    .core4-item::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(201,168,76,.05) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .core4-item:hover { background: #1a1a1a; }
+    .core4-item:hover::after { opacity: 1; }
+    .core4-num {
+      font-family: var(--font-d);
+      font-size: 80px; font-weight: 900;
+      line-height: 1;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(201,168,76,.12);
+      margin-bottom: 6px;
+      letter-spacing: -2px;
+    }
+    .core4-title {
+      font-family: var(--font-d);
+      font-size: 26px; font-weight: 900;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 8px;
+    }
+    .core4-subtitle {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: var(--steel); margin-bottom: 14px;
+    }
+    .core4-text { font-size: 14px; color: var(--silver); line-height: 1.65; }
+
+    /* LS4 Score Ring */
+    .ls4-ring-section {
+      margin-top: 60px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      background: var(--dark2);
+      border: 1px solid rgba(201,168,76,.15);
+      border-radius: 8px;
+      padding: 50px 60px;
+      position: relative; overflow: hidden;
+    }
+    .ls4-ring-section::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 30% 50%, rgba(201,168,76,.06), transparent 60%);
+    }
+    .ls4-visual { display: flex; justify-content: center; align-items: center; position: relative; }
+    .ls4-svg { width: 220px; height: 220px; }
+    .ls4-svg-track { fill: none; stroke: rgba(255,255,255,.05); stroke-width: 12; }
+    .ls4-svg-bar {
+      fill: none;
+      stroke: url(#goldGradRing);
+      stroke-width: 12;
+      stroke-linecap: round;
+      stroke-dasharray: 565;
+      stroke-dashoffset: 565;
+      transition: stroke-dashoffset 2s cubic-bezier(.4,0,.2,1);
+    }
+    .ls4-svg-bar.animated { stroke-dashoffset: 85; }
+    .ls4-center-text {
+      position: absolute;
+      text-align: center;
+    }
+    .ls4-score-num {
+      font-family: var(--font-d);
+      font-size: 48px; font-weight: 900;
+      line-height: 1;
+      background: linear-gradient(135deg, var(--gold2), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .ls4-score-label {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: var(--steel);
+    }
+    .ls4-ring-info {}
+    .ls4-ring-title {
+      font-family: var(--font-d);
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 900;
+      text-transform: uppercase; line-height: .95;
+      margin-bottom: 16px;
+    }
+    .ls4-ring-title span {
+      background: linear-gradient(135deg, var(--gold2), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .ls4-ring-desc { font-size: 15px; color: var(--steel); line-height: 1.7; margin-bottom: 28px; }
+    .ls4-domains { display: flex; flex-direction: column; gap: 14px; }
+    .ls4-domain {
+      display: flex; align-items: center; gap: 14px;
+    }
+    .ls4-domain-label {
+      font-family: var(--font-d);
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--white);
+      min-width: 90px;
+    }
+    .ls4-bar-track {
+      flex: 1; height: 4px;
+      background: rgba(255,255,255,.07);
+      border-radius: 2px; overflow: hidden;
+    }
+    .ls4-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold), var(--gold2));
+      border-radius: 2px;
+      width: 0;
+      transition: width 1.8s cubic-bezier(.4,0,.2,1);
+    }
+    .ls4-domain-pct {
+      font-family: var(--font-d);
+      font-size: 13px; font-weight: 700;
+      color: var(--gold); min-width: 34px; text-align: right;
+    }
+
+    /* ═══════════════════════════════════════════
+       WHY IT MATTERS
+    ═══════════════════════════════════════════ */
+    #why { background: var(--dark); }
+    .why-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      margin-top: 60px;
+    }
+    .why-stat {
+      text-align: center;
+      padding: 50px 28px;
+      background: var(--dark2);
+      position: relative; overflow: hidden;
+      transition: background .3s;
+    }
+    .why-stat:hover { background: #1c1c1c; }
+    .why-stat-num {
+      font-family: var(--font-d);
+      font-size: clamp(52px, 7vw, 76px);
+      font-weight: 900;
+      line-height: 1;
+      background: linear-gradient(135deg, var(--gold3), var(--gold), var(--golddim));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 14px;
+      display: block;
+    }
+    .why-stat-text { font-size: 15px; color: var(--steel); line-height: 1.6; }
+    .why-quote {
+      margin-top: 60px;
+      padding: 60px 50px;
+      background: linear-gradient(135deg, rgba(201,168,76,.08) 0%, rgba(201,168,76,.03) 100%);
+      border: 1px solid rgba(201,168,76,.18);
+      border-radius: 8px;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .why-quote::before {
+      content: '\201C';
+      position: absolute;
+      top: 10px; left: 40px;
+      font-size: 160px; line-height: 1;
+      color: rgba(201,168,76,.06);
+      font-family: Georgia, serif;
+    }
+    .why-quote-text {
+      font-family: var(--font-d);
+      font-size: clamp(22px, 3.5vw, 36px);
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.3;
+      margin-bottom: 18px;
+      position: relative; z-index: 1;
+    }
+    .why-quote-attr {
+      font-size: 12px; color: var(--gold);
+      letter-spacing: 3px; text-transform: uppercase;
+      font-family: var(--font-d); font-weight: 700;
+    }
+
+    /* ═══════════════════════════════════════════
+       WHO WE SERVE
+    ═══════════════════════════════════════════ */
+    #serve { background: var(--black); }
+    .serve-tabs {
+      display: flex; gap: 0;
+      margin: 50px 0 0;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      font-family: var(--font-d);
+      font-size: 13px; font-weight: 700;
+      letter-spacing: 2.5px; text-transform: uppercase;
+      padding: 16px 30px;
+      color: rgba(138,155,168,.6);
+      background: transparent;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all .2s var(--ease);
+    }
+    .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+    .tab-btn:hover { color: var(--white); }
+    .tab-panel { display: none; padding-top: 44px; }
+    .tab-panel.active { display: block; }
+    .serve-features {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 20px;
+    }
+    .serve-feature {
+      background: var(--dark2);
+      border: 1px solid rgba(255,255,255,.055);
+      border-radius: 6px;
+      padding: 28px 24px;
+      transition: all .3s var(--ease);
+      position: relative; overflow: hidden;
+    }
+    .serve-feature::before {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform .3s var(--ease);
+    }
+    .serve-feature:hover::before { transform: scaleX(1); }
+    .serve-feature:hover { border-color: rgba(201,168,76,.2); transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,.4); }
+    .feature-label {
+      font-family: var(--font-d);
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 4px; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 10px;
+    }
+    .feature-title {
+      font-family: var(--font-d);
+      font-size: 20px; font-weight: 800;
+      text-transform: uppercase;
+      color: var(--white); margin-bottom: 12px;
+    }
+    .feature-text { font-size: 14px; color: var(--steel); line-height: 1.65; }
+
+    /* ═══════════════════════════════════════════
+       WHAT WE DELIVER
+    ═══════════════════════════════════════════ */
+    #system { background: var(--dark); }
+    .system-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 60px;
+    }
+    .system-card {
+      background: var(--dark2);
+      border: 1px solid rgba(255,255,255,.055);
+      border-radius: 8px;
+      padding: 38px 30px;
+      position: relative; overflow: hidden;
+      transition: all .3s var(--ease);
+      transform-style: preserve-3d;
+    }
+    .system-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold), var(--golddim), transparent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .4s var(--ease);
+    }
+    .system-card:hover::before { transform: scaleX(1); }
+    .system-card:hover {
+      border-color: rgba(201,168,76,.2);
+      transform: translateY(-6px);
+      box-shadow: 0 24px 60px rgba(0,0,0,.5), 0 0 0 1px rgba(201,168,76,.1);
+    }
+    .system-icon {
+      font-size: 38px; margin-bottom: 18px;
+      filter: drop-shadow(0 0 12px rgba(201,168,76,.3));
+    }
+    .system-title {
+      font-family: var(--font-d);
+      font-size: 22px; font-weight: 900;
+      text-transform: uppercase; letter-spacing: 1px;
+      color: var(--gold); margin-bottom: 10px;
+    }
+    .system-text { font-size: 14px; color: var(--steel); line-height: 1.65; }
+    .system-list {
+      list-style: none; margin-top: 18px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .system-list li {
+      font-size: 13px; color: var(--silver);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .system-list li::before { content: '→'; color: var(--gold); flex-shrink: 0; }
+
+    /* ═══════════════════════════════════════════
+       PRICING
+    ═══════════════════════════════════════════ */
+    #pricing { background: var(--black); }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 60px;
+    }
+    .pricing-card {
+      background: var(--dark2);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: all .3s var(--ease);
+      display: flex; flex-direction: column;
+      position: relative;
+    }
+    .pricing-card:hover { transform: translateY(-8px); box-shadow: 0 30px 70px rgba(0,0,0,.5); }
+    .pricing-card.featured {
+      border-color: rgba(201,168,76,.5);
+      box-shadow: 0 0 0 1px rgba(201,168,76,.2), 0 20px 60px rgba(201,168,76,.08);
+    }
+    .pricing-card.featured:hover {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 1px var(--gold), 0 30px 80px rgba(201,168,76,.15);
+    }
+    .pricing-badge {
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--gold), var(--golddim));
+      color: var(--black);
+      font-family: var(--font-d);
+      font-size: 10px; font-weight: 800;
+      letter-spacing: 3px;
+      padding: 5px 20px;
+      border-radius: 0 0 6px 6px;
+    }
+    .pricing-header {
+      padding: 36px 30px 22px;
+      background: linear-gradient(180deg, rgba(201,168,76,.04) 0%, transparent 100%);
+      border-bottom: 1px solid rgba(255,255,255,.05);
+    }
+    .pricing-card.featured .pricing-header {
+      background: linear-gradient(180deg, rgba(201,168,76,.08) 0%, transparent 100%);
+    }
+    .pricing-tier {
+      font-family: var(--font-d);
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 5px; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 8px;
+    }
+    .pricing-name {
+      font-family: var(--font-d);
+      font-size: 38px; font-weight: 900;
+      text-transform: uppercase; line-height: 1;
+      color: var(--white); margin-bottom: 18px;
+    }
+    .pricing-price { display: flex; align-items: flex-start; gap: 4px; }
+    .price-dollar {
+      font-family: var(--font-d);
+      font-size: 22px; font-weight: 700;
+      color: var(--gold); margin-top: 8px;
+    }
+    .price-amount {
+      font-family: var(--font-d);
+      font-size: 64px; font-weight: 900;
+      line-height: 1; color: var(--white);
+    }
+    .price-note { font-size: 13px; color: var(--steel); margin-top: 8px; }
+    .pricing-body { padding: 26px 30px; flex: 1; }
+    .pricing-features {
+      list-style: none;
+      display: flex; flex-direction: column; gap: 13px;
+    }
+    .pricing-features li {
+      font-size: 14px; color: var(--silver);
+      display: flex; align-items: flex-start; gap: 11px;
+      line-height: 1.45;
+    }
+    .pricing-features li::before {
+      content: '✓';
+      color: var(--gold); font-weight: 700;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .pricing-footer { padding: 18px 30px 30px; }
+    .pricing-footer .btn { width: 100%; text-align: center; justify-content: center; }
+
+    /* Team cards */
+    .team-pricing {
+      margin-top: 40px;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .team-card {
+      background: var(--dark2);
+      border: 1px solid rgba(201,168,76,.18);
+      border-radius: 10px;
+      padding: 36px;
+      transition: border-color .25s, transform .25s;
+    }
+    .team-card:hover { border-color: rgba(201,168,76,.4); transform: translateY(-4px); }
+    .team-card-tag {
+      font-family: var(--font-d);
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 4px; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 10px;
+    }
+    .team-card-title {
+      font-family: var(--font-d);
+      font-size: 28px; font-weight: 900;
+      text-transform: uppercase; color: var(--white); margin-bottom: 12px;
+    }
+    .team-card-text { font-size: 14px; color: var(--steel); margin-bottom: 22px; line-height: 1.65; }
+    .team-features {
+      list-style: none;
+      display: flex; flex-direction: column; gap: 9px;
+      margin-bottom: 26px;
+    }
+    .team-features li {
+      font-size: 13px; color: var(--silver);
+      display: flex; align-items: center; gap: 9px;
+    }
+    .team-features li::before { content: '→'; color: var(--gold); }
+
+    /* ═══════════════════════════════════════════
+       PARTNERS
+    ═══════════════════════════════════════════ */
+    #partners { background: var(--dark); }
+    .partners-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 60px;
+    }
+    .partner-card {
+      background: var(--dark2);
+      border: 1px solid rgba(255,255,255,.055);
+      border-radius: 8px;
+      padding: 32px 24px;
+      text-align: center;
+      transition: all .3s var(--ease);
+      position: relative; overflow: hidden;
+    }
+    .partner-card::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 50% 0%, rgba(201,168,76,.07), transparent 60%);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .partner-card:hover::after { opacity: 1; }
+    .partner-card:hover { border-color: rgba(201,168,76,.25); transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,.4); }
+    .partner-icon { font-size: 36px; margin-bottom: 14px; filter: drop-shadow(0 0 8px rgba(201,168,76,.2)); }
+    .partner-name {
+      font-family: var(--font-d);
+      font-size: 18px; font-weight: 900;
+      text-transform: uppercase; letter-spacing: 1px;
+      color: var(--white); margin-bottom: 8px;
+    }
+    .partner-role { font-size: 12px; color: var(--steel); line-height: 1.5; }
+
+
+    /* ═══════════════════════════════════════════
+       PRODUCTS
+    ═══════════════════════════════════════════ */
+    #products { background: var(--dark); }
+    .products-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-top: 60px;
+    }
+    .product-card {
+      background: var(--dark2);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 44px 40px;
+      position: relative;
+      overflow: hidden;
+      transition: transform .3s var(--ease), border-color .3s;
+      display: flex;
+      flex-direction: column;
+    }
+    .product-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      transition: opacity .3s;
+    }
+    .product-card.react::before  { background: linear-gradient(90deg, #3ddc64, #28a845); }
+    .product-card.nil::before    { background: linear-gradient(90deg, var(--gold), var(--golddim)); }
+    .product-card:hover { transform: translateY(-6px); border-color: rgba(255,255,255,.12); }
+    .product-card-eyebrow {
+      font-family: var(--font-d);
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 4px; text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .product-card.react .product-card-eyebrow { color: #3ddc64; }
+    .product-card.nil  .product-card-eyebrow  { color: var(--gold); }
+    .product-card-name {
+      font-family: var(--font-d);
+      font-size: clamp(30px, 4vw, 44px);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -1px;
+      line-height: .95;
+      color: var(--white);
+      margin-bottom: 10px;
+    }
+    .product-card-tagline {
+      font-family: var(--font-d);
+      font-size: 15px; font-weight: 600;
+      letter-spacing: 2px; text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .product-card.react .product-card-tagline { color: rgba(61,220,100,.7); }
+    .product-card.nil  .product-card-tagline  { color: var(--golddim); }
+    .product-card-desc {
+      font-size: 15px;
+      color: var(--steel);
+      line-height: 1.75;
+      margin-bottom: 28px;
+      flex: 1;
+    }
+    .product-stats {
+      display: flex;
+      gap: 28px;
+      margin-bottom: 32px;
+      padding: 20px 0;
+      border-top: 1px solid rgba(255,255,255,.05);
+      border-bottom: 1px solid rgba(255,255,255,.05);
+    }
+    .product-stat-num {
+      font-family: var(--font-d);
+      font-size: 26px; font-weight: 900;
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+    .product-card.react .product-stat-num { color: #3ddc64; }
+    .product-card.nil  .product-stat-num  { color: var(--gold2); }
+    .product-stat-label {
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--steel);
+    }
+    .btn-react {
+      background: linear-gradient(135deg, #3ddc64, #219a3c);
+      color: #080808;
+      font-weight: 900;
+    }
+    .btn-react:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(61,220,100,.3); }
+    @media (max-width: 800px) {
+      .products-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ═══════════════════════════════════════════
+       SIGN UP
+    ═══════════════════════════════════════════ */
+    #signup { background: var(--black); }
+    .signup-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+    .form-card {
+      background: var(--dark2);
+      border: 1px solid rgba(201,168,76,.2);
+      border-radius: 10px;
+      padding: 44px;
+      box-shadow: 0 30px 80px rgba(0,0,0,.4);
+    }
+    .form-title {
+      font-family: var(--font-d);
+      font-size: 30px; font-weight: 900;
+      text-transform: uppercase; letter-spacing: 1px;
+      color: var(--white); margin-bottom: 30px;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block;
+      font-family: var(--font-d);
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: var(--steel); margin-bottom: 8px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 4px;
+      color: var(--white);
+      font-family: var(--font-b);
+      font-size: 15px;
+      padding: 13px 16px;
+      transition: border-color .2s, background .2s;
+      outline: none;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--gold);
+      background: rgba(201,168,76,.03);
+    }
+    .form-group select option { background: #1a1a1a; }
+    .form-group textarea { resize: vertical; min-height: 90px; }
+    .form-submit {
+      width: 100%; padding: 17px;
+      background: linear-gradient(135deg, var(--gold), var(--golddim));
+      color: var(--black);
+      font-family: var(--font-d);
+      font-size: 14px; font-weight: 800;
+      letter-spacing: 3px; text-transform: uppercase;
+      border-radius: 4px; border: none; cursor: pointer;
+      transition: all .25s var(--ease);
+      margin-top: 8px;
+      box-shadow: 0 4px 20px rgba(201,168,76,.25);
+    }
+    .form-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(201,168,76,.4); }
+    .form-success { display: none; text-align: center; padding: 30px; }
+    .form-success-icon { font-size: 52px; margin-bottom: 16px; }
+    .form-success h3 {
+      font-family: var(--font-d);
+      font-size: 28px; font-weight: 900;
+      text-transform: uppercase; color: var(--gold); margin-bottom: 10px;
+    }
+    .form-success p { color: var(--steel); font-size: 15px; }
+
+    .signup-benefits { display: flex; flex-direction: column; gap: 0; margin-top: 36px; }
+    .signup-benefit {
+      display: flex; align-items: center; gap: 16px;
+      padding: 18px 0;
+      border-bottom: 1px solid rgba(255,255,255,.05);
+    }
+    .signup-benefit:last-child { border-bottom: none; }
+    .signup-benefit-check {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: rgba(201,168,76,.1);
+      border: 1px solid rgba(201,168,76,.3);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: 13px;
+      color: var(--gold);
+    }
+    .signup-benefit-text { font-size: 15px; color: var(--silver); }
+
+    /* ═══════════════════════════════════════════
+       CTA BANNER
+    ═══════════════════════════════════════════ */
+    #cta-banner {
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, var(--gold) 0%, #b5912a 50%, #8a6d2e 100%);
+      padding: 100px 0;
+      text-align: center;
+    }
+    #cta-banner::before {
+      content: 'LANISTA';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: var(--font-d);
+      font-size: clamp(80px, 18vw, 220px);
+      font-weight: 900;
+      letter-spacing: -4px;
+      text-transform: uppercase;
+      color: rgba(0,0,0,.06);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .cta-title {
+      font-family: var(--font-d);
+      font-size: clamp(44px, 8vw, 90px);
+      font-weight: 900;
+      line-height: .9;
+      text-transform: uppercase;
+      color: var(--black);
+      margin-bottom: 20px;
+      position: relative; z-index: 1;
+    }
+    .cta-sub {
+      font-size: 18px;
+      color: rgba(8,8,8,.65);
+      max-width: 620px; margin: 0 auto 40px;
+      position: relative; z-index: 1;
+    }
+    .cta-btns {
+      display: flex; gap: 14px;
+      justify-content: center; flex-wrap: wrap;
+      position: relative; z-index: 1;
+    }
+    .btn-dark { background: var(--black); color: var(--gold); }
+    .btn-dark:hover { background: #1a1a1a; transform: translateY(-2px); }
+    .btn-dark-outline { border: 2px solid rgba(8,8,8,.5); color: var(--black); background: transparent; }
+    .btn-dark-outline:hover { background: rgba(0,0,0,.1); }
+
+    /* ═══════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════ */
+    #footer {
+      background: #060606;
+      padding: 70px 0 32px;
+      border-top: 1px solid rgba(201,168,76,.1);
+    }
+    .footer-top {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 50px;
+      padding-bottom: 56px;
+      border-bottom: 1px solid rgba(255,255,255,.05);
+      margin-bottom: 32px;
+    }
+    .footer-brand-name {
+      font-family: var(--font-d);
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #F5E090 0%, #C9A84C 50%, #9a7020 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(1px 1px 0px rgba(0,0,0,0.8));
+    }
+    .footer-brand-name .dot { display: none; }
+
+    .footer-tagline {
+      font-family: var(--font-d);
+      font-size: 10px; letter-spacing: 4px;
+      text-transform: uppercase; color: var(--steel);
+      margin-bottom: 16px;
+    }
+    .footer-desc { font-size: 14px; color: var(--steel); line-height: 1.7; margin-bottom: 24px; }
+    .social-links { display: flex; gap: 10px; }
+    .social-link {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      transition: all .2s;
+    }
+    .social-link:hover { border-color: var(--gold); background: rgba(201,168,76,.1); transform: translateY(-2px); }
+    .footer-col-title {
+      font-family: var(--font-d);
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 4px; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 20px;
+    }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 11px; }
+    .footer-links a { font-size: 14px; color: var(--steel); transition: color .2s; }
+    .footer-links a:hover { color: var(--white); }
+    .footer-bottom {
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 10px;
+    }
+    .footer-copy { font-size: 12px; color: rgba(138,155,168,.5); }
+    .footer-est {
+      font-family: var(--font-d);
+      font-size: 10px; letter-spacing: 4px;
+      text-transform: uppercase; color: rgba(201,168,76,.35);
+    }
+
+    /* ═══════════════════════════════════════════
+       MODAL
+    ═══════════════════════════════════════════ */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.88);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--dark2);
+      border: 1px solid rgba(201,168,76,.25);
+      border-radius: 10px;
+      padding: 44px;
+      max-width: 560px; width: 100%;
+      position: relative;
+      max-height: 92vh; overflow-y: auto;
+      box-shadow: 0 40px 100px rgba(0,0,0,.7), 0 0 0 1px rgba(201,168,76,.1);
+    }
+    .modal-close {
+      position: absolute; top: 18px; right: 18px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.12);
+      color: var(--silver);
+      width: 34px; height: 34px;
+      border-radius: 50%; font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .2s; cursor: pointer;
+    }
+    .modal-close:hover { border-color: var(--gold); color: var(--gold); }
+    .modal-tier {
+      font-family: var(--font-d);
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 5px; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 6px;
+    }
+    .modal-title {
+      font-family: var(--font-d);
+      font-size: 32px; font-weight: 900;
+      text-transform: uppercase; color: var(--white);
+      margin-bottom: 28px;
+    }
+
+    /* ═══════════════════════════════════════════
+       ANIMATIONS
+    ═══════════════════════════════════════════ */
+    @keyframes fadeInLeft {
+      from { opacity: 0; transform: translateX(-28px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; } to { opacity: 1; }
+    }
+
+    .fade-up {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity .7s var(--ease), transform .7s var(--ease);
+    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    .fade-left {
+      opacity: 0; transform: translateX(-28px);
+      transition: opacity .7s var(--ease), transform .7s var(--ease);
+    }
+    .fade-left.visible { opacity: 1; transform: translateX(0); }
+
+    /* ═══════════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════════ */
+    @media (max-width: 960px) {
+      .mission-grid,
+      .signup-wrap { grid-template-columns: 1fr; gap: 50px; }
+      .system-grid,
+      .pricing-grid { grid-template-columns: 1fr 1fr; }
+      .partners-grid { grid-template-columns: repeat(2, 1fr); }
+      .team-pricing { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr 1fr; gap: 36px; }
+      .why-stat-grid { grid-template-columns: 1fr; }
+      .core4-grid { grid-template-columns: 1fr; }
+      .ls4-ring-section { grid-template-columns: 1fr; gap: 40px; padding: 40px; }
+      .hero-stats { display: none; }
+    }
+    @media (max-width: 640px) {
+      .section { padding: 70px 0; }
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .hero-btns { flex-direction: column; }
+      .hero-btns .btn { text-align: center; justify-content: center; }
+      .hero-watermark { display: none; }
+      .form-row { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr; }
+      .serve-features { grid-template-columns: 1fr; }
+      .partners-grid { grid-template-columns: 1fr; }
+      .pricing-grid { grid-template-columns: 1fr; }
+      .system-grid { grid-template-columns: 1fr; }
+      .stats-strip { flex-wrap: wrap; }
+      .stat-item { min-width: 48%; border-right: none; border-bottom: 1px solid rgba(255,255,255,.05); }
+      .pricing-badge { font-size: 9px; }
+      #cursor, #cursor-ring { display: none; }
+      body { cursor: auto; }
+      button { cursor: pointer; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Cursor -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- ═══ NAV ════════════════════════════════════════ -->
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="#hero" class="nav-logo">
+      <span class="nav-logo-name">Lanista Sports</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#mission">About</a></li>
+      <li><a href="#core4">The System</a></li>
+      <li><a href="#serve">Who We Serve</a></li>
+      <li><a href="#pricing">Membership</a></li>
+      <li><a href="#partners">Partners</a></li>
+      <li><a href="#products">Products</a></li>
+      <li><a href="#" onclick="openPlayer();return false;">Dashboard</a></li>
+      <li><a href="#" onclick="openDashboard2();return false;" style="color:#d4af37">Dashboard 2.0</a></li>
+    </ul>
+    <a href="#inquiry" class="btn btn-gold nav-cta" style="display:none;padding:12px 26px;font-size:12px" id="nav-cta-desktop">Get Started</a>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#mission" class="mobile-link">About</a>
+  <a href="#core4" class="mobile-link">The System</a>
+  <a href="#serve" class="mobile-link">Who We Serve</a>
+  <a href="#pricing" class="mobile-link">Membership</a>
+  <a href="#partners" class="mobile-link">Partners</a>
+  <a href="#products" class="mobile-link">Products</a>
+  <a href="#" class="mobile-link" onclick="openPlayer();return false;">Dashboard</a>
+  <a href="#" class="mobile-link" onclick="openDashboard2();return false;" style="color:#d4af37">Dashboard 2.0</a>
+  <a href="#inquiry" class="btn btn-gold mobile-link" style="border-radius:3px">Get Started →</a>
+</div>
+
+<!-- ═══ HERO ════════════════════════════════════════ -->
+<section id="hero">
+  <div class="hero-bg-base"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-lines"></div>
+  <div class="hero-watermark">LS4</div>
+
+  <div class="hero-content">
+    <div class="hero-inner-grid">
+      <!-- LEFT: text content -->
+      <div class="hero-text-col">
+        <div class="hero-eyebrow">EST. 2025 · Pittsburgh, PA · Athlete Intelligence Platform</div>
+        <h1 class="hero-title">
+          THE ARENA<br>
+          <span class="line2">AWAITS.</span>
+        </h1>
+        <p class="hero-tagline">Precision Development. Strategized Growth.</p>
+        <p class="hero-desc">
+          We turn raw potential into elite performance. Lanista Sports is the athlete development platform that transforms data into direction — for athletes, families, and coaches ready to win.
+        </p>
+        <div class="hero-btns">
+          <a href="#pricing" class="btn btn-gold">Join Now →</a>
+          <a href="#mission" class="btn btn-outline">Learn Our Story</a>
+        </div>
+
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-num">6–8%</div>
+            <div class="hero-stat-label">HS athletes go college</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num">LS4</div>
+            <div class="hero-stat-label">Verified athlete score</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num">3</div>
+            <div class="hero-stat-label">Development domains</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num">6+</div>
+            <div class="hero-stat-label">Elite tech partners</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: decorative monogram -->
+      <div class="hero-badge-col">
+        <div class="hero-monogram">
+          <svg viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg" class="monogram-svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="mgGold" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#F5E090"/>
+                <stop offset="45%" stop-color="#C9A84C"/>
+                <stop offset="100%" stop-color="#7a5c20"/>
+              </linearGradient>
+              <linearGradient id="mgGoldStroke" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#F5E090" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#C9A84C" stop-opacity="0.06"/>
+              </linearGradient>
+            </defs>
+            <!-- Outer ring -->
+            <circle cx="180" cy="180" r="168" fill="none" stroke="url(#mgGoldStroke)" stroke-width="1.5"/>
+            <circle cx="180" cy="180" r="152" fill="none" stroke="rgba(201,168,76,0.08)" stroke-width="1"/>
+            <!-- Greek key arc segments -->
+            <circle cx="180" cy="180" r="160" fill="none" stroke="url(#mgGold)" stroke-width="2" stroke-dasharray="18 6" opacity="0.35"/>
+            <!-- LS letters -->
+            <text x="180" y="148" font-family="'Barlow Condensed',sans-serif" font-size="130" font-weight="900" fill="url(#mgGold)" text-anchor="middle" dominant-baseline="middle" letter-spacing="-4" opacity="0.92">LS</text>
+            <!-- Tagline arc text -->
+            <path id="arc-path" d="M 40,180 A 140,140 0 0,1 320,180" fill="none"/>
+            <text font-family="'Barlow Condensed',sans-serif" font-size="11" font-weight="700" fill="rgba(201,168,76,0.5)" letter-spacing="5">
+              <textPath href="#arc-path" startOffset="50%" text-anchor="middle">PRECISION · DEVELOPMENT · STRATEGIZED GROWTH</textPath>
+            </text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    Scroll
+  </div>
+</section>
+
+<!-- ═══ MARQUEE ══════════════════════════════════════ -->
+<div class="marquee-wrap" aria-hidden="true">
+  <div class="marquee-track">
+    <!-- Two identical sets for seamless loop -->
+    <span class="marquee-item">Strengthen<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Shield<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Strategize<span class="marquee-dot"></span></span>
+    <span class="marquee-item">LS4 Score<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Precision Development<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Whole Athlete<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Strategized Growth<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Every Level<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Pittsburgh, PA<span class="marquee-dot"></span></span>
+    <span class="marquee-item">NIL Protect<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Rapsodo · Diamond Kinetics<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Data Into Direction<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Strengthen<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Shield<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Strategize<span class="marquee-dot"></span></span>
+    <span class="marquee-item">LS4 Score<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Precision Development<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Whole Athlete<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Strategized Growth<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Every Level<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Pittsburgh, PA<span class="marquee-dot"></span></span>
+    <span class="marquee-item">NIL Protect<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Rapsodo · Diamond Kinetics<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Data Into Direction<span class="marquee-dot"></span></span>
+  </div>
+</div>
+
+<!-- ═══ STATS STRIP ═══════════════════════════════════ -->
+<div id="stats">
+  <div class="stats-strip">
+    <div class="stat-item fade-up">
+      <div class="stat-num" data-count="6">6–8%</div>
+      <div class="stat-label">of HS athletes go college</div>
+    </div>
+    <div class="stat-item fade-up" style="transition-delay:.08s">
+      <div class="stat-num">3</div>
+      <div class="stat-label">Core pillars of development</div>
+    </div>
+    <div class="stat-item fade-up" style="transition-delay:.16s">
+      <div class="stat-num">LS4</div>
+      <div class="stat-label">Verified composite score</div>
+    </div>
+    <div class="stat-item fade-up" style="transition-delay:.24s">
+      <div class="stat-num">6+</div>
+      <div class="stat-label">Elite tech partners</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MISSION ══════════════════════════════════════ -->
+<section id="mission" class="section">
+  <div class="container">
+    <div class="mission-grid">
+      <div class="fade-left">
+        <div class="tag">Our Identity</div>
+        <h2 class="section-title">BEHIND<br>THE NAME</h2>
+        <div class="divider"></div>
+        <p class="section-sub">
+          In ancient Rome, the <strong style="color:var(--gold)">Lanista</strong> was the trainer, manager, and strategist behind gladiators — the one who turned raw potential into elite performance.<br><br>We are that for today's athletes.
+        </p>
+        <blockquote class="mission-quote">
+          "We remove the guesswork from development by educating, guiding, and empowering athletes to understand themselves."
+        </blockquote>
+        <a href="#inquiry" class="btn btn-gold">Start Your Journey →</a>
+      </div>
+      <div class="fade-up" style="transition-delay:.15s">
+        <div class="pillar-badges">
+          <div class="pillar-badge">
+            <div class="pillar-badge-icon">💪</div>
+            <div>
+              <div class="pillar-badge-title">Educate</div>
+              <div class="pillar-badge-text">Know the game and the process. We give athletes the knowledge to compete with confidence and clarity.</div>
+            </div>
+          </div>
+          <div class="pillar-badge">
+            <div class="pillar-badge-icon">🧭</div>
+            <div>
+              <div class="pillar-badge-title">Guide</div>
+              <div class="pillar-badge-text">Step-by-step support with confidence. No guesswork, no wasted showcases, no bad fits.</div>
+            </div>
+          </div>
+          <div class="pillar-badge">
+            <div class="pillar-badge-icon">⚡</div>
+            <div>
+              <div class="pillar-badge-title">Empower</div>
+              <div class="pillar-badge-text">Align goals to best-fit opportunities. Connect performance data to the right doors at the next level.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CORE 4 / LS4 ═════════════════════════════════ -->
+<section id="core4" class="section">
+  <div class="container">
+    <div class="text-center fade-up">
+      <div class="tag">The Lanista System</div>
+      <h2 class="section-title grad">LANISTA CORE 4</h2>
+      <p class="section-sub" style="margin:18px auto 0;">Every athlete. Measured. Developed. Placed. Our proprietary LS4 system evaluates the whole athlete across four core domains.</p>
+    </div>
+
+    <div class="core4-grid fade-up" style="transition-delay:.1s">
+      <div class="core4-item">
+        <div class="core4-num">01</div>
+        <div class="core4-title">Athletic</div>
+        <div class="core4-subtitle">Physical Foundation · Body</div>
+        <p class="core4-text">Speed · Strength · Agility · Endurance · Explosiveness. We assess and develop the physical baseline every elite athlete needs.</p>
+      </div>
+      <div class="core4-item">
+        <div class="core4-num">02</div>
+        <div class="core4-title">Skills</div>
+        <div class="core4-subtitle">Sport Performance · Talent</div>
+        <p class="core4-text">Sport-specific technique, mechanics, and game IQ. Film evaluation and data-driven tracking with Rapsodo & Diamond Kinetics.</p>
+      </div>
+      <div class="core4-item">
+        <div class="core4-num">03</div>
+        <div class="core4-title">Mentality</div>
+        <div class="core4-subtitle">Mindset & Character · Mind</div>
+        <p class="core4-text">Coachability · Competitive drive · Leadership. Mental performance is the difference between talent and production.</p>
+      </div>
+      <div class="core4-item">
+        <div class="core4-num">04</div>
+        <div class="core4-title">LS4 Score</div>
+        <div class="core4-subtitle">The Composite Output</div>
+        <p class="core4-text">Your athlete's full identity in one verified number. The Lanista Score is the standard for whole-athlete evaluation at every level.</p>
+      </div>
+    </div>
+
+    <!-- LS4 Score Visualization -->
+    <div class="ls4-ring-section fade-up" style="transition-delay:.2s" id="ls4-section">
+      <div class="ls4-visual">
+        <svg class="ls4-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="goldGradRing" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#E8C96B" />
+              <stop offset="100%" style="stop-color:#8a6d2e" />
+            </linearGradient>
+          </defs>
+          <!-- Outer subtle ring -->
+          <circle cx="100" cy="100" r="88" fill="none" stroke="rgba(255,255,255,.04)" stroke-width="1"/>
+          <!-- Track -->
+          <circle class="ls4-svg-track" cx="100" cy="100" r="86" />
+          <!-- Main bar (stroke-dasharray = 2πr ≈ 540) -->
+          <circle class="ls4-svg-bar" id="ls4-ring-bar"
+            cx="100" cy="100" r="86"
+            transform="rotate(-90 100 100)"
+            stroke-dasharray="540"
+            stroke-dashoffset="540" />
+          <!-- Inner rings for depth -->
+          <circle cx="100" cy="100" r="70" fill="none" stroke="rgba(201,168,76,.06)" stroke-width="1"/>
+          <circle cx="100" cy="100" r="54" fill="none" stroke="rgba(201,168,76,.04)" stroke-width="1"/>
+        </svg>
+        <div class="ls4-center-text">
+          <div class="ls4-score-num" id="ls4-score-count">0</div>
+          <div class="ls4-score-label">LS4 Score</div>
+        </div>
+      </div>
+      <div class="ls4-ring-info">
+        <div class="tag">The Lanista Score</div>
+        <h3 class="ls4-ring-title">ONE <span>VERIFIED</span><br>NUMBER.</h3>
+        <p class="ls4-ring-desc">The LS4 Composite Score captures the complete picture — physical baseline, sport-specific skills, and mental performance — so athletes, families, and coaches can make smarter decisions at every level.</p>
+        <div class="ls4-domains">
+          <div class="ls4-domain">
+            <div class="ls4-domain-label">Athletic</div>
+            <div class="ls4-bar-track"><div class="ls4-bar-fill" data-width="85"></div></div>
+            <div class="ls4-domain-pct">85</div>
+          </div>
+          <div class="ls4-domain">
+            <div class="ls4-domain-label">Skills</div>
+            <div class="ls4-bar-track"><div class="ls4-bar-fill" data-width="78"></div></div>
+            <div class="ls4-domain-pct">78</div>
+          </div>
+          <div class="ls4-domain">
+            <div class="ls4-domain-label">Mentality</div>
+            <div class="ls4-bar-track"><div class="ls4-bar-fill" data-width="92"></div></div>
+            <div class="ls4-domain-pct">92</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ WHY IT MATTERS ═══════════════════════════════ -->
+<section id="why" class="section">
+  <div class="container">
+    <div class="text-center fade-up">
+      <div class="tag">Why It Matters</div>
+      <h2 class="section-title grad">ATHLETE DEVELOPMENT<br>IS EVERYTHING.</h2>
+    </div>
+    <div class="why-stat-grid">
+      <div class="why-stat fade-up">
+        <span class="why-stat-num" data-count-pct="6" data-suffix="%">6%</span>
+        <div class="why-stat-text">of high school athletes ever play in college. The gap isn't ability — it's guidance, identity, and fit.</div>
+      </div>
+      <div class="why-stat fade-up" style="transition-delay:.1s">
+        <span class="why-stat-num" data-count="100" data-suffix="%">100%</span>
+        <div class="why-stat-text">of athletes deserve a real development system — not just exposure. We meet athletes where they are and help them reach where they want to be.</div>
+      </div>
+      <div class="why-stat fade-up" style="transition-delay:.2s">
+        <span class="why-stat-num">1</span>
+        <div class="why-stat-text">platform that connects performance tech, recruiting, mindset, and NIL into one verified system. Lanista closes the gap — for every athlete.</div>
+      </div>
+    </div>
+    <div class="why-quote fade-up" style="transition-delay:.3s">
+      <div class="why-quote-text">"Raw talent without a development system is wasted potential."</div>
+      <div class="why-quote-attr">— Lanista Sports</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ WHO WE SERVE ══════════════════════════════════ -->
+<section id="serve" class="section">
+  <div class="container">
+    <div class="fade-up">
+      <div class="tag">Who We Serve</div>
+      <h2 class="section-title">BUILT FOR<br>EVERY LEVEL.</h2>
+    </div>
+    <div class="serve-tabs fade-up" style="transition-delay:.1s">
+      <button class="tab-btn active" data-tab="athletes">Athletes</button>
+      <button class="tab-btn" data-tab="parents">Parents</button>
+      <button class="tab-btn" data-tab="coaches">Coaches & Teams</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-athletes">
+      <div class="serve-features">
+        <div class="serve-feature">
+          <div class="feature-label">Strengthen</div>
+          <div class="feature-title">Uncover Your Edge</div>
+          <p class="feature-text">Verified metrics, film, and a personalized LS4 Score with reports that tell the full story of your athletic identity.</p>
+        </div>
+        <div class="serve-feature">
+          <div class="feature-label">Shield</div>
+          <div class="feature-title">Guard Your Future</div>
+          <p class="feature-text">Avoid bad fits, misleading advisors, and wasted showcases. A trusted all-in-one platform built to protect your journey.</p>
+        </div>
+        <div class="serve-feature">
+          <div class="feature-label">Strategize</div>
+          <div class="feature-title">Map Your Move</div>
+          <p class="feature-text">A complete development roadmap designed to improve skills, athletic performance, and mindset while finding the right fit for your future.</p>
+        </div>
+        <div class="serve-feature">
+          <div class="feature-label">Develop</div>
+          <div class="feature-title">Weekly Growth System</div>
+          <p class="feature-text">Track progress through data reporting, customized training plans, weekly check-ins, and a dashboard that evolves alongside your development.</p>
+        </div>
+        <div class="serve-feature">
+          <div class="feature-label">Resources</div>
+          <div class="feature-title">Content & Courses</div>
+          <p class="feature-text">Learn from expert-created courses focused on improving on-field skills, athletic ability, and mental performance.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-parents">
+      <div class="serve-features">
+        <div class="serve-feature">
+          <div class="feature-label">Transparency</div>
+          <div class="feature-title">Know Where They Stand</div>
+          <p class="feature-text">Take the guesswork out of your child's development. The full transparent story of your athlete's potential, in one verified system.</p>
+        </div>
+        <div class="serve-feature">
+          <div class="feature-label">Protection</div>
+          <div class="feature-title">Guard Their Future</div>
+          <p class="feature-text">Avoid wasted time and money on unreliable showcases, advisors, and platforms. One trusted system designed to protect athletes and families.</p>
+        </div>
+        <div class="serve-feature">
+          <div class="feature-label">Strategy</div>
+          <div class="feature-title">Clear Developmental Path</div>
+          <p class="feature-text">Access the tools, insights, and guidance needed to create a roadmap that helps your athlete reach their full potential.</p>
+        </div>
+        <div class="serve-feature">
+          <div class="feature-label">Progress</div>
+          <div class="feature-title">Weekly Updates</div>
+          <p class="feature-text">Data reporting, customized training plans, and a dashboard that shows exactly how your athlete is growing each week.</p>
+        </div>
+        <div class="serve-feature">
+          <div class="feature-label">Education</div>
+          <div class="feature-title">Pro-Level Resources</div>
+          <p class="feature-text">Professional-level courses and educational content designed to help athletes grow, improve, and maximize their opportunities.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-coaches">
+      <div class="serve-features">
+        <div class="serve-feature">
+          <div class="feature-label">Strengthen</div>
+          <div class="feature-title">Find Your X-Factor</div>
+          <p class="feature-text">Gain a complete view of your team through aggregated reporting and actionable insights. Eliminate guesswork and make smarter decisions.</p>
+        </div>
+        <div class="serve-feature">
+          <div class="feature-label">Shield</div>
+          <div class="feature-title">Protect Your Culture</div>
+          <p class="feature-text">Automatically streamline developmental plans to organize and enforce the standards of your culture. Shield your program from bad fits.</p>
+        </div>
+        <div class="serve-feature">
+          <div class="feature-label">Strategize</div>
+          <div class="feature-title">Vet the Right Fit</div>
+          <p class="feature-text">Identify athletes who align with your program through trusted evaluations, measurable data, and long-term player development insights.</p>
+        </div>
+        <div class="serve-feature">
+          <div class="feature-label">Pipeline</div>
+          <div class="feature-title">Weekly Player Updates</div>
+          <p class="feature-text">Receive weekly updates on players in your organization, including team strengths and weaknesses, so you can stay informed and proactive.</p>
+        </div>
+        <div class="serve-feature">
+          <div class="feature-label">Efficiency</div>
+          <div class="feature-title">One-Stop Hub</div>
+          <p class="feature-text">Roster gap scanner, verified prospects, overall culture review, and one-click development tools — all in one coaching hub.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ WHAT WE DELIVER ════════════════════════════════ -->
+<section id="system" class="section">
+  <div class="container">
+    <div class="text-center fade-up">
+      <div class="tag">Core Offerings</div>
+      <h2 class="section-title grad">WHAT WE DELIVER</h2>
+    </div>
+    <div class="system-grid">
+      <div class="system-card fade-up">
+        <div class="system-icon">📋</div>
+        <div class="system-title">Verified Athlete Profiles</div>
+        <p class="system-text">Stats, film, metrics, and character — all in one coach-ready profile that tells the complete story of your athlete.</p>
+        <ul class="system-list">
+          <li>Combine session data</li>
+          <li>LS4 Score + tracking dashboard</li>
+          <li>Film integration</li>
+        </ul>
+      </div>
+      <div class="system-card fade-up" style="transition-delay:.08s">
+        <div class="system-icon">🎯</div>
+        <div class="system-title">Smart Match Engine</div>
+        <p class="system-text">Algorithmic player-to-team fit based on metrics, needs, and culture. Stop guessing. Start matching.</p>
+        <ul class="system-list">
+          <li>Fit-based athlete-program matching</li>
+          <li>Roster gap scanner</li>
+          <li>One-click recruiting outreach</li>
+        </ul>
+      </div>
+      <div class="system-card fade-up" style="transition-delay:.16s">
+        <div class="system-icon">📈</div>
+        <div class="system-title">Personalized Development</div>
+        <p class="system-text">Custom training plans, weekly check-ins, and LS4 Score tracking that evolves as your athlete grows.</p>
+        <ul class="system-list">
+          <li>Weekly development plans</li>
+          <li>Progress dashboards</li>
+          <li>Certified coach lessons</li>
+        </ul>
+      </div>
+      <div class="system-card fade-up" style="transition-delay:.24s">
+        <div class="system-icon">🛡️</div>
+        <div class="system-title">NIL & Recruiting Guidance</div>
+        <p class="system-text">Courses, resources, and advisor access to navigate the recruiting process and protect your NIL rights.</p>
+        <ul class="system-list">
+          <li>NIL compliance courses</li>
+          <li>Recruiting roadmap access</li>
+          <li>1-on-1 advisor consultations</li>
+        </ul>
+      </div>
+      <div class="system-card fade-up" style="transition-delay:.3s">
+        <div class="system-icon">🏋️</div>
+        <div class="system-title">Coaching Hub</div>
+        <p class="system-text">Roster gap scanner, verified prospects, culture review, and one-click development tools for coaches and programs.</p>
+        <ul class="system-list">
+          <li>Team analytics dashboard</li>
+          <li>Program-level reporting</li>
+          <li>Prospect pipeline access</li>
+        </ul>
+      </div>
+      <div class="system-card fade-up" style="transition-delay:.36s">
+        <div class="system-icon">🧠</div>
+        <div class="system-title">Whole Athlete Roadmap</div>
+        <p class="system-text">Mindset scores, athletic scores, and skill scores — all rolled into the comprehensive Lanista Score (LS4).</p>
+        <ul class="system-list">
+          <li>Mental performance tracking</li>
+          <li>Holistic athlete identity</li>
+          <li>Long-term development path</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PRICING ══════════════════════════════════════ -->
+<section id="pricing" class="section">
+  <div class="container">
+    <div class="text-center fade-up">
+      <div class="tag">Membership</div>
+      <h2 class="section-title">CHOOSE YOUR TIER</h2>
+      <p class="section-sub" style="margin:18px auto 0;">Individual athlete memberships. One-time investment. Lifetime access to your LS4 profile and development tools.</p>
+    </div>
+
+    <div class="pricing-grid fade-up" style="transition-delay:.1s">
+      <!-- Contender -->
+      <div class="pricing-card">
+        <div class="pricing-header">
+          <div class="pricing-tier">Tier 1 · Entry</div>
+          <div class="pricing-name">Contender</div>
+          <div class="pricing-price">
+            <span class="price-dollar">$</span>
+            <span class="price-amount">175</span>
+          </div>
+          <div class="price-note">One-time payment · Individual Athlete</div>
+        </div>
+        <div class="pricing-body">
+          <ul class="pricing-features">
+            <li>Verified Athlete Profile with 1 Combine Session</li>
+            <li>LS4 Score + Tracking Dashboard</li>
+            <li>Customized Development Report</li>
+            <li>10% off future lessons with Lanista certified coaches</li>
+            <li>Full-Year Basic Access to Lanista Platform</li>
+          </ul>
+        </div>
+        <div class="pricing-footer">
+          <button class="btn btn-outline" onclick="openModal('contender')" style="width:100%;justify-content:center">Get Started →</button>
+        </div>
+      </div>
+
+      <!-- Warrior (Featured) -->
+      <div class="pricing-card featured">
+        <div class="pricing-badge">MOST POPULAR</div>
+        <div class="pricing-header" style="padding-top:48px">
+          <div class="pricing-tier">Tier 2 · Recommended</div>
+          <div class="pricing-name">Warrior</div>
+          <div class="pricing-price">
+            <span class="price-dollar">$</span>
+            <span class="price-amount">325</span>
+          </div>
+          <div class="price-note">One-time payment · Individual Athlete</div>
+        </div>
+        <div class="pricing-body">
+          <ul class="pricing-features">
+            <li>Verified Athlete Profile with 2 Combine Sessions</li>
+            <li>LS4 Score + Tracking Dashboard</li>
+            <li>Customized Development Report</li>
+            <li>10% off future lessons with Lanista certified coaches</li>
+            <li>1 Month Free access to NIL Protect</li>
+            <li>Full-Year Access to Lanista Platform</li>
+          </ul>
+        </div>
+        <div class="pricing-footer">
+          <button class="btn btn-gold" onclick="openModal('warrior')" style="width:100%;justify-content:center">Get Started →</button>
+        </div>
+      </div>
+
+      <!-- Gladiator -->
+      <div class="pricing-card">
+        <div class="pricing-header">
+          <div class="pricing-tier">Tier 3 · Elite</div>
+          <div class="pricing-name">Gladiator</div>
+          <div class="pricing-price">
+            <span class="price-dollar">$</span>
+            <span class="price-amount">600</span>
+          </div>
+          <div class="price-note">One-time or Quarterly · Individual Athlete</div>
+        </div>
+        <div class="pricing-body">
+          <ul class="pricing-features">
+            <li>Verified Athlete Profile with 4 Combine Sessions</li>
+            <li>LS4 Score + Tracking Dashboard</li>
+            <li>Development Report + 4 Consulting Sessions</li>
+            <li>15% off future lessons with Lanista Certified Coach</li>
+            <li>1 Free hitting or pitching lesson with Certified Coach</li>
+            <li>1 Year Free access to NIL Protect + 1 Free Consultation</li>
+            <li>Lanista Athlete T-Shirt</li>
+          </ul>
+        </div>
+        <div class="pricing-footer">
+          <button class="btn btn-outline" onclick="openModal('gladiator')" style="width:100%;justify-content:center">Get Started →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Team Pricing -->
+    <div class="team-pricing fade-up" style="transition-delay:.2s">
+      <div class="team-card">
+        <div class="team-card-tag">AAU / Travel Organizations</div>
+        <div class="team-card-title">Team Package</div>
+        <p class="team-card-text">For AAU travel teams, club programs, and tournament operators seeking a development edge for their rosters.</p>
+        <ul class="team-features">
+          <li>Verified Athlete Profiles (up to 25)</li>
+          <li>LS4 Score + Tracking Dashboard</li>
+          <li>Smart Match Engine Access</li>
+          <li>Weekly Check-In System</li>
+          <li>NIL & Recruiting Course Library</li>
+          <li>Priority Partner Network Access</li>
+        </ul>
+        <button class="btn btn-outline" onclick="openModal('team-aau')">Contact for Pricing →</button>
+      </div>
+      <div class="team-card">
+        <div class="team-card-tag">D2 / D3 / NAIA / JUCO Programs</div>
+        <div class="team-card-title">College Program</div>
+        <p class="team-card-text">For small-college programs recruiting smarter with verified athlete profiles and fit-matching technology.</p>
+        <ul class="team-features">
+          <li>Team-Level Analytics Dashboard</li>
+          <li>Roster Gap Scanner</li>
+          <li>Coach Recruiting Hub Access</li>
+          <li>Event & Showcase Integration</li>
+          <li>Whole Athlete Network Referrals</li>
+          <li>Program Culture Review Tools</li>
+        </ul>
+        <button class="btn btn-outline" onclick="openModal('team-college')">Contact for Pricing →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PARTNERS ══════════════════════════════════════ -->
+<section id="partners" class="section">
+  <div class="container">
+    <div class="text-center fade-up">
+      <div class="tag">The Ecosystem</div>
+      <h2 class="section-title">PARTNERS &<br>CONNECTIONS</h2>
+      <p class="section-sub" style="margin:18px auto 0;">Lanista is the development command center. We integrate the best technology and specialists into one unified system.</p>
+    </div>
+    <div class="partners-grid fade-up" style="transition-delay:.1s">
+      <div class="partner-card">
+        <div class="partner-icon">⚾</div>
+        <div class="partner-name">Rapsodo</div>
+        <div class="partner-role">Ball Flight & Pitch Analytics · API Integration</div>
+      </div>
+      <div class="partner-card">
+        <div class="partner-icon">📊</div>
+        <div class="partner-name">Diamond Kinetics</div>
+        <div class="partner-role">Swing & Pitch Metrics · Data Collection</div>
+      </div>
+      <div class="partner-card">
+        <div class="partner-icon">💪</div>
+        <div class="partner-name">Athletic Assessment</div>
+        <div class="partner-role">Performance Testing &amp; Body Composition Analysis</div>
+      </div>
+      <div class="partner-card">
+        <div class="partner-icon">🧠</div>
+        <div class="partner-name">EDGE90</div>
+        <div class="partner-role">Mental Skills Development & Culture</div>
+      </div>
+      <div class="partner-card">
+        <div class="partner-icon">🛡️</div>
+        <div class="partner-name">NIL Protect</div>
+        <div class="partner-role">NIL Compliance & Protection · Business Strategy</div>
+      </div>
+      <div class="partner-card">
+        <div class="partner-icon">🏋️</div>
+        <div class="partner-name">AHN Sports Performance</div>
+        <div class="partner-role">Sports Medicine & Recovery · Strength Training</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PRODUCTS ═══════════════════════════════════════ -->
+<section id="products" class="section">
+  <div class="container">
+    <div class="text-center fade-up">
+      <div class="tag">Lanista Ecosystem</div>
+      <h2 class="section-title grad">OUR<br>PRODUCTS</h2>
+      <p class="section-sub" style="margin:18px auto 0;text-align:center">Beyond athlete development, we've built tools that give every competitor an edge — from the court to the contract.</p>
+    </div>
+    <div class="products-grid">
+
+      <!-- ReactDeck -->
+      <div class="product-card react fade-up">
+        <div class="product-card-eyebrow">Reaction Training</div>
+        <div class="product-card-name">React<br>Deck</div>
+        <div class="product-card-tagline">Stop Thinking. Start Reacting.</div>
+        <p class="product-card-desc">The hand-eye coordination and cognitive activation training deck used by elite athletes at every level. 25 color-coded drill cards. 50+ drills. Zero excuses. Proven by D1 programs and youth athletes alike — all for just $29.99.</p>
+        <div class="product-stats">
+          <div>
+            <div class="product-stat-num">25</div>
+            <div class="product-stat-label">Drill Cards</div>
+          </div>
+          <div>
+            <div class="product-stat-num">50+</div>
+            <div class="product-stat-label">Unique Drills</div>
+          </div>
+          <div>
+            <div class="product-stat-num">10K+</div>
+            <div class="product-stat-label">Athletes</div>
+          </div>
+        </div>
+        <a href="https://www.reactdeck.com" target="_blank" rel="noopener" class="btn btn-react" style="align-self:flex-start">Shop ReactDeck — $29.99 →</a>
+      </div>
+
+      <!-- NIL Protect -->
+      <div class="product-card nil fade-up" style="transition-delay:.12s">
+        <div class="product-card-eyebrow">Athlete Protection</div>
+        <div class="product-card-name">NIL<br>Protect</div>
+        <div class="product-card-tagline">Protect Your Name. Your Image. Your Future.</div>
+        <p class="product-card-desc">Your name, image, and likeness are your greatest assets. NIL Protect helps student-athletes navigate the complex world of NIL deals — monitoring unauthorized use, securing your rights, and ensuring you're compensated fairly at every level of competition.</p>
+        <div class="product-stats">
+          <div>
+            <div class="product-stat-num">NIL</div>
+            <div class="product-stat-label">Monitoring</div>
+          </div>
+          <div>
+            <div class="product-stat-num">24/7</div>
+            <div class="product-stat-label">Protection</div>
+          </div>
+          <div>
+            <div class="product-stat-num">100%</div>
+            <div class="product-stat-label">Athlete-First</div>
+          </div>
+        </div>
+        <a href="https://www.nilprotect.io" target="_blank" rel="noopener" class="btn btn-gold" style="align-self:flex-start">Explore NIL Protect →</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ INQUIRY ══════════════════════════════════════ -->
+<section id="inquiry" class="section">
+  <div class="container">
+    <div class="signup-wrap">
+      <div class="fade-left">
+        <div class="tag">Contact Us</div>
+        <h2 class="section-title">LET'S<br>BUILD<br>TOGETHER.</h2>
+        <div class="divider"></div>
+        <p class="section-sub">
+          Ready to learn more? Fill out the form and our team will reach out within 24 hours to answer your questions and find the right fit.
+        </p>
+        <div class="signup-benefits">
+          <div class="signup-benefit">
+            <div class="signup-benefit-check">✓</div>
+            <div class="signup-benefit-text">LS4 Athlete Profile & Scoring</div>
+          </div>
+          <div class="signup-benefit">
+            <div class="signup-benefit-check">✓</div>
+            <div class="signup-benefit-text">Custom development roadmap</div>
+          </div>
+          <div class="signup-benefit">
+            <div class="signup-benefit-check">✓</div>
+            <div class="signup-benefit-text">Elite analytics &amp; assessment tools</div>
+          </div>
+          <div class="signup-benefit">
+            <div class="signup-benefit-check">✓</div>
+            <div class="signup-benefit-text">Pittsburgh-based. Built for every level.</div>
+          </div>
+        </div>
+        <div style="margin-top:44px;padding:24px 26px;background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.18);border-radius:8px">
+          <div style="font-family:var(--font-d);font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Questions?</div>
+          <div style="font-size:14px;color:var(--steel)">Reach us at <a href="mailto:ops@lanistasports.com" style="color:var(--gold);text-decoration:underline;text-underline-offset:3px">ops@lanistasports.com</a></div>
+        </div>
+      </div>
+      <div class="fade-up" style="transition-delay:.15s">
+        <div class="form-card">
+          <div id="form-content">
+            <div class="form-title">Get In Touch</div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="f-first">First Name *</label>
+                <input type="text" id="f-first" placeholder="John" required />
+              </div>
+              <div class="form-group">
+                <label for="f-last">Last Name *</label>
+                <input type="text" id="f-last" placeholder="Smith" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="f-email">Email *</label>
+              <input type="email" id="f-email" placeholder="john@example.com" required />
+            </div>
+            <div class="form-group">
+              <label for="f-phone">Phone</label>
+              <input type="tel" id="f-phone" placeholder="(412) 555-0100" />
+            </div>
+            <div class="form-group">
+              <label for="f-role">I am a *</label>
+              <select id="f-role">
+                <option value="">Select one...</option>
+                <option>Athlete / Parent</option>
+                <option>Coach / Trainer</option>
+                <option>Scout / College Program</option>
+                <option>AAU Organization</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="f-interest">Membership Interest</label>
+              <select id="f-interest">
+                <option value="">Select tier...</option>
+                <option>Contender ($175)</option>
+                <option>Warrior ($325)</option>
+                <option>Gladiator ($600)</option>
+                <option>Team / Organization (Contact)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="f-message">Tell us about your athlete</label>
+              <textarea id="f-message" placeholder="Sport, position, age, goals..."></textarea>
+            </div>
+            <button class="form-submit" onclick="handleSubmit()">Send Inquiry →</button>
+          </div>
+          <div class="form-success" id="form-success">
+            <div class="form-success-icon">🏆</div>
+            <h3>You're In The Arena.</h3>
+            <p>Thanks for reaching out! Our team will be in touch within 24 hours to connect you with the right path forward.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CTA BANNER ════════════════════════════════════ -->
+<section id="cta-banner">
+  <div class="container">
+    <div class="cta-title">THE ARENA<br>AWAITS.</div>
+    <p class="cta-sub">Precision Development. Strategized Growth. Whole Athlete. Every Level. One System.</p>
+    <div class="cta-btns">
+      <a href="#pricing" class="btn btn-dark">Choose Your Membership</a>
+      <a href="#mission" class="btn btn-dark-outline">Learn Our Story</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═════════════════════════════════════════ -->
+<footer id="footer">
+  <div class="container">
+    <div class="footer-top">
+      <div>
+        <div style="display:flex;align-items:center;gap:20px;margin-bottom:16px">
+          <div>
+            <div class="footer-brand-name" style="margin-bottom:4px">LANISTA SPORTS</div>
+            <div class="footer-tagline">Strength · Shield · Strategize</div>
+          </div>
+        </div>
+        <p class="footer-desc">Pittsburgh-based athlete development platform. We turn data into direction — for athletes, families, and coaches at every level.</p>
+        <div class="social-links">
+          <a href="https://www.instagram.com/lanistasportsig/" target="_blank" class="social-link" aria-label="Instagram">📷</a>
+          <a href="https://x.com/LanistaSports" target="_blank" class="social-link" aria-label="X / Twitter">𝕏</a>
+          <a href="https://www.linkedin.com/in/lanista-sports-85b4a2395/" target="_blank" class="social-link" aria-label="LinkedIn">in</a>
+          <a href="https://www.tiktok.com/@lanista.sports" target="_blank" class="social-link" aria-label="TikTok">♪</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Platform</div>
+        <ul class="footer-links">
+          <li><a href="#core4">The LS4 System</a></li>
+          <li><a href="#system">Core Offerings</a></li>
+          <li><a href="#pricing">Membership</a></li>
+          <li><a href="#partners">Partners</a></li>
+          <li><a href="https://app.lanistasports.com/sign-in">Sign In</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Who We Serve</div>
+        <ul class="footer-links">
+          <li><a href="#serve">Athletes</a></li>
+          <li><a href="#serve">Parents</a></li>
+          <li><a href="#serve">Coaches</a></li>
+          <li><a href="#serve">AAU Organizations</a></li>
+          <li><a href="#serve">College Programs</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Contact</div>
+        <ul class="footer-links">
+          <li><a href="mailto:ops@lanistasports.com">ops@lanistasports.com</a></li>
+          <li><a href="https://lanistasports.com">lanistasports.com</a></li>
+          <li><a href="#inquiry">Get In Touch</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 Lanista Sports, Inc. Pittsburgh, PA</div>
+      <div class="footer-est">EST. 2025 · STRENGTH · SHIELD · STRATEGIZE</div>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══ MODAL ══════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ═══ SCRIPTS ════════════════════════════════════════ -->
+<script>
+/* ── CUSTOM CURSOR ── */
+(function() {
+  var c  = document.getElementById('cursor');
+  var cr = document.getElementById('cursor-ring');
+  var mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', function(e) { mx = e.clientX; my = e.clientY; });
+  function animCursor() {
+    rx += (mx - rx) * .15;
+    ry += (my - ry) * .15;
+    c.style.left  = mx + 'px';
+    c.style.top   = my + 'px';
+    cr.style.left = rx + 'px';
+    cr.style.top  = ry + 'px';
+    requestAnimationFrame(animCursor);
+  }
+  animCursor();
+  document.querySelectorAll('a, button, .tab-btn, .pricing-card, .system-card, .partner-card').forEach(function(el) {
+    el.addEventListener('mouseenter', function() {
+      c.style.width  = '16px';
+      c.style.height = '16px';
+      cr.style.width  = '54px';
+      cr.style.height = '54px';
+      cr.style.borderColor = 'rgba(201,168,76,.8)';
+    });
+    el.addEventListener('mouseleave', function() {
+      c.style.width  = '10px';
+      c.style.height = '10px';
+      cr.style.width  = '38px';
+      cr.style.height = '38px';
+      cr.style.borderColor = 'rgba(201,168,76,.5)';
+    });
+  });
+})();
+
+/* ── NAV SCROLL ── */
+var nav = document.getElementById('nav');
+var navCta = document.getElementById('nav-cta-desktop');
+window.addEventListener('scroll', function() {
+  if (window.scrollY > 60) {
+    nav.classList.add('scrolled');
+    navCta.style.display = 'inline-flex';
+  } else {
+    nav.classList.remove('scrolled');
+    navCta.style.display = 'none';
+  }
+});
+
+/* ── HAMBURGER ── */
+var ham = document.getElementById('hamburger');
+var mobileMenu = document.getElementById('mobile-menu');
+ham.addEventListener('click', function() {
+  mobileMenu.classList.toggle('open');
+});
+document.querySelectorAll('.mobile-link').forEach(function(el) {
+  el.addEventListener('click', function() { mobileMenu.classList.remove('open'); });
+});
+
+/* ── TABS ── */
+document.querySelectorAll('.tab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* ── INTERSECTION OBSERVER (fade-up, fade-left) ── */
+var fadeEls = document.querySelectorAll('.fade-up, .fade-left');
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+fadeEls.forEach(function(el) { observer.observe(el); });
+
+/* ── LS4 SCORE RING ANIMATION ── */
+var ls4Animated = false;
+var ls4Observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting && !ls4Animated) {
+      ls4Animated = true;
+      // Animate ring: dashoffset from 540 to ~108 (80% fill)
+      setTimeout(function() {
+        var ring = document.getElementById('ls4-ring-bar');
+        if (ring) ring.style.strokeDashoffset = '108';
+        // Count up score
+        var scoreEl = document.getElementById('ls4-score-count');
+        if (scoreEl) {
+          var target = 85, current = 0;
+          var interval = setInterval(function() {
+            current += 2;
+            if (current >= target) { current = target; clearInterval(interval); }
+            scoreEl.textContent = current;
+          }, 30);
+        }
+        // Animate domain bars
+        document.querySelectorAll('.ls4-bar-fill').forEach(function(bar) {
+          var w = bar.getAttribute('data-width');
+          if (w) bar.style.width = w + '%';
+        });
+      }, 300);
+    }
+  });
+}, { threshold: 0.4 });
+var ls4Section = document.getElementById('ls4-section');
+if (ls4Section) ls4Observer.observe(ls4Section);
+
+/* ── MODAL ── */
+var tiers = {
+  contender:    { name: 'Contender',       price: '$175',              tier: 'Tier 1 · Individual Athlete' },
+  warrior:      { name: 'Warrior',         price: '$325',              tier: 'Tier 2 · Individual Athlete' },
+  gladiator:    { name: 'Gladiator',       price: '$600',              tier: 'Tier 3 · Elite · Individual Athlete' },
+  'team-aau':   { name: 'Team Package',    price: 'Contact for Pricing', tier: 'AAU / Travel Organizations' },
+  'team-college':{ name: 'College Program', price: 'Contact for Pricing', tier: 'D2/D3/NAIA/JUCO Programs' }
+};
+
+function openModal(tier) {
+  var t = tiers[tier];
+  var isContact = tier.startsWith('team');
+  document.getElementById('modal-body').innerHTML =
+    '<div class="modal-tier">' + t.tier + '</div>' +
+    '<div class="modal-title">' + t.name + ' — ' + t.price + '</div>' +
+    '<div id="modal-form-content">' +
+      '<div class="form-row">' +
+        '<div class="form-group"><label>First Name *</label><input type="text" id="mf-first" placeholder="John" /></div>' +
+        '<div class="form-group"><label>Last Name *</label><input type="text" id="mf-last" placeholder="Smith" /></div>' +
+      '</div>' +
+      '<div class="form-group"><label>Email *</label><input type="email" id="mf-email" placeholder="john@example.com" /></div>' +
+      '<div class="form-group"><label>Phone</label><input type="tel" id="mf-phone" placeholder="(412) 555-0100" /></div>' +
+      '<div class="form-group"><label>I am a</label><select id="mf-role">' +
+        '<option>Athlete / Parent</option><option>Coach / Trainer</option><option>Scout / College Program</option><option>AAU Organization</option><option>Other</option>' +
+      '</select></div>' +
+      (isContact ? '<div class="form-group"><label>Organization Name</label><input type="text" id="mf-org" placeholder="Your organization" /></div>' : '') +
+      '<div class="form-group"><label>Tell us about your athlete / program</label><textarea id="mf-msg" placeholder="Sport, position, age, goals..."></textarea></div>' +
+      '<button class="form-submit" onclick="handleModalSubmit()">Send Inquiry →</button>' +
+    '</div>' +
+    '<div class="form-success" id="modal-success">' +
+      '<div class="form-success-icon">🏆</div>' +
+      '<h3>You\'re In The Arena.</h3>' +
+      '<p>Application received! Our team will be in touch within 24 hours.</p>' +
+    '</div>';
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModalDirect() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModalDirect();
+}
+
+function handleModalSubmit() {
+  var email = document.getElementById('mf-email').value;
+  if (!email) { alert('Please enter your email address.'); return; }
+  document.getElementById('modal-form-content').style.display = 'none';
+  document.getElementById('modal-success').style.display = 'block';
+}
+
+/* ── MAIN FORM ── */
+function handleSubmit() {
+  var email = document.getElementById('f-email').value;
+  if (!email) { alert('Please enter your email address.'); return; }
+  document.getElementById('form-content').style.display = 'none';
+  document.getElementById('form-success').style.display = 'block';
+}
+</script>
+
+<!-- ═══ PLAYER DASHBOARD OVERLAY ════════════════════════════════ -->
+<div id="player-overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:#0d1117;flex-direction:column">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#0d1117;border-bottom:1px solid rgba(212,175,55,.2);flex-shrink:0">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;letter-spacing:3px;color:#d4af37;text-transform:uppercase">LANISTA IQ — Player Dashboard</div>
+    <button onclick="closePlayer()" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:13px;font-weight:600;padding:8px 18px;border-radius:6px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px">✕ Back to Site</button>
+  </div>
+  <iframe id="player-frame" src="/player" style="flex:1;border:none;width:100%;height:100%"></iframe>
+</div>
+
+<!-- ═══ DASHBOARD 2.0 OVERLAY ════════════════════════════════ -->
+<div id="dashboard2-overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:#0d1117;flex-direction:column">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#0d1117;border-bottom:1px solid rgba(212,175,55,.2);flex-shrink:0">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;letter-spacing:3px;color:#d4af37;text-transform:uppercase">LANISTA IQ — Platform 2.0 <span style="font-size:10px;letter-spacing:1px;color:#6b7a99;margin-left:12px">Player · Coach · Admin</span></div>
+    <button onclick="closeDashboard2()" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:13px;font-weight:600;padding:8px 18px;border-radius:6px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px">✕ Back to Site</button>
+  </div>
+  <iframe id="dashboard2-frame" src="/dashboard" style="flex:1;border:none;width:100%;height:100%"></iframe>
+</div>
+
+<script>
+function openOverlay(id) {
+  document.getElementById(id).style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  var mm = document.getElementById('mobile-menu');
+  if (mm) mm.classList.remove('open');
+}
+function closeOverlay(id) {
+  document.getElementById(id).style.display = 'none';
+  document.body.style.overflow = '';
+}
+function openPlayer()      { openOverlay('player-overlay'); }
+function closePlayer()     { closeOverlay('player-overlay'); }
+function openDashboard2()  { openOverlay('dashboard2-overlay'); }
+function closeDashboard2() { closeOverlay('dashboard2-overlay'); }
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeOverlay('player-overlay');
+    closeOverlay('dashboard2-overlay');
+  }
+});
+</script>
+<!-- ═══════════════════════════════════════════════════════════
+     GLADIUS · LANISTA SPORTS AI SYSTEM
+     Admin-only. Secret trigger: click footer copyright 5x fast
+     or visit ?gladius in the URL.
+════════════════════════════════════════════════════════════ -->
+<style>
+/* ── Gladius Float Button ── */
+#gladius-btn {
+  display: none;
+  position: fixed;
+  bottom: 28px; right: 28px;
+  z-index: 9000;
+  width: 58px; height: 58px;
+  background: linear-gradient(135deg, #C9A84C 0%, #8a6d2e 100%);
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 24px rgba(201,168,76,.45), 0 0 0 0 rgba(201,168,76,.3);
+  align-items: center; justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 24px; font-weight: 900;
+  color: #0a0a0a;
+  transition: transform .2s, box-shadow .2s;
+  animation: gladiusPulse 3s ease-in-out infinite;
+}
+@keyframes gladiusPulse {
+  0%, 100% { box-shadow: 0 4px 24px rgba(201,168,76,.45), 0 0 0 0 rgba(201,168,76,.3); }
+  50% { box-shadow: 0 4px 24px rgba(201,168,76,.45), 0 0 0 10px rgba(201,168,76,0); }
+}
+#gladius-btn.vis { display: flex; }
+#gladius-btn:hover { transform: scale(1.08); }
+
+/* ── Auth Modal ── */
+#g-auth {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.92); z-index: 9100;
+  align-items: center; justify-content: center;
+}
+#g-auth.open { display: flex; }
+.g-auth-box {
+  background: #111; border: 1px solid rgba(201,168,76,.4);
+  border-radius: 8px; padding: 50px 44px; width: 380px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,.7);
+}
+.g-auth-shield { font-size: 52px; margin-bottom: 14px; }
+.g-auth-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 30px; font-weight: 900;
+  letter-spacing: 5px; text-transform: uppercase;
+  color: #C9A84C; margin-bottom: 4px;
+}
+.g-auth-sub {
+  font-size: 11px; color: #8A9BA8;
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 30px;
+}
+.g-auth-input {
+  width: 100%; background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.15); border-radius: 4px;
+  color: #F5F5F5; font-family: 'Barlow', sans-serif;
+  font-size: 15px; padding: 13px 16px;
+  text-align: center; letter-spacing: 4px;
+  outline: none; margin-bottom: 14px;
+  transition: border-color .2s;
+}
+.g-auth-input:focus { border-color: #C9A84C; }
+.g-auth-btn {
+  width: 100%; padding: 14px;
+  background: #C9A84C; color: #0a0a0a;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px; font-weight: 800;
+  letter-spacing: 3px; text-transform: uppercase;
+  border: none; border-radius: 4px; cursor: pointer;
+  transition: background .2s;
+}
+.g-auth-btn:hover { background: #E8C96B; }
+.g-auth-err { color: #e74c3c; font-size: 13px; margin-top: 12px; display: none; }
+
+/* ── Backdrop ── */
+#g-backdrop {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.5); z-index: 8900;
+}
+#g-backdrop.open { display: block; }
+
+/* ── Main Panel ── */
+#g-panel {
+  display: none; position: fixed;
+  top: 0; right: 0; bottom: 0;
+  width: 800px; max-width: 100vw;
+  background: #0d0d0d;
+  border-left: 1px solid rgba(201,168,76,.2);
+  z-index: 9000; flex-direction: column;
+  box-shadow: -12px 0 70px rgba(0,0,0,.6);
+  transform: translateX(100%);
+  transition: transform .35s cubic-bezier(.4,0,.2,1);
+}
+#g-panel.open { display: flex; transform: translateX(0); }
+
+/* Panel Header */
+.g-header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 22px;
+  border-bottom: 1px solid rgba(201,168,76,.18);
+  background: #111; flex-shrink: 0;
+}
+.g-header-badge {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: linear-gradient(135deg, #C9A84C, #8a6d2e);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 19px; font-weight: 900; color: #0a0a0a;
+  flex-shrink: 0;
+}
+.g-header-info { flex: 1; }
+.g-header-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px; font-weight: 900;
+  letter-spacing: 4px; text-transform: uppercase;
+  color: #C9A84C; line-height: 1;
+}
+.g-header-sub {
+  font-size: 10px; color: #8A9BA8;
+  letter-spacing: 2px; text-transform: uppercase;
+}
+.g-status {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 1px; color: #2ecc71;
+  text-transform: uppercase;
+}
+.g-status-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #2ecc71;
+  animation: gPulse 2s ease-in-out infinite;
+}
+@keyframes gPulse {
+  0%,100% { opacity: 1; } 50% { opacity: .3; }
+}
+.g-close {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: none; border: 1px solid rgba(255,255,255,.12);
+  color: #8A9BA8; font-size: 15px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s; flex-shrink: 0;
+}
+.g-close:hover { border-color: #C9A84C; color: #C9A84C; }
+
+/* Panel Body */
+.g-body { display: flex; flex: 1; overflow: hidden; }
+
+/* Sidebar */
+.g-sidebar {
+  width: 210px; flex-shrink: 0;
+  background: #111; border-right: 1px solid rgba(255,255,255,.05);
+  overflow-y: auto; padding: 14px 0;
+}
+.g-sb-section {
+  padding: 0 13px 16px;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  margin-bottom: 14px;
+}
+.g-sb-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: #C9A84C; margin-bottom: 9px;
+}
+.g-in {
+  width: 100%; background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.09); border-radius: 3px;
+  color: #F5F5F5; font-size: 12px; padding: 8px 9px;
+  outline: none; margin-bottom: 6px;
+  font-family: 'Barlow', sans-serif; transition: border-color .2s;
+}
+.g-in:focus { border-color: #C9A84C; }
+.g-sel {
+  width: 100%; background: #191919;
+  border: 1px solid rgba(255,255,255,.09); border-radius: 3px;
+  color: #F5F5F5; font-size: 12px; padding: 8px 9px;
+  outline: none; margin-bottom: 6px;
+  font-family: 'Barlow', sans-serif; transition: border-color .2s;
+}
+.g-sel:focus { border-color: #C9A84C; }
+.g-rbtn {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%; text-align: left;
+  background: rgba(201,168,76,.05);
+  border: 1px solid rgba(201,168,76,.12); border-radius: 3px;
+  color: #C5C8CC; font-size: 12px;
+  padding: 9px 10px; cursor: pointer;
+  margin-bottom: 5px; font-family: 'Barlow', sans-serif;
+  transition: all .18s; line-height: 1.3;
+}
+.g-rbtn:hover { background: rgba(201,168,76,.13); border-color: #C9A84C; color: #fff; }
+.g-rbtn-ico { font-size: 13px; flex-shrink: 0; }
+
+/* Upload */
+.g-upload-zone {
+  border: 1px dashed rgba(201,168,76,.3); border-radius: 3px;
+  padding: 14px; text-align: center; cursor: pointer;
+  transition: all .2s; margin-bottom: 8px;
+}
+.g-upload-zone:hover { border-color: #C9A84C; background: rgba(201,168,76,.04); }
+.g-upload-icon { font-size: 18px; margin-bottom: 4px; }
+.g-upload-txt { font-size: 10px; color: #8A9BA8; line-height: 1.5; }
+.g-upload-txt span { color: #C9A84C; }
+.g-files { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.g-file {
+  font-size: 11px; color: #8A9BA8;
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 7px; background: rgba(255,255,255,.03);
+  border-radius: 2px;
+}
+.g-file-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.g-file-del {
+  color: #e74c3c; cursor: pointer;
+  background: none; border: none; font-size: 11px; padding: 0;
+  flex-shrink: 0;
+}
+
+/* Chat Area */
+.g-chat { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.g-msgs {
+  flex: 1; overflow-y: auto; padding: 20px;
+  display: flex; flex-direction: column; gap: 16px;
+  scrollbar-width: thin; scrollbar-color: rgba(201,168,76,.2) transparent;
+}
+.g-msgs::-webkit-scrollbar { width: 4px; }
+.g-msgs::-webkit-scrollbar-thumb { background: rgba(201,168,76,.2); border-radius: 2px; }
+
+.g-welcome {
+  text-align: center; padding: 40px 20px; color: #8A9BA8;
+  margin: auto 0;
+}
+.g-welcome-ico { font-size: 52px; margin-bottom: 14px; }
+.g-welcome-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 24px; font-weight: 900;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: #C9A84C; margin-bottom: 10px;
+}
+.g-welcome-txt { font-size: 14px; line-height: 1.7; max-width: 380px; margin: 0 auto; }
+
+.g-msg { display: flex; gap: 10px; align-items: flex-start; }
+.g-msg.user { flex-direction: row-reverse; }
+.g-avatar {
+  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px; font-weight: 900;
+}
+.g-msg.ai .g-avatar {
+  background: linear-gradient(135deg, #C9A84C, #8a6d2e); color: #0a0a0a;
+}
+.g-msg.user .g-avatar {
+  background: rgba(255,255,255,.07); color: #C9A84C;
+  border: 1px solid rgba(201,168,76,.25);
+}
+.g-bubble {
+  max-width: 82%; padding: 12px 16px; border-radius: 4px;
+  font-size: 14px; line-height: 1.65;
+}
+.g-msg.ai .g-bubble {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.07); color: #C5C8CC;
+}
+.g-msg.user .g-bubble {
+  background: rgba(201,168,76,.09);
+  border: 1px solid rgba(201,168,76,.18);
+  color: #F5F5F5;
+}
+.g-bubble h3 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px; letter-spacing: 1px; text-transform: uppercase;
+  color: #C9A84C; margin: 14px 0 6px; border-bottom: 1px solid rgba(201,168,76,.2);
+  padding-bottom: 4px;
+}
+.g-bubble strong { color: #E8C96B; }
+.g-bubble ul { padding-left: 18px; margin: 6px 0; }
+.g-bubble li { margin-bottom: 4px; }
+.g-bubble p { margin-bottom: 8px; }
+.g-bubble p:last-child { margin-bottom: 0; }
+.g-time {
+  font-size: 10px; color: rgba(255,255,255,.18);
+  margin-top: 4px; padding: 0 4px;
+}
+.g-msg.user .g-time { text-align: right; }
+
+/* Typing */
+.g-typing { display: none; align-items: center; gap: 10px; }
+.g-typing.on { display: flex; }
+.g-typing-dots {
+  display: flex; gap: 4px; padding: 10px 14px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.07); border-radius: 4px;
+}
+.g-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #C9A84C; animation: gDot 1.2s infinite;
+}
+.g-dot:nth-child(2) { animation-delay: .2s; }
+.g-dot:nth-child(3) { animation-delay: .4s; }
+@keyframes gDot {
+  0%,100% { opacity: .2; transform: scale(.8); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+/* Input */
+.g-input-area {
+  padding: 14px 18px; border-top: 1px solid rgba(255,255,255,.06);
+  background: #111; flex-shrink: 0;
+}
+.g-input-row { display: flex; gap: 9px; align-items: flex-end; }
+.g-textarea {
+  flex: 1; background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.1); border-radius: 4px;
+  color: #F5F5F5; font-family: 'Barlow', sans-serif;
+  font-size: 14px; padding: 10px 13px;
+  resize: none; outline: none; line-height: 1.5;
+  min-height: 42px; max-height: 120px;
+  transition: border-color .2s;
+}
+.g-textarea:focus { border-color: #C9A84C; }
+.g-textarea::placeholder { color: rgba(255,255,255,.25); }
+.g-send {
+  width: 42px; height: 42px; background: #C9A84C;
+  border: none; border-radius: 4px;
+  color: #0a0a0a; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background .2s; flex-shrink: 0;
+}
+.g-send:hover { background: #E8C96B; }
+.g-send:disabled { opacity: .45; cursor: not-allowed; }
+.g-hint {
+  font-size: 10px; color: rgba(255,255,255,.18);
+  text-align: center; margin-top: 7px; letter-spacing: .5px;
+}
+
+/* Clear history button */
+.g-clear {
+  font-size: 11px; color: rgba(255,255,255,.25);
+  background: none; border: none; cursor: pointer;
+  padding: 0; font-family: 'Barlow', sans-serif;
+  transition: color .2s; margin-left: auto; display: block;
+}
+.g-clear:hover { color: #e74c3c; }
+
+/* Export PDF button on AI messages */
+.g-export-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  margin-top: 10px; padding: 6px 13px;
+  background: rgba(201,168,76,.1);
+  border: 1px solid rgba(201,168,76,.3); border-radius: 3px;
+  color: #C9A84C; font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  cursor: pointer; font-family: 'Barlow Condensed', sans-serif;
+  transition: all .2s;
+}
+.g-export-btn:hover { background: rgba(201,168,76,.2); border-color: #C9A84C; color: #E8C96B; }
+
+/* File processing indicator */
+.g-file-processing {
+  font-size: 10px; color: #C9A84C; padding: 4px 7px;
+  background: rgba(201,168,76,.06); border-radius: 2px;
+  animation: gPulse 1.2s ease-in-out infinite;
+}
+
+@media (max-width: 640px) {
+  #g-panel { width: 100vw; }
+  .g-sidebar { display: none; }
+}
+</style>
+
+<!-- Float Button -->
+<button id="gladius-btn" aria-label="Gladius Admin">G</button>
+
+<!-- Backdrop -->
+<div id="g-backdrop" onclick="gClose()"></div>
+
+<!-- Auth Modal -->
+<div id="g-auth">
+  <div class="g-auth-box">
+    <div class="g-auth-shield">🛡️</div>
+    <div class="g-auth-title">GLADIUS</div>
+    <div class="g-auth-sub">Lanista Sports · Internal AI System</div>
+    <input type="password" class="g-auth-input" id="g-pw"
+      placeholder="ACCESS CODE"
+      onkeydown="if(event.key==='Enter')gAuth()"
+      autocomplete="off" />
+    <button class="g-auth-btn" onclick="gAuth()">ENTER THE ARENA →</button>
+    <div class="g-auth-err" id="g-auth-err">Invalid access code.</div>
+  </div>
+</div>
+
+<!-- Main Panel -->
+<div id="g-panel">
+  <!-- Header -->
+  <div class="g-header">
+    <div class="g-header-badge">G</div>
+    <div class="g-header-info">
+      <div class="g-header-name">GLADIUS</div>
+      <div class="g-header-sub">Lanista Sports AI · Admin Intelligence System</div>
+    </div>
+    <div class="g-status"><div class="g-status-dot"></div>ONLINE</div>
+    <button class="g-clear" onclick="gClearHistory()">Clear history</button>
+    <button class="g-close" onclick="gClose()">✕</button>
+  </div>
+
+  <!-- Body -->
+  <div class="g-body">
+
+    <!-- Sidebar -->
+    <div class="g-sidebar">
+
+      <!-- Athlete Profile -->
+      <div class="g-sb-section">
+        <div class="g-sb-label">⚡ Athlete Profile</div>
+        <input type="text" class="g-in" id="g-name" placeholder="Athlete name..." />
+        <input type="text" class="g-in" id="g-age" placeholder="Age / Grade..." />
+        <select class="g-sel" id="g-sport">
+          <option value="">Sport...</option>
+          <option>Baseball</option>
+          <option>Softball</option>
+          <option>Basketball</option>
+          <option>Football</option>
+          <option>Soccer</option>
+          <option>Multi-sport</option>
+          <option>Other</option>
+        </select>
+        <select class="g-sel" id="g-tier">
+          <option value="">Membership tier...</option>
+          <option>Contender ($175)</option>
+          <option>Warrior ($325)</option>
+          <option>Gladiator ($600)</option>
+          <option>Team Member</option>
+          <option>AAU Organization</option>
+          <option>College Program</option>
+        </select>
+        <input type="text" class="g-in" id="g-team" placeholder="Team / School..." />
+      </div>
+
+      <!-- Generate Reports -->
+      <div class="g-sb-section">
+        <div class="g-sb-label">📋 Generate Reports</div>
+        <button class="g-rbtn" onclick="gReport('player')"><span class="g-rbtn-ico">👤</span>Individual Player Report</button>
+        <button class="g-rbtn" onclick="gReport('parent')"><span class="g-rbtn-ico">👨‍👩‍👧</span>Parent Progress Summary</button>
+        <button class="g-rbtn" onclick="gReport('coach')"><span class="g-rbtn-ico">🏆</span>Coach Scouting Report</button>
+        <button class="g-rbtn" onclick="gReport('ls4')"><span class="g-rbtn-ico">📊</span>LS4 Score Breakdown</button>
+        <button class="g-rbtn" onclick="gReport('team')"><span class="g-rbtn-ico">🏟️</span>Team Analytics Report</button>
+        <button class="g-rbtn" onclick="gReport('recruiting')"><span class="g-rbtn-ico">🎓</span>Recruiting Readiness</button>
+        <button class="g-rbtn" onclick="gReport('nil')"><span class="g-rbtn-ico">💰</span>NIL Strategy Report</button>
+      </div>
+
+      <!-- Quick Prompts -->
+      <div class="g-sb-section">
+        <div class="g-sb-label">💬 Quick Actions</div>
+        <button class="g-rbtn" onclick="gQuick('plan')"><span class="g-rbtn-ico">🗺️</span>8-Week Dev Plan</button>
+        <button class="g-rbtn" onclick="gQuick('metrics')"><span class="g-rbtn-ico">📈</span>Analyze My Metrics</button>
+        <button class="g-rbtn" onclick="gQuick('mental')"><span class="g-rbtn-ico">🧠</span>Mental Performance Plan</button>
+        <button class="g-rbtn" onclick="gQuick('strength')"><span class="g-rbtn-ico">💪</span>Strength & Conditioning</button>
+        <button class="g-rbtn" onclick="gQuick('compare')"><span class="g-rbtn-ico">⚖️</span>Peer Comparison</button>
+      </div>
+
+      <!-- Upload Documents -->
+      <div class="g-sb-section" style="border-bottom:none;margin-bottom:0">
+        <div class="g-sb-label">📂 Upload Metrics / Docs</div>
+        <div class="g-upload-zone" onclick="document.getElementById('g-file-in').click()">
+          <div class="g-upload-icon">📎</div>
+          <div class="g-upload-txt"><span>Click to upload</span><br>Screenshots · CSV · PDF · TXT · DOCX · XLSX</div>
+        </div>
+        <input type="file" id="g-file-in" style="display:none" multiple
+          accept=".pdf,.csv,.txt,.doc,.docx,.xlsx,.xls,.png,.jpg,.jpeg,.gif,.webp,.bmp"
+          onchange="gUpload(event)" />
+        <ul class="g-files" id="g-file-list"></ul>
+      </div>
+    </div>
+
+    <!-- Chat -->
+    <div class="g-chat">
+      <div class="g-msgs" id="g-msgs">
+        <div class="g-welcome" id="g-welcome">
+          <div class="g-welcome-ico">🛡️</div>
+          <div class="g-welcome-title">GLADIUS ONLINE</div>
+          <p class="g-welcome-txt">
+            I am Gladius — Lanista Sports' internal AI intelligence system.
+            Load an athlete profile, upload metrics, generate reports, or ask me anything about athlete development, recruiting, or the LS4 system.
+          </p>
+        </div>
+      </div>
+
+      <div class="g-typing" id="g-typing">
+        <div class="g-avatar" style="background:linear-gradient(135deg,#C9A84C,#8a6d2e);color:#0a0a0a;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;flex-shrink:0">G</div>
+        <div class="g-typing-dots">
+          <div class="g-dot"></div><div class="g-dot"></div><div class="g-dot"></div>
+        </div>
+      </div>
+
+      <div class="g-input-area">
+        <div class="g-input-row">
+          <textarea class="g-textarea" id="g-input"
+            placeholder="Ask Gladius about development, metrics, recruiting, reports..."
+            rows="1"
+            onkeydown="gKey(event)"
+            oninput="gResize(this)"></textarea>
+          <button class="g-send" id="g-send" onclick="gSend()">➤</button>
+        </div>
+        <div class="g-hint">Shift+Enter for new line · Uploaded files are included as context in every message</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  // ── Config (set by worker) ──
+  var G_SESSION = 'gladius_ok';
+  var G_PW_KEY  = 'gladius_pw';
+
+  // ── State ──
+  var gHistory  = [];
+  var gFiles    = [];
+  var gTapCount = 0;
+  var gTapTimer = null;
+  var gAuthed   = false;
+
+  // ── System Prompt ──
+  var SYSTEM = [
+    'You are Gladius, the proprietary AI intelligence system built exclusively for Lanista Sports.',
+    'You are an internal admin tool — confidential, not public-facing. You are the secret sauce.',
+    '',
+    'ABOUT LANISTA SPORTS:',
+    '- Pittsburgh-based athlete development platform (EST. 2025)',
+    '- Mission: Turn data into direction for athletes, families, and coaches',
+    '- Brand: STRENGTHEN · SHIELD · STRATEGIZE | Precision Development. Strategized Growth.',
+    '- Lanista Core 4 (LS4) Score: Athletic (speed/strength/agility/endurance/explosiveness),',
+    '  Skills (technique/mechanics/film/game IQ), Mentality (coachability/drive/leadership)',
+    '  → produces an Overall LS4 Composite Score (the whole athlete in one verified number)',
+    '- Memberships: Contender $175 (1 combine), Warrior $325 (2 combines + NIL Protect 1mo),',
+    '  Gladiator $600 (4 combines + consulting + free lesson + 1yr NIL Protect)',
+    '- Tech Partners: Rapsodo (pitch/ball flight analytics), Diamond Kinetics (swing metrics),',
+    '  Sensi-Fit (body composition/strength), EDGE90 (mental skills), NIL Protect (compliance),',
+    '  AHN Sports Performance (sports medicine/recovery)',
+    '- Target market: athletes 13-18, AAU/travel orgs, D2/D3/NAIA/JUCO programs',
+    '',
+    'YOUR CAPABILITIES:',
+    '- Analyze performance metrics from Rapsodo, Diamond Kinetics, Sensi-Fit, etc.',
+    '- Generate professional development reports for players, parents, and coaches',
+    '- Create detailed LS4 score breakdowns and improvement plans',
+    '- Build personalized 30/60/90-day development roadmaps',
+    '- Provide recruiting strategy, college fit analysis, and timeline planning',
+    '- Advise on NIL compliance, strategy, and monetization',
+    '- Design strength, conditioning, and sport-specific training programs',
+    '- Provide mental performance coaching and mindset development plans',
+    '- Analyze team analytics, roster gaps, and organizational development needs',
+    '- Review and interpret uploaded documents, CSV data, and metrics files',
+    '',
+    'REPORT STYLE:',
+    'When generating reports, use clear section headers (###), bullet points for data,',
+    'bold for key metrics/scores, and end with concrete NEXT STEPS.',
+    'Reports should feel premium — worth the Lanista membership investment.',
+    'Use brand language: Strengthen, Shield, Strategize, Precision Development.',
+    '',
+    'TONE: Expert, authoritative, precise, and motivating.',
+    'You are the intelligence behind the Lanista system. Speak accordingly.'
+  ].join('\n');
+
+  // ── Secret Trigger: footer copyright 5x ──
+  var footerCopy = document.querySelector('.footer-copy');
+  if (footerCopy) {
+    footerCopy.style.cursor = 'default';
+    footerCopy.addEventListener('click', function() {
+      gTapCount++;
+      clearTimeout(gTapTimer);
+      gTapTimer = setTimeout(function() { gTapCount = 0; }, 2000);
+      if (gTapCount >= 5) {
+        gTapCount = 0;
+        gReveal();
+      }
+    });
+  }
+
+  // Also: URL param ?gladius
+  if (window.location.search.indexOf('gladius') !== -1) {
+    gReveal();
+  }
+
+  function gReveal() {
+    var btn = document.getElementById('gladius-btn');
+    btn.classList.add('vis');
+    if (sessionStorage.getItem(G_SESSION) === '1') {
+      gAuthed = true;
+      gOpenPanel();
+    } else {
+      gOpenAuth();
+    }
+  }
+
+  document.getElementById('gladius-btn').addEventListener('click', function() {
+    if (gAuthed) { gOpenPanel(); } else { gOpenAuth(); }
+  });
+
+  function gOpenAuth() {
+    document.getElementById('g-auth').classList.add('open');
+    setTimeout(function() { document.getElementById('g-pw').focus(); }, 120);
+  }
+
+  window.gAuth = async function() {
+    var pw = document.getElementById('g-pw').value.trim();
+    var errEl = document.getElementById('g-auth-err');
+    errEl.style.display = 'none';
+    if (!pw) return;
+    try {
+      var res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pw })
+      });
+      var data = await res.json();
+      if (data.success) {
+        gAuthed = true;
+        sessionStorage.setItem(G_SESSION, '1');
+        sessionStorage.setItem(G_PW_KEY, pw);
+        document.getElementById('g-auth').classList.remove('open');
+        document.getElementById('g-pw').value = '';
+        gOpenPanel();
+      } else {
+        errEl.style.display = 'block';
+      }
+    } catch(e) {
+      errEl.textContent = 'Connection error. Is the worker deployed?';
+      errEl.style.display = 'block';
+    }
+  };
+
+  function gOpenPanel() {
+    document.getElementById('g-panel').classList.add('open');
+    document.getElementById('g-backdrop').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  window.gClose = function() {
+    document.getElementById('g-panel').classList.remove('open');
+    document.getElementById('g-backdrop').classList.remove('open');
+    document.getElementById('g-auth').classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+  // ── File Upload ──
+  function gIsImage(name) {
+    return /\.(png|jpg|jpeg|gif|webp|bmp)$/i.test(name);
+  }
+  function gExt(name) {
+    return (name.match(/\.([^.]+)$/) || ['',''])[1].toLowerCase();
+  }
+
+  function gLoadScript(url) {
+    return new Promise(function(resolve, reject) {
+      if (document.querySelector('script[src="' + url + '"]')) { resolve(); return; }
+      var s = document.createElement('script');
+      s.src = url; s.onload = resolve; s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
+
+  window.gUpload = async function(evt) {
+    var files = Array.from(evt.target.files);
+    var listEl = document.getElementById('g-file-list');
+
+    for (var i = 0; i < files.length; i++) {
+      var f = files[i];
+      var ext = gExt(f.name);
+
+      // Show processing indicator
+      var procLi = document.createElement('li');
+      procLi.className = 'g-file-processing';
+      procLi.textContent = 'Processing ' + f.name + '…';
+      listEl.appendChild(procLi);
+
+      try {
+        if (gIsImage(f.name)) {
+          var imgData = await gReadImage(f);
+          gFiles.push({ type: 'image', name: f.name, mimeType: f.type || 'image/png', base64: imgData.base64, thumb: imgData.dataUrl });
+        } else if (ext === 'docx' || ext === 'doc') {
+          var docText = await gReadDocx(f);
+          gFiles.push({ type: 'text', name: f.name, content: docText });
+        } else if (ext === 'xlsx' || ext === 'xls') {
+          var xlsText = await gReadXlsx(f);
+          gFiles.push({ type: 'text', name: f.name, content: xlsText });
+        } else if (ext === 'pdf') {
+          var pdfText = await gReadPdf(f);
+          gFiles.push({ type: 'text', name: f.name, content: pdfText });
+        } else {
+          var content = await gReadText(f);
+          gFiles.push({ type: 'text', name: f.name, content: content });
+        }
+      } catch(e) {
+        gFiles.push({ type: 'text', name: f.name, content: '[Could not parse file: ' + e.message + ']' });
+      }
+
+      listEl.removeChild(procLi);
+    }
+    evt.target.value = '';
+    gRenderFiles();
+  };
+
+  function gReadImage(f) {
+    return new Promise(function(resolve) {
+      var r = new FileReader();
+      r.onload = function(e) {
+        var dataUrl = e.target.result;
+        var base64  = dataUrl.split(',')[1];
+        resolve({ dataUrl: dataUrl, base64: base64 });
+      };
+      r.readAsDataURL(f);
+    });
+  }
+
+  function gReadText(f) {
+    return new Promise(function(resolve) {
+      var r = new FileReader();
+      r.onload = function(e) { resolve(e.target.result || ''); };
+      r.readAsText(f);
+    });
+  }
+
+  function gReadArrayBuffer(f) {
+    return new Promise(function(resolve) {
+      var r = new FileReader();
+      r.onload = function(e) { resolve(e.target.result); };
+      r.readAsArrayBuffer(f);
+    });
+  }
+
+  async function gReadDocx(f) {
+    await gLoadScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js');
+    var buf = await gReadArrayBuffer(f);
+    var result = await mammoth.extractRawText({ arrayBuffer: buf });
+    return result.value || '[Empty document]';
+  }
+
+  async function gReadXlsx(f) {
+    await gLoadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
+    var buf = await gReadArrayBuffer(f);
+    var wb  = XLSX.read(buf, { type: 'array' });
+    var out = [];
+    wb.SheetNames.forEach(function(name) {
+      var ws  = wb.Sheets[name];
+      var csv = XLSX.utils.sheet_to_csv(ws);
+      out.push('=== Sheet: ' + name + ' ===\n' + csv);
+    });
+    return out.join('\n\n') || '[Empty spreadsheet]';
+  }
+
+  async function gReadPdf(f) {
+    await gLoadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js');
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+    var buf  = await gReadArrayBuffer(f);
+    var pdf  = await pdfjsLib.getDocument({ data: buf }).promise;
+    var pages = [];
+    for (var p = 1; p <= pdf.numPages; p++) {
+      var page    = await pdf.getPage(p);
+      var content = await page.getTextContent();
+      var str     = content.items.map(function(s) { return s.str; }).join(' ');
+      pages.push('--- Page ' + p + ' ---\n' + str);
+    }
+    return pages.join('\n\n') || '[Empty PDF]';
+  }
+
+  function gRenderFiles() {
+    var list = document.getElementById('g-file-list');
+    list.innerHTML = gFiles.map(function(f, i) {
+      var icon = f.type === 'image'
+        ? '<img src="' + f.thumb + '" style="width:28px;height:28px;object-fit:cover;border-radius:2px;flex-shrink:0">'
+        : '<span style="color:#C9A84C;flex-shrink:0">📄</span>';
+      return '<li class="g-file">' +
+        icon +
+        '<span class="g-file-name">' + f.name + '</span>' +
+        '<button class="g-file-del" onclick="gDelFile(' + i + ')">✕</button>' +
+        '</li>';
+    }).join('');
+  }
+
+  window.gDelFile = function(i) {
+    gFiles.splice(i, 1);
+    gRenderFiles();
+  };
+
+  // ── Report Templates ──
+  window.gReport = function(type) {
+    var name  = document.getElementById('g-name').value || 'the athlete';
+    var age   = document.getElementById('g-age').value  || 'unknown';
+    var sport = document.getElementById('g-sport').value || 'baseball';
+    var tier  = document.getElementById('g-tier').value  || 'Lanista member';
+    var team  = document.getElementById('g-team').value  || '';
+
+    var prompts = {
+      player: 'Generate a comprehensive Individual Player Development Report for ' + name +
+        ' (' + age + ', ' + sport + ', ' + tier + (team ? ', ' + team : '') + ').\n\n' +
+        'Format with these sections:\n' +
+        '### ATHLETE OVERVIEW\n' +
+        '### LS4 SCORE SUMMARY (Athletic / Skills / Mentality / Overall — score each /100)\n' +
+        '### KEY STRENGTHS (top 3 with data support)\n' +
+        '### AREAS FOR DEVELOPMENT (top 3 with specific drills/actions)\n' +
+        '### 30-DAY ACTION PLAN\n' +
+        '### 60-DAY MILESTONE TARGETS\n' +
+        '### 90-DAY DEVELOPMENT GOAL\n' +
+        '### COACH NOTES & NEXT STEPS\n\n' +
+        (gFiles.length > 0 ? 'Use the uploaded documents as data sources for the report.' :
+          'Provide best-practice framework based on the athlete profile above.'),
+
+      parent: 'Generate a Parent Progress Summary for ' + name + ' (' + age + ', ' + sport + ').\n\n' +
+        'This is for parents/family. Use clear, warm, non-technical language.\n' +
+        '### WELCOME\n' +
+        '### WHERE ' + name.toUpperCase() + ' STANDS TODAY\n' +
+        '### WHAT WE HAVE BEEN WORKING ON\n' +
+        '### MEASURABLE PROGRESS THIS PERIOD\n' +
+        '### HOW PARENTS CAN SUPPORT DEVELOPMENT AT HOME\n' +
+        '### UPCOMING DEVELOPMENT FOCUS\n' +
+        '### MEMBERSHIP VALUE SUMMARY (' + tier + ')\n' +
+        '### NEXT STEPS & TIMELINE\n\n' +
+        'Keep it encouraging and data-backed. Parents should feel proud and confident in their investment.',
+
+      coach: 'Generate a Coach Scouting Report for ' + name + ' (' + age + ', ' + sport + ').\n\n' +
+        'Format as a professional scouting document for college programs:\n' +
+        '### PLAYER OVERVIEW\n' +
+        '### VERIFIED METRICS SUMMARY\n' +
+        '### ATHLETIC PROFILE (speed / strength / agility)\n' +
+        '### SKILL ASSESSMENT (technique / mechanics / game IQ / film notes)\n' +
+        '### MENTAL CHARACTER PROFILE (coachability / drive / leadership / culture fit)\n' +
+        '### LS4 COMPOSITE SCORE\n' +
+        '### PROGRAM FIT ANALYSIS\n' +
+        '### DEVELOPMENTAL TRAJECTORY\n' +
+        '### RECRUITING RECOMMENDATION\n\n' +
+        (gFiles.length > 0 ? 'Incorporate uploaded metrics and data into the analysis.' :
+          'Provide assessment framework based on position and sport.'),
+
+      ls4: 'Generate a detailed LS4 Score Breakdown for ' + name + ' (' + age + ', ' + sport + ', ' + tier + ').\n\n' +
+        '### LS4 SYSTEM OVERVIEW (brief)\n' +
+        '### ATHLETIC SCORE /100\n' +
+        '  - Speed & Agility\n  - Strength & Power\n  - Endurance & Explosiveness\n' +
+        '### SKILLS SCORE /100\n' +
+        '  - Technique & Mechanics\n  - Game IQ & Decision Making\n  - Film & Data Analysis\n' +
+        '### MENTALITY SCORE /100\n' +
+        '  - Coachability Rating\n  - Competitive Drive\n  - Leadership & Culture Fit\n' +
+        '### OVERALL LS4 COMPOSITE SCORE\n' +
+        '### HOW TO IMPROVE EACH DOMAIN (specific actions)\n' +
+        '### ESTIMATED PERCENTILE VS PEERS\n' +
+        '### PRIORITY DEVELOPMENT ORDER\n\n' +
+        (gFiles.length > 0 ? 'Use uploaded data to calculate/estimate actual scores where possible.' :
+          'Provide the scoring framework and estimated scores based on athlete profile.'),
+
+      team: 'Generate a Team Analytics Report (' + sport + (team ? ' — ' + team : '') + ').\n\n' +
+        '### TEAM OVERVIEW & ROSTER SNAPSHOT\n' +
+        '### AGGREGATE LS4 TEAM SCORE\n' +
+        '### TEAM STRENGTHS (top 3)\n' +
+        '### ROSTER GAPS & WEAKNESSES\n' +
+        '### POSITIONAL DEPTH ANALYSIS\n' +
+        '### DEVELOPMENT PRIORITIES (ranked by impact)\n' +
+        '### INDIVIDUAL SPOTLIGHT PLAYERS (standouts & concerns)\n' +
+        '### RECRUITING RECOMMENDATIONS\n' +
+        '### 90-DAY TEAM DEVELOPMENT PLAN\n' +
+        '### CULTURE & CHEMISTRY ASSESSMENT\n\n' +
+        (gFiles.length > 0 ? 'Analyze the uploaded team data for specific insights.' :
+          'Provide framework and recommendations for the team level described.'),
+
+      recruiting: 'Generate a Recruiting Readiness Report for ' + name + ' (' + age + ', ' + sport + ').\n\n' +
+        '### RECRUITING ELIGIBILITY OVERVIEW\n' +
+        '### CURRENT LS4 PROFILE (for coaches)\n' +
+        '### ACADEMIC SNAPSHOT (remind athlete to track GPA, test scores, eligibility)\n' +
+        '### TARGET SCHOOL TIER ANALYSIS\n' +
+        '  - D1 realistic targets (if applicable)\n' +
+        '  - D2/D3 best fits\n  - NAIA & JUCO options\n' +
+        '### SCHOLARSHIP POTENTIAL ASSESSMENT\n' +
+        '### SHOWCASE & EXPOSURE STRATEGY (what events, when, why)\n' +
+        '### NIL OPPORTUNITY OVERVIEW\n' +
+        '### COMMITMENT TIMELINE\n' +
+        '### RED FLAGS TO AVOID (bad advisors, wasted showcases, bad fits)\n' +
+        '### ACTION ITEMS (athlete / parent / Lanista)\n\n' +
+        'Be honest about realistic opportunities while keeping the athlete motivated.',
+
+      nil: 'Generate a NIL Strategy Report for ' + name + ' (' + age + ', ' + sport + ', ' + tier + ').\n\n' +
+        '### NIL BASICS (what it is, who qualifies, current rules)\n' +
+        '### ' + name.toUpperCase() + "'S NIL ELIGIBILITY ASSESSMENT\n" +
+        '### PERSONAL BRAND FOUNDATION (social media, story, audience)\n' +
+        '### MONETIZATION OPPORTUNITIES (local, regional, national)\n' +
+        '### COMPLIANCE CHECKLIST (what to do and avoid)\n' +
+        '### NIL PROTECT INTEGRATION (Lanista partner — how it helps)\n' +
+        '### SHORT-TERM GOALS (0-6 months)\n' +
+        '### LONG-TERM NIL ROADMAP\n' +
+        '### ACTION ITEMS\n\n' +
+        'Be practical and specific. This is real money and real legal protection on the line.'
+    };
+
+    var p = prompts[type];
+    if (p) {
+      var ta = document.getElementById('g-input');
+      ta.value = p;
+      gResize(ta);
+      ta.focus();
+    }
+  };
+
+  // ── Quick Prompts ──
+  window.gQuick = function(type) {
+    var name  = document.getElementById('g-name').value  || 'this athlete';
+    var sport = document.getElementById('g-sport').value || 'baseball';
+
+    var qp = {
+      plan: 'Create a detailed 8-week development plan for ' + name + ' focused on ' + sport + '. ' +
+        'Include weekly goals, specific drills, workout progressions, and measurable checkpoints ' +
+        'for each of the three LS4 domains: Athletic, Skills, and Mentality.',
+
+      metrics: 'Analyze the uploaded performance metrics for ' + name + '. ' +
+        'Identify key strengths, weaknesses, trends over time, and provide 5 specific, ' +
+        'actionable recommendations to improve their LS4 score. Flag any red flags or outliers.',
+
+      mental: 'Create a mental performance training plan for ' + name + ' (' + sport + '). ' +
+        'Cover: pre-game routines, handling slumps and adversity, building competitive confidence, ' +
+        'improving coachability, leadership development, and the daily mental habits of elite athletes. ' +
+        'Make it practical with weekly exercises.',
+
+      strength: 'Design a position-specific strength and conditioning program for ' + name + ' (' + sport + '). ' +
+        'Include off-season, pre-season, and in-season phases. Cover explosive power, ' +
+        'speed development, mobility, injury prevention, and recovery protocols. ' +
+        'Align with Lanista and Sensi-Fit assessment methodology.',
+
+      compare: 'Based on the uploaded data or the athlete profile for ' + name + ', ' +
+        'provide a detailed peer comparison analysis. How does this athlete stack up against ' +
+        'D3, D2, and D1 prospects at their position? What gaps exist and how long will it take ' +
+        'to close them with focused development? Be direct and data-driven.'
+    };
+
+    var p = qp[type];
+    if (p) {
+      var ta = document.getElementById('g-input');
+      ta.value = p;
+      gResize(ta);
+      ta.focus();
+    }
+  };
+
+  // ── Send Message ──
+  window.gSend = async function() {
+    var ta   = document.getElementById('g-input');
+    var text = ta.value.trim();
+    if (!text) return;
+
+    var sendBtn = document.getElementById('g-send');
+    sendBtn.disabled = true;
+    ta.value = '';
+    ta.style.height = 'auto';
+
+    // Remove welcome
+    var welcome = document.getElementById('g-welcome');
+    if (welcome) welcome.remove();
+
+    // Split files: text docs vs images
+    var textFiles  = gFiles.filter(function(f) { return f.type === 'text'; });
+    var imageFiles = gFiles.filter(function(f) { return f.type === 'image'; });
+
+    // Text file context (included every message)
+    var fileCtx = '';
+    if (textFiles.length > 0) {
+      fileCtx = '\n\n--- UPLOADED DOCUMENTS ---\n' + textFiles.map(function(f) {
+        var snippet = f.content.length > 40000 ? f.content.substring(0, 40000) + '...[truncated]' : f.content;
+        return '[' + f.name + ']:\n' + snippet;
+      }).join('\n\n---\n');
+    }
+
+    // Build athlete context
+    var name  = document.getElementById('g-name').value;
+    var age   = document.getElementById('g-age').value;
+    var sport = document.getElementById('g-sport').value;
+    var tier  = document.getElementById('g-tier').value;
+    var team  = document.getElementById('g-team').value;
+    var athleteCtx = '';
+    if (name || sport) {
+      athleteCtx = '\n\n--- ACTIVE ATHLETE PROFILE ---\n' +
+        (name  ? 'Name: '       + name  + '\n' : '') +
+        (age   ? 'Age/Grade: '  + age   + '\n' : '') +
+        (sport ? 'Sport: '      + sport + '\n' : '') +
+        (tier  ? 'Membership: ' + tier  + '\n' : '') +
+        (team  ? 'Team/School: '+ team  + '\n' : '');
+    }
+
+    var fullMsg = text + athleteCtx + fileCtx;
+
+    // Build message content — multimodal if images present
+    var msgContent;
+    if (imageFiles.length > 0) {
+      msgContent = [];
+      imageFiles.forEach(function(img) {
+        msgContent.push({
+          type: 'image',
+          source: { type: 'base64', media_type: img.mimeType, data: img.base64 }
+        });
+      });
+      msgContent.push({ type: 'text', text: fullMsg });
+    } else {
+      msgContent = fullMsg;
+    }
+
+    // History stores text only (images aren't re-sent in follow-ups)
+    var historyLabel = imageFiles.length > 0
+      ? '[' + imageFiles.length + ' image(s) attached] ' + text
+      : fullMsg;
+    gHistory.push({ role: 'user', content: historyLabel });
+    gAppend('user', text + (imageFiles.length > 0 ? ' <span style="color:#C9A84C;font-size:11px">[' + imageFiles.length + ' image' + (imageFiles.length > 1 ? 's' : '') + ']</span>' : ''));
+
+    // For this request, swap last history entry with full multimodal content
+    var apiMessages = gHistory.slice(0, -1).concat([{ role: 'user', content: msgContent }]);
+
+    // Show typing
+    var typing = document.getElementById('g-typing');
+    typing.classList.add('on');
+    gScrollBottom();
+
+    try {
+      var pw = sessionStorage.getItem(G_PW_KEY) || '';
+      var res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Gladius-Auth': pw
+        },
+        body: JSON.stringify({ system: SYSTEM, messages: apiMessages })
+      });
+
+      var data = await res.json();
+      typing.classList.remove('on');
+
+      if (data.content && data.content[0]) {
+        var reply = data.content[0].text;
+        gHistory.push({ role: 'assistant', content: reply });
+        gAppend('ai', reply);
+      } else if (data.error) {
+        gAppend('ai', 'Error: ' + (data.error.message || 'Something went wrong. Check that CLAUDE_API_KEY is set in your worker.'));
+      } else {
+        gAppend('ai', 'Unexpected response. Check worker logs.');
+      }
+    } catch(e) {
+      typing.classList.remove('on');
+      gAppend('ai', 'Connection error: ' + e.message);
+    }
+
+    sendBtn.disabled = false;
+    gScrollBottom();
+  };
+
+  // ── Export Report as PDF ──
+  var gReportIndex = 0;
+  window.gExportPDF = function(idx) {
+    var el = document.getElementById('g-report-' + idx);
+    if (!el) return;
+    var content = el.getAttribute('data-raw') || el.innerText;
+
+    var athleteName = document.getElementById('g-name').value || 'Athlete';
+    var ts = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+    // Convert markdown-style content to clean HTML for print
+    var bodyHtml = content
+      .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+      .replace(/### (.+)/g, '<h2>$1</h2>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/\n/g, '<br>');
+    bodyHtml = '<p>' + bodyHtml + '</p>';
+
+    var win = window.open('', '_blank', 'width=900,height=700');
+    win.document.write('<!DOCTYPE html><html><head><meta charset="utf-8">' +
+      '<title>Lanista Sports Report — ' + athleteName + '</title>' +
+      '<link rel="preconnect" href="https://fonts.googleapis.com">' +
+      '<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">' +
+      '<style>' +
+        'body{margin:0;padding:0;background:#fff;color:#111;font-family:"Barlow",sans-serif;font-size:13px;line-height:1.7;}' +
+        '.ls-header{background:#0a0a0a;padding:28px 40px;display:flex;align-items:center;gap:18px;}' +
+        '.ls-logo-badge{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#C9A84C,#8a6d2e);display:flex;align-items:center;justify-content:center;font-family:"Barlow Condensed",sans-serif;font-size:22px;font-weight:900;color:#0a0a0a;flex-shrink:0;}' +
+        '.ls-header-text{flex:1;}' +
+        '.ls-brand{font-family:"Barlow Condensed",sans-serif;font-size:22px;font-weight:900;letter-spacing:5px;color:#C9A84C;text-transform:uppercase;}' +
+        '.ls-tagline{font-size:10px;color:#8A9BA8;letter-spacing:2px;text-transform:uppercase;}' +
+        '.ls-meta{text-align:right;font-size:10px;color:#8A9BA8;letter-spacing:1px;text-transform:uppercase;line-height:1.8;}' +
+        '.ls-gold-bar{height:3px;background:linear-gradient(90deg,#C9A84C,#8a6d2e);}' +
+        '.ls-body{padding:36px 40px 50px;}' +
+        'h2{font-family:"Barlow Condensed",sans-serif;font-size:15px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:#0a0a0a;border-bottom:2px solid #C9A84C;padding-bottom:5px;margin:24px 0 10px;}' +
+        'strong{color:#8a6d2e;font-weight:700;}' +
+        'p{margin:0 0 10px;}' +
+        'ul{padding-left:20px;margin:6px 0;}' +
+        'li{margin-bottom:4px;}' +
+        '.ls-footer{border-top:1px solid #eee;padding:18px 40px;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#aaa;letter-spacing:1px;text-transform:uppercase;}' +
+        '@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}.ls-header{background:#0a0a0a!important;}.ls-gold-bar{background:linear-gradient(90deg,#C9A84C,#8a6d2e)!important;}}' +
+      '</style></head><body>' +
+      '<div class="ls-header">' +
+        '<div class="ls-logo-badge">G</div>' +
+        '<div class="ls-header-text">' +
+          '<div class="ls-brand">LANISTA SPORTS</div>' +
+          '<div class="ls-tagline">Gladius AI · Intelligence Report</div>' +
+        '</div>' +
+        '<div class="ls-meta">Athlete: ' + athleteName + '<br>' + ts + '<br>CONFIDENTIAL</div>' +
+      '</div>' +
+      '<div class="ls-gold-bar"></div>' +
+      '<div class="ls-body">' + bodyHtml + '</div>' +
+      '<div class="ls-footer">' +
+        '<span>Lanista Sports · lanistasports.com</span>' +
+        '<span>Generated by Gladius AI · ' + ts + '</span>' +
+        '<span>STRENGTHEN · SHIELD · STRATEGIZE</span>' +
+      '</div>' +
+      '</body></html>');
+    win.document.close();
+    win.onload = function() { win.print(); };
+  };
+
+  function gAppend(role, text) {
+    var msgs = document.getElementById('g-msgs');
+    var time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    // Light markdown formatting
+    var html = text
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/### (.+)/g, '<h3>$1</h3>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/\n/g, '<br>');
+    html = '<p>' + html + '</p>';
+
+    var div = document.createElement('div');
+    div.className = 'g-msg ' + role;
+
+    var exportBtn = '';
+    if (role === 'ai') {
+      var rIdx = gReportIndex++;
+      exportBtn = '<button class="g-export-btn" onclick="gExportPDF(' + rIdx + ')">⬇ Export PDF</button>';
+      div.innerHTML =
+        '<div class="g-avatar">G</div>' +
+        '<div>' +
+          '<div class="g-bubble" id="g-report-' + rIdx + '" data-raw="' + text.replace(/"/g, '&quot;') + '">' + html + '</div>' +
+          '<div class="g-time">' + time + ' &nbsp;' + exportBtn + '</div>' +
+        '</div>';
+    } else {
+      div.innerHTML =
+        '<div class="g-avatar">A</div>' +
+        '<div>' +
+          '<div class="g-bubble">' + html + '</div>' +
+          '<div class="g-time">' + time + '</div>' +
+        '</div>';
+    }
+
+    msgs.appendChild(div);
+    gScrollBottom();
+  }
+
+  function gScrollBottom() {
+    var msgs = document.getElementById('g-msgs');
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  window.gClearHistory = function() {
+    gHistory = [];
+    var msgs = document.getElementById('g-msgs');
+    msgs.innerHTML = '<div class="g-welcome" id="g-welcome">' +
+      '<div class="g-welcome-ico">🛡️</div>' +
+      '<div class="g-welcome-title">HISTORY CLEARED</div>' +
+      '<p class="g-welcome-txt">Fresh session started. Load a profile or ask Gladius anything.</p>' +
+      '</div>';
+  };
+
+  window.gKey = function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); gSend(); }
+  };
+
+  window.gResize = function(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  };
+
+})();
+</script>
+
+</body>
+</html>

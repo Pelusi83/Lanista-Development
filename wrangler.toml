@@ -1,0 +1,17 @@
+name = "lanista-sports-dev"
+main = "src/worker.js"
+compatibility_date = "2025-01-01"
+
+# Static assets (marketing site + dashboards) are served from ./public
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+# Secrets (set with `wrangler secret put <NAME>`):
+#   CLAUDE_API_KEY    - Anthropic API key for the Gladius AI assistant
+#   GLADIUS_PASSWORD  - access code for the admin Gladius console
+#
+# Optional vars:
+#   CLAUDE_MODEL      - override the default Claude model
+[vars]
+CLAUDE_MODEL = "claude-3-5-sonnet-20241022"

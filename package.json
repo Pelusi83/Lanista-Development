@@ -1,0 +1,14 @@
+{
+  "name": "lanista-sports-dev",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lanista Sports marketing site + unified LANISTA IQ athlete intelligence platform (Cloudflare Worker).",
+  "scripts": {
+    "dev": "wrangler dev",
+    "start": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}
