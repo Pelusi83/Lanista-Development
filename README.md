@@ -71,11 +71,41 @@ npm run deploy     # vercel deploy --prod
 
 Set these in the Vercel project (Settings → Environment Variables):
 
-| Name               | Purpose                                          |
-| ------------------ | ------------------------------------------------ |
-| `CLAUDE_API_KEY`   | Anthropic API key for the Gladius AI assistant   |
-| `GLADIUS_PASSWORD` | Access code for the admin Gladius console        |
-| `CLAUDE_MODEL`     | (optional) override the default Claude model     |
+| Name                 | Purpose                                                      |
+| -------------------- | ----------------------------------------------------------- |
+| `CLAUDE_API_KEY`     | Anthropic API key for the Gladius AI assistant              |
+| `GLADIUS_PASSWORD`   | Access code for the admin Gladius console                   |
+| `CLAUDE_MODEL`       | (optional) override the default Claude model                |
+| `RAPSODO_API_KEY`    | Rapsodo Cloud API key (UUID)                                |
+| `RAPSODO_SECRET_KEY` | Rapsodo secret used to sign requests                        |
+| `RAPSODO_USER_ID`    | Your Rapsodo user id                                        |
+| `RAPSODO_BALL_TYPE`  | (optional) `baseball` (default) or `softball`               |
+| `AUTH_SECRET`        | secret for signing per-player login tokens & access codes   |
+| `ADMIN_KEY`          | (optional) key to view/distribute player access links       |
+| `CRON_SECRET`        | (optional) protects the weekly refresh cron endpoint        |
+| `REQUIRE_AUTH`       | (optional) set to `1` to require player token / admin key   |
+
+## Rapsodo integration
+
+`/iq` connects to the **Rapsodo Cloud API** to build each athlete's dashboard
+from real ball-flight data. See [`docs/RAPSODO-INTEGRATION.md`](docs/RAPSODO-INTEGRATION.md)
+for the full design. In short:
+
+- **Live roster by name** — coaches/admins see real Rapsodo players; click any
+  athlete to open their dashboard. Search works by first/last name.
+- **Per-player dashboards** — each athlete has their own view at
+  `/iq?player=<id>`. Coaches can send that link or screenshot it.
+- **Unique player logins** — every athlete gets a stable access code
+  (`/iq?login=1` → enter code) or a one-click signed link. Codes/links are
+  generated in **Coach → Athletes → Player Access** (needs `ADMIN_KEY`).
+- **Weekly refresh** — a Vercel Cron (`api/cron-refresh`, Mondays 06:00) warms the
+  data each week; the proxy also caches for a week (`RAPSODO_CACHE_TTL_MS`).
+- **Graceful fallback** — with no Rapsodo env vars set, `/iq` shows the built-in
+  demo so nothing breaks.
+
+> Talent + Performance come from live Rapsodo data. Character, Mentality &
+> Alignment come from Lanista check-ins & coach evaluations (Rapsodo only
+> measures ball flight).
 
 ## LANISTA IQ
 
