@@ -7,7 +7,8 @@
     "dev": "vercel dev",
     "start": "vercel dev",
     "deploy": "vercel deploy --prod",
-    "test": "node smoke.test.js"
+    "test": "node smoke.test.js",
+    "test:live": "node live.test.js"
   },
   "devDependencies": {
     "jsdom": "^25.0.0",

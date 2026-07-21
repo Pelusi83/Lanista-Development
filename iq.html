@@ -525,12 +525,14 @@ function persist(){ try{ localStorage.setItem('lanista_iq_unified', JSON.stringi
 function pct(v,mn,mx){ return Math.round(Math.max(0,Math.min(100,(v-mn)/(mx-mn)*100))); }
 function avg(arr){ return arr.reduce(function(a,b){return a+b;},0)/arr.length; }
 function trendChip(t){
+  if(t==null) return '<span class="chip flat">pending</span>';
   if(t>0) return '<span class="chip up">▲ +'+t+'</span>';
   if(t<0) return '<span class="chip down">▼ '+t+'</span>';
   return '<span class="chip flat">■ 0</span>';
 }
-function core4Avg(a){ var c=a.core4; return Math.round((c.talent.score+c.character.score+c.mentality.score+c.alignment.score)/4); }
-function rosterCore4(p){ return Math.round((p.talent+p.character+p.mentality+p.alignment)/4); }
+function fmtScore(v){ return v==null?'—':v; }
+function core4Avg(a){ var c=a.core4; var v=[c.talent.score,c.character.score,c.mentality.score,c.alignment.score].filter(function(x){return x!=null;}); return v.length?Math.round(v.reduce(function(s,x){return s+x;},0)/v.length):0; }
+function rosterCore4(p){ var v=[p.talent,p.character,p.mentality,p.alignment].filter(function(x){return x!=null;}); return v.length?Math.round(v.reduce(function(s,x){return s+x;},0)/v.length):0; }
 function statusColor(s){ return s==='green'?'g':s==='yellow'?'y':'r'; }
 function initials(n){ return n.split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase(); }
 
@@ -551,7 +553,7 @@ function core4Rings(a, size){
   s+='<g transform="rotate(-90 '+size/2+' '+size/2+')">';
   dims.forEach(function(d,i){
     var r=(size/2)-stroke/2-i*(stroke+gap);
-    var c=2*Math.PI*r, val=a.core4[d].score, off=c*(1-val/100);
+    var c=2*Math.PI*r, val=(a.core4[d].score||0), off=c*(1-val/100);
     s+='<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="'+stroke+'"/>';
     s+='<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="'+C4[d].color+'" stroke-width="'+stroke+'" stroke-linecap="round" stroke-dasharray="'+c+'" stroke-dashoffset="'+off+'"><animate attributeName="stroke-dashoffset" from="'+c+'" to="'+off+'" dur="1s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1"/></circle>';
   });
@@ -691,13 +693,13 @@ function core4Signature(a, title, sub){
     '<div class="core4-hero">'+
       '<div><div class="core4-rings">'+core4Rings(a)+
         '<div class="core4-center"><div class="cc-lbl">Lanista IQ</div><div class="cc-val">'+a.lanistaIQ+'</div>'+
-        '<div class="cc-tag">'+a.status+' · Top 12%</div></div></div></div>'+
+        '<div class="cc-tag">'+a.status+(a._rapsodo?'':' · Top 12%')+'</div></div></div></div>'+
       '<div class="core4-legend">'+dims.map(function(d){
         var dim=a.core4[d];
         return '<div class="c4dim" style="--dc:'+C4[d].color+'" onclick="openC4(\''+d+'\')">'+
           '<div class="d-top"><span class="d-dot"></span><span class="d-name">'+C4[d].name+'</span><span class="d-arrow">›</span></div>'+
-          '<div style="display:flex;align-items:flex-end;gap:8px"><span class="d-val" style="color:'+C4[d].color+'">'+dim.score+'</span>'+trendChip(dim.trend)+'</div>'+
-          '<div class="d-bar"><i style="width:'+dim.score+'%"></i></div>'+
+          '<div style="display:flex;align-items:flex-end;gap:8px"><span class="d-val" style="color:'+C4[d].color+'">'+fmtScore(dim.score)+'</span>'+trendChip(dim.score==null?null:dim.trend)+'</div>'+
+          '<div class="d-bar"><i style="width:'+(dim.score||0)+'%"></i></div>'+
           '<div class="d-meta"><span>'+C4[d].desc+'</span></div></div>';
       }).join('')+'</div>'+
     '</div></div>';
@@ -716,8 +718,8 @@ function athleteHeader(a, actions){
         '<span class="tag">'+a.height+' · '+a.weight+'</span>'+
         '<span class="tag gold">GPA '+a.gpa+'</span>'+
       '</div>'+
-      '<div class="ah-meta" style="margin-top:10px"><span class="tag gold">🔥 '+a.streak+'-week check-in streak</span>'+
-        '<span class="tag">⭐ '+a.level+'</span>'+
+      '<div class="ah-meta" style="margin-top:10px">'+(a.streak>0?'<span class="tag gold">🔥 '+a.streak+'-week check-in streak</span>':'')+
+        (a._rapsodo?'<span class="tag gold">⚡ Live · Rapsodo</span>':'<span class="tag">⭐ '+a.level+'</span>')+
         '<span class="tag">Profile '+comp+'% complete</span></div>'+
     '</div>'+
     '<div class="pc-ring"><div style="position:relative;width:52px;height:52px">'+ring(comp,52,6,'#C9A84C')+
@@ -739,24 +741,32 @@ var PAGES = { player:{}, coach:{}, admin:{} };
 
 PAGES.player.home = function(){
   var a=ATHLETE;
-  var strengths=[
+  var strengths = a._rapsodo ? (a.liveStrengths||[]) : [
     {ic:'💥',t:'Elite exit velocity — 94.2 mph',d:'Top 12% nationally for your class. Your power is a genuine separator.'},
     {ic:'🔥',t:'Fastball trending up +3.2 mph',d:'Six months of consistent velocity gains — your development curve is steep.'},
     {ic:'🧠',t:'Mentality at 88 (+6)',d:'One of your fastest-rising CORE4 areas — composure under pressure is strong.'}
   ];
-  var priorities=a.devPlan.slice(0,3);
+  var priorities=(a.devPlan||[]).slice(0,3);
   var actions=[
     {ic:'✓',t:'Complete this week\'s check-in',d:'Keep your 4-week streak alive — closes Sunday.',go:'DO NOW',fn:'openCheckin()'},
     {ic:'🎬',t:'Review your latest coach evaluation',d:'Coach Rivera left notes on your changeup command.',go:'REVIEW',fn:'navigate(\'development\')'},
     {ic:'▶️',t:'Watch: Changeup Grip & Release',d:'Recommended for your #2 development priority.',go:'WATCH',fn:'navigate(\'resources\')'},
     {ic:'👤',t:'Add 2 highlights to your profile',d:'Profiles with film get 3× more coach views.',go:'ADD',fn:'openPlayerCard()'}
   ];
-  var html = athleteHeader(a)+
+  var liveBanner = (LIQ.live && !LIQ.authedPlayer)
+    ? '<div class="card pad mb22" style="border-color:rgba(201,168,76,.3);display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="font-size:26px">⚡</div><div style="flex:1;min-width:200px"><div style="font-weight:700">This is a sample dashboard</div><div class="mut" style="font-size:12.5px">Sign in with your access code to see <b style="color:var(--gold)">your</b> live Rapsodo data.</div></div><button class="btn gold" onclick="LIQ.openLogin()">Sign In →</button></div>'
+    : (a._rapsodo ? '<div class="card pad mb22" style="border-color:rgba(74,222,128,.3);display:flex;align-items:center;gap:10px"><span style="width:8px;height:8px;border-radius:50%;background:var(--pos)"></span><div class="mut" style="font-size:12.5px">Live from Rapsodo — Talent &amp; Performance reflect your real ball-flight data. Character, Mentality &amp; Alignment come from check-ins &amp; coach evaluations.</div></div>' : '');
+  var html = liveBanner + athleteHeader(a)+
     '<div class="grid g4 mb22">'+
-      kpi('Lanista IQ',a.lanistaIQ,'+7 vs last cycle','up')+
-      kpi('CORE4 Avg',core4Avg(a),'Balanced profile','up')+
-      kpi('Dev Goals On Track','4/5','1 needs attention','flat')+
-      kpi('Check-In Streak',a.streak+' wks','Personal best','up')+
+      (a._rapsodo
+        ? kpi('Talent Index',a.core4.talent.score==null?'—':a.core4.talent.score,'live · Rapsodo','up')+
+          kpi('Swings Tracked',(a._rapsodo.hitting&&a._rapsodo.hitting.count)||0,'this cycle','flat')+
+          kpi('Pitches Tracked',(a._rapsodo.pitching&&a._rapsodo.pitching.count)||0,'this cycle','flat')+
+          kpi('Data Source','Rapsodo','auto-refresh weekly','up')
+        : kpi('Lanista IQ',a.lanistaIQ,'+7 vs last cycle','up')+
+          kpi('CORE4 Avg',core4Avg(a),'Balanced profile','up')+
+          kpi('Dev Goals On Track','4/5','1 needs attention','flat')+
+          kpi('Check-In Streak',a.streak+' wks','Personal best','up'))+
     '</div>'+
     core4Signature(a)+
     '<div class="grid g-2-1 mb22">'+
@@ -768,7 +778,7 @@ PAGES.player.home = function(){
     '<div class="grid g-2-1 mb22">'+
       '<div class="card pad"><div class="card-head"><span class="lbl">🎯 Your Top Development Priorities</span>'+
         '<span class="act" onclick="navigate(\'development\')">Full plan →</span></div>'+
-        priorities.map(function(p,i){return priorityRow(p,i+1);}).join('')+'</div>'+
+        (priorities.length?priorities.map(function(p,i){return priorityRow(p,i+1);}).join(''):'<div class="empty">No development goals yet. Your coach can assign goals, or add them from My Development.</div>')+'</div>'+
       '<div class="card pad"><div class="card-head"><span class="lbl">⚡ Recommended Next Actions</span></div>'+
         actions.map(function(x){return '<div class="action" onclick="'+x.fn+'"><div class="a-ic">'+x.ic+'</div>'+
           '<div><div class="a-tt">'+x.t+'</div><div class="a-ds">'+x.d+'</div></div><div class="a-go">'+x.go+' →</div></div>';}).join('')+'</div>'+
@@ -778,8 +788,14 @@ PAGES.player.home = function(){
 
 PAGES.player.core4 = function(){
   var a=ATHLETE, dims=['talent','character','mentality','alignment'];
+  var liveTalent=null;
+  if(a._rapsodo){ var h=a._rapsodo.hitting||{},p=a._rapsodo.pitching||{}; liveTalent=[];
+    if(h.count){ liveTalent.push(['Max Distance',h.maxDistance+' ft',pct(h.maxDistance,40,340)]); liveTalent.push(['Sweet Spot',h.sweetSpotPct+'%',h.sweetSpotPct]); }
+    if(p.count){ liveTalent.push(['Spin Eff.',p.avgSpinEfficiency+'%',p.avgSpinEfficiency]); liveTalent.push(['Avg Spin',p.avgSpin+' rpm',pct(p.avgSpin,1200,2800)]); }
+    if(!liveTalent.length) liveTalent=[['No sessions','—',0]];
+  }
   var sub={
-    talent:[['Exit Velocity',a.exitVelo+' mph',pct(a.exitVelo,60,110)],['Pitch Velocity',a.pitchVelo+' mph',pct(a.pitchVelo,50,95)],['Arm Velocity',a.armVelo+' mph',pct(a.armVelo,50,100)],['30-Yd Dash',a.sprint30+'s',pct(7.5-a.sprint30,0,1)]],
+    talent: liveTalent || [['Exit Velocity',a.exitVelo+' mph',pct(a.exitVelo,60,110)],['Pitch Velocity',a.pitchVelo+' mph',pct(a.pitchVelo,50,95)],['Arm Velocity',a.armVelo+' mph',pct(a.armVelo,50,100)],['30-Yd Dash',a.sprint30+'s',pct(7.5-a.sprint30,0,1)]],
     character:[['Coachability',a.coachability,a.coachability],['Effort',a.effort,a.effort],['Grit',a.grit,a.grit],['Leadership',82,82]],
     mentality:[['Confidence',a.confidence,a.confidence],['Focus',a.focus,a.focus],['Composure',a.composure,a.composure],['Resilience',a.resilience,a.resilience]],
     alignment:[['Dev Plan Progress','62%',62],['Check-In Rate','90%',90],['Goal Fit','High',84],['Engagement',a.morale,a.morale]]
@@ -791,10 +807,10 @@ PAGES.player.core4 = function(){
       var dim=a.core4[d];
       return '<div class="card pad hover" style="--dc:'+C4[d].color+'">'+
         '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-size:20px">'+C4[d].icon+'</span>'+
-          '<span style="font-family:var(--f-d);font-weight:800;letter-spacing:1px;text-transform:uppercase;font-size:14px">'+C4[d].name+'</span>'+trendChip(dim.trend)+'</div>'+
-        '<div style="position:relative;width:120px;height:120px;margin:0 auto 12px">'+ring(dim.score,120,11,C4[d].color)+
-          '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-family:var(--f-d);font-size:34px;font-weight:900;color:'+C4[d].color+'">'+dim.score+'</span><span style="font-family:var(--f-m);font-size:8px;color:var(--steel)">/ 100</span></div></div>'+
-        sub[d].map(function(r){return '<div class="mrow" style="padding:7px 0"><span class="m-nm" style="width:auto;flex:1;font-size:12px">'+r[0]+'</span><div class="m-track" style="max-width:60px"><div class="m-fill" style="width:'+r[2]+'%;background:'+C4[d].color+'"></div></div><span class="m-val" style="width:70px;font-size:12px;color:'+C4[d].color+'">'+r[1]+'</span></div>';}).join('')+
+          '<span style="font-family:var(--f-d);font-weight:800;letter-spacing:1px;text-transform:uppercase;font-size:14px">'+C4[d].name+'</span>'+trendChip(dim.score==null?null:dim.trend)+'</div>'+
+        '<div style="position:relative;width:120px;height:120px;margin:0 auto 12px">'+ring(dim.score||0,120,11,C4[d].color)+
+          '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-family:var(--f-d);font-size:34px;font-weight:900;color:'+C4[d].color+'">'+fmtScore(dim.score)+'</span><span style="font-family:var(--f-m);font-size:8px;color:var(--steel)">/ 100</span></div></div>'+
+        (dim.score==null?'<div class="empty" style="padding:8px;font-size:11px">Pending assessment / check-in</div>':sub[d].map(function(r){return '<div class="mrow" style="padding:7px 0"><span class="m-nm" style="width:auto;flex:1;font-size:12px">'+r[0]+'</span><div class="m-track" style="max-width:60px"><div class="m-fill" style="width:'+r[2]+'%;background:'+C4[d].color+'"></div></div><span class="m-val" style="width:70px;font-size:12px;color:'+C4[d].color+'">'+r[1]+'</span></div>';}).join(''))+
       '</div>';
     }).join('')+'</div>'+
     '<div class="grid g-2-1">'+
@@ -907,11 +923,35 @@ function filterRes(type,btn){
   var el=document.getElementById('resGrid'); if(el) el.innerHTML=list.map(resourceCard).join('');
 }
 
+/* ── live Rapsodo performance ── */
+function livePerfHTML(s, tab){
+  var h=s.hitting||{}, p=s.pitching||{};
+  var note='<div class="mut" style="font-size:11px;margin-bottom:14px">⚡ Live from Rapsodo · '+(s.updatedAt?new Date(s.updatedAt).toLocaleString():'')+'</div>';
+  if(tab==='hitting'){
+    if(!h.count) return note+'<div class="empty">No hitting sessions recorded in Rapsodo yet.</div>';
+    return note+'<div class="grid g4 mb22">'+kpi('Avg Distance',h.avgDistance,'ft','flat')+kpi('Max Distance',h.maxDistance,'ft','up')+kpi('Launch Angle',h.avgLaunchAngle+'°','avg','flat')+kpi('Sweet Spot',h.sweetSpotPct+'%','8–32° contact','up')+'</div>'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">Hitting Detail · '+h.count+' swings</span></div>'+
+      [['Average Distance',h.avgDistance+' ft',pct(h.avgDistance,20,120)],['Max Distance',h.maxDistance+' ft',pct(h.maxDistance,40,340)],['Avg Launch Angle',h.avgLaunchAngle+'°',pct(h.avgLaunchAngle,0,45)],['Sweet-Spot %',h.sweetSpotPct+'%',h.sweetSpotPct],['Avg Spin',h.avgSpin+' rpm',pct(h.avgSpin,500,3000)]].map(function(r){return '<div class="mrow"><span class="m-nm">'+r[0]+'</span><div class="m-track"><div class="m-fill" style="width:'+r[2]+'%"></div></div><span class="m-val">'+r[1]+'</span></div>';}).join('')+'</div>';
+  }
+  if(tab==='pitching'){
+    if(!p.count) return note+'<div class="empty">No pitching sessions recorded in Rapsodo yet.</div>';
+    var types=p.pitchTypes||{};
+    return note+'<div class="grid g4 mb22">'+kpi('Avg Spin',p.avgSpin,'rpm','flat')+kpi('Spin Eff.',p.avgSpinEfficiency+'%','','up')+kpi('V-Break',p.avgVerticalBreakIn+'"','','flat')+kpi('Release Ext.',p.avgReleaseExtensionFt+"'",'','flat')+'</div>'+
+      '<div class="grid g-2-1"><div class="card pad"><div class="card-head"><span class="lbl">Pitching Detail · '+p.count+' pitches</span></div>'+
+      [['Avg Spin',p.avgSpin+' rpm',pct(p.avgSpin,1200,2800)],['Spin Efficiency',p.avgSpinEfficiency+'%',p.avgSpinEfficiency],['Vertical Break',p.avgVerticalBreakIn+'"',pct(Math.abs(p.avgVerticalBreakIn),0,24)],['Horizontal Break',p.avgHorizontalBreakIn+'"',pct(Math.abs(p.avgHorizontalBreakIn),0,24)],['Release Height',p.avgReleaseHeightFt+' ft',pct(p.avgReleaseHeightFt,4,7)],['Release Extension',p.avgReleaseExtensionFt+' ft',pct(p.avgReleaseExtensionFt,4,7)]].map(function(r){return '<div class="mrow"><span class="m-nm">'+r[0]+'</span><div class="m-track"><div class="m-fill" style="width:'+r[2]+'%"></div></div><span class="m-val">'+r[1]+'</span></div>';}).join('')+'</div>'+
+      '<div class="card pad"><div class="card-head"><span class="lbl">Pitch Mix</span></div>'+
+      Object.keys(types).map(function(t){var c=types[t];var tot=p.count;return '<div class="mrow"><span class="m-nm">'+t+'</span><div class="m-track"><div class="m-fill" style="width:'+Math.round(c/tot*100)+'%"></div></div><span class="m-val">'+c+'</span></div>';}).join('')+'</div></div>';
+  }
+  // athletic
+  return note+'<div class="empty">Athletic combine testing (speed, agility, RSI) isn\'t captured by Rapsodo.<br>Switch to <b>Hitting</b> or <b>Pitching</b> for live ball-flight data.</div>';
+}
+
 /* ── performance tabs ── */
 function perfTab(tab,btn){
   if(btn){ btn.parentElement.querySelectorAll('button').forEach(function(b){b.classList.remove('active');}); btn.classList.add('active'); }
   var a=ATHLETE, el=document.getElementById('perfBody'); if(!el) return;
   destroyCharts();
+  if(a._rapsodo){ el.innerHTML = livePerfHTML(a._rapsodo, tab); return; }
   if(tab==='athletic'){
     var rows=[['Exit Velocity',a.exitVelo+' mph',pct(a.exitVelo,65,110),'87 mph'],['Arm Velocity',a.armVelo+' mph',pct(a.armVelo,55,100),'78 mph'],
       ['30-Yard Dash',a.sprint30+'s',pct(7.5-a.sprint30,0,1),'6.95s'],['Lane Agility',a.agility+'s',pct(7.5-a.agility,0,1),'7.0s'],
@@ -1055,7 +1095,8 @@ PAGES.coach.team = PAGES.coach.home;
 PAGES.coach.athletes = function(){
   var html='<div class="page-hero"><div class="lead"><h1>Athlete Matrix</h1><p>Compare every athlete across CORE4 and performance. Sort, filter, and click any row to open the full profile — no more scrolling through dozens of pages.</p></div>'+
     '<div style="display:flex;gap:8px;flex-wrap:wrap"><select class="inp" style="width:auto;margin:0" onchange="matrixFilter(this.value)"><option value="">All Positions</option><option>P</option><option>C</option><option>IF</option><option>OF</option></select>'+
-    '<button class="btn sm" onclick="openCompare()">⚖ Compare</button></div></div>'+
+    '<button class="btn sm" onclick="openCompare()">⚖ Compare</button>'+(LIQ.live?'<button class="btn gold sm" onclick="LIQ.openAccessPanel()">🔗 Player Access</button>':'')+'</div></div>'+
+    (LIQ.live?'':'<div class="card pad mb16" style="border-color:rgba(201,168,76,.25)"><div class="mut" style="font-size:12.5px">⚡ <b style="color:var(--gold)">Connect Rapsodo</b> to replace this sample roster with your real athletes — set <span class="mono">RAPSODO_API_KEY</span>, <span class="mono">RAPSODO_SECRET_KEY</span> &amp; <span class="mono">RAPSODO_USER_ID</span> in your environment.</div></div>')+
     '<div class="card" style="overflow:hidden"><div style="overflow:auto"><table class="tbl" id="matrixTbl"><thead><tr>'+
     ['name|Athlete','pos|Pos','cls|Class','core4|CORE4','talent|Talent','character|Character','mentality|Mentality','alignment|Alignment','trend|Trend','assess|Status'].map(function(h){var p=h.split('|');return '<th onclick="sortMatrix(\''+p[0]+'\')">'+p[1]+'</th>';}).join('')+
     '</tr></thead><tbody id="matrixBody"></tbody></table></div></div>';
@@ -1132,19 +1173,21 @@ function core4RingsAnimate(){}
 var _matrixSort='core4', _matrixDir=-1, _matrixFilter='';
 function matrixFilter(v){ _matrixFilter=v; renderMatrix(); }
 function sortMatrix(k){ if(_matrixSort===k) _matrixDir*=-1; else {_matrixSort=k;_matrixDir=-1;} renderMatrix(); }
+function activeRoster(){ return (LIQ.live && LIQ.liveRoster && LIQ.liveRoster.length) ? LIQ.liveRoster : ROSTER; }
 function renderMatrix(){
   var body=document.getElementById('matrixBody'); if(!body) return;
-  var list=ROSTER.slice();
+  var list=activeRoster().slice();
   if(_matrixFilter){ list=list.filter(function(p){ var g=p.pos; if(_matrixFilter==='P')return /P/.test(g); if(_matrixFilter==='C')return /^C/.test(g); if(_matrixFilter==='IF')return /(1B|2B|3B|SS)/.test(g); if(_matrixFilter==='OF')return /(CF|LF|RF|OF)/.test(g); return true;}); }
   list.sort(function(a,b){ var av=_matrixSort==='core4'?rosterCore4(a):a[_matrixSort], bv=_matrixSort==='core4'?rosterCore4(b):b[_matrixSort];
     if(typeof av==='string') return av.localeCompare(bv)*_matrixDir; return (av-bv)*_matrixDir; });
   body.innerHTML=list.map(function(p){
-    var st=p.assess==='complete'?'<span class="pill g">Complete</span>':p.assess==='overdue'?'<span class="pill r">Overdue</span>':'<span class="pill y">Pending</span>';
-    return '<tr onclick="openAthlete(\''+p.name+'\')"><td><span class="av-sm">'+initials(p.name)+'</span>'+p.name+'</td>'+
+    var st=p.assess==='complete'?'<span class="pill g">Complete</span>':p.assess==='overdue'?'<span class="pill r">Overdue</span>':'<span class="pill y">'+(p.live?'View →':'Pending')+'</span>';
+    var c4=(p.live&&p.talent==null)?'—':rosterCore4(p);
+    return '<tr onclick="openAthlete(\''+(p.name.replace(/'/g,"\\'"))+'\')"><td><span class="av-sm">'+initials(p.name)+'</span>'+p.name+'</td>'+
       '<td class="mono mut">'+p.pos+'</td><td class="mono mut">'+p.cls+'</td>'+
-      '<td class="mono" style="color:var(--gold);font-weight:700">'+rosterCore4(p)+'</td>'+
-      ['talent','character','mentality','alignment'].map(function(d){return '<td class="mono" style="color:'+C4[d].color+'">'+p[d]+'</td>';}).join('')+
-      '<td>'+trendChip(p.trend)+'</td><td>'+st+'</td></tr>';
+      '<td class="mono" style="color:var(--gold);font-weight:700">'+c4+'</td>'+
+      ['talent','character','mentality','alignment'].map(function(d){return '<td class="mono" style="color:'+C4[d].color+'">'+fmtScore(p[d])+'</td>';}).join('')+
+      '<td>'+trendChip(p.live&&p.trend===0?null:p.trend)+'</td><td>'+st+'</td></tr>';
   }).join('');
 }
 function openCompare(){
@@ -1217,9 +1260,10 @@ PAGES.admin.teams = function(){
 PAGES.admin.athletes = function(){
   var html='<div class="page-hero"><div class="lead"><h1>All Athletes</h1><p>Platform-wide athlete directory. Click any athlete to open their universal profile.</p></div></div>'+
     '<div class="card" style="overflow:hidden"><div style="overflow:auto"><table class="tbl"><thead><tr><th>Athlete</th><th>Position</th><th>Class</th><th>CORE4</th><th>Trend</th><th>Status</th></tr></thead><tbody id="matrixBody"></tbody></table></div></div>';
-  return {html:html, after:function(){ var body=document.getElementById('matrixBody'); body.innerHTML=ROSTER.map(function(p){
-    var st=p.assess==='complete'?'<span class="pill g">Active</span>':p.assess==='overdue'?'<span class="pill r">Overdue</span>':'<span class="pill y">Pending</span>';
-    return '<tr onclick="openAthlete(\''+p.name+'\')"><td><span class="av-sm">'+initials(p.name)+'</span>'+p.name+'</td><td class="mut">'+p.pos+'</td><td class="mono mut">'+p.cls+'</td><td class="mono" style="color:var(--gold);font-weight:700">'+rosterCore4(p)+'</td><td>'+trendChip(p.trend)+'</td><td>'+st+'</td></tr>';}).join(''); }};
+  return {html:html, after:function(){ var body=document.getElementById('matrixBody'); body.innerHTML=activeRoster().map(function(p){
+    var st=p.live?'<span class="pill y">View →</span>':p.assess==='complete'?'<span class="pill g">Active</span>':p.assess==='overdue'?'<span class="pill r">Overdue</span>':'<span class="pill y">Pending</span>';
+    var c4=(p.live&&p.talent==null)?'—':rosterCore4(p);
+    return '<tr onclick="openAthlete(\''+(p.name.replace(/'/g,"\\'"))+'\')"><td><span class="av-sm">'+initials(p.name)+'</span>'+p.name+'</td><td class="mut">'+p.pos+'</td><td class="mono mut">'+p.cls+'</td><td class="mono" style="color:var(--gold);font-weight:700">'+c4+'</td><td>'+trendChip(p.live&&p.trend===0?null:p.trend)+'</td><td>'+st+'</td></tr>';}).join(''); }};
 };
 
 PAGES.admin.analytics = function(){
@@ -1340,7 +1384,8 @@ function setProfTab(tab,btn){
 
 /* ── athlete drawer (coach/admin quick view) ── */
 function openAthlete(name){
-  var p=ROSTER.find(function(x){return x.name===name;}); if(!p) return;
+  var p=activeRoster().find(function(x){return x.name===name;}); if(!p) return;
+  if(p.live && p.id){ LIQ.openLiveAthlete(p); return; }
   var c4={talent:p.talent,character:p.character,mentality:p.mentality,alignment:p.alignment};
   var fake={core4:{talent:{score:p.talent,trend:p.trend},character:{score:p.character,trend:p.trend},mentality:{score:p.mentality,trend:p.trend},alignment:{score:p.alignment,trend:p.trend}},lanistaIQ:rosterCore4(p),status:p.status==='green'?'On Track':p.status==='yellow'?'Monitor':'At Risk'};
   var note = p.status==='red'?insight('⚠️','Needs attention','Mentality '+p.mentality+' · trending '+p.trend+'. Recommend a 1-on-1 this week.','bad')
@@ -1460,14 +1505,176 @@ function sendGladius(){
 document.getElementById('gInput').addEventListener('keydown',function(e){ if(e.key==='Enter'){e.preventDefault();sendGladius();} });
 document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ closeModal(); closeDrawer(); } });
 
+/* ══════════════════════════════════════════════════════════════
+   LIQ — RAPSODO LIVE INTEGRATION LAYER
+   Connects the dashboard to /api/rapsodo & /api/player-auth.
+   Gracefully falls back to demo data when the API isn't configured.
+══════════════════════════════════════════════════════════════ */
+var LIQ = {
+  live:false, players:[], liveRoster:[], lastSync:null, authedPlayer:null, playerToken:null,
+
+  api:function(path,opts){ return fetch(path,opts).then(function(r){return r.json();}).catch(function(){return null;}); },
+
+  bootstrap:async function(){
+    var qp; try{ qp=new URLSearchParams(location.search); }catch(e){ qp=new URLSearchParams(''); }
+    var qr=qp.get('role'); if(qr && NAV[qr]){ STATE.role=qr; persist(); }
+    var qpg=qp.get('page'); if(qpg){ STATE.page=qpg; }
+    try{ this.playerToken = sessionStorage.getItem('liq_ptoken')||null; }catch(e){}
+
+    var res=await this.api('/api/rapsodo?resource=roster');
+    if(res && res.configured){
+      this.live=true; this.players=res.players||[]; this.lastSync=res.updatedAt||Date.now();
+      this.liveRoster=this.players.map(function(p){
+        return { id:p.id, name:p.name, live:true, pos:(p.throws?(p.throws+'HP'):'—'), cls:'—',
+          talent:null,character:null,mentality:null,alignment:null, exitVelo:null,armVelo:null,
+          streak:0,status:'',trend:0,assess:'live', bats:p.bats,throws:p.throws,ht:p.height,wt:p.weight,email:p.email };
+      });
+    }
+
+    var qPlayer=qp.get('player'), qk=qp.get('k');
+    if(this.live && qPlayer){
+      if(qk){ this.playerToken=qk; try{ sessionStorage.setItem('liq_ptoken',qk); }catch(e){} }
+      await this.loadPlayer(qPlayer, this.playerToken);
+      STATE.role='player';
+    } else if(this.live && this.playerToken && STATE.role==='player'){
+      var v=await this.api('/api/player-auth?verify='+encodeURIComponent(this.playerToken));
+      if(v && v.valid){ await this.loadPlayer(v.playerId, this.playerToken); }
+    }
+    this._pendingLogin = this.live && (qp.get('login')==='1');
+  },
+
+  loadPlayer:async function(id, token){
+    var opts = token ? {headers:{'X-Player-Token':token}} : {};
+    var res=await this.api('/api/rapsodo?resource=summary&playerId='+encodeURIComponent(id), opts);
+    if(res && res.player){ this.mapSummary(res); this.authedPlayer=res.player; return true; }
+    return false;
+  },
+
+  mapSummary:function(s){
+    var p=s.player, hit=s.hitting||{}, pit=s.pitching||{};
+    var isP=(pit.count||0)>=(hit.count||0) && (pit.count||0)>0;
+    ATHLETE.id=p.id; ATHLETE.name=p.name; ATHLETE.first=(p.firstName||p.name.split(' ')[0]); ATHLETE.avatar=initials(p.name);
+    ATHLETE.pos=isP?((p.throws||'R')==='L'?'LHP':'RHP'):'Hitter'; ATHLETE.posShort=ATHLETE.pos;
+    ATHLETE.bats=(p.bats||'R')+'/'+(p.throws||'R'); ATHLETE.team=p.email? p.email.split('@')[1]||'Rapsodo':'Rapsodo';
+    if(p.height){ ATHLETE.height=Math.floor(p.height/12)+"'"+(p.height%12)+'"'; }
+    if(p.weight){ ATHLETE.weight=p.weight+' lbs'; }
+    ATHLETE.grad='—'; ATHLETE.grade='—'; ATHLETE.gpa='—'; ATHLETE.number='—'; ATHLETE.city='';
+    var t=(s.talentIndex!=null)?s.talentIndex:null;
+    ATHLETE.core4.talent={score:t,trend:0,prev:t};
+    ATHLETE.core4.character={score:null,trend:0,prev:null};
+    ATHLETE.core4.mentality={score:null,trend:0,prev:null};
+    ATHLETE.core4.alignment={score:null,trend:0,prev:null};
+    ATHLETE.lanistaIQ=(t!=null?t:'—'); ATHLETE.ls4=(t!=null?t:'—'); ATHLETE.status=s.hasData?'Live · Rapsodo':'No sessions yet';
+    ATHLETE.profile=100; ATHLETE._rapsodo=s; ATHLETE.devPlan=[]; ATHLETE.streak=0;
+    ATHLETE.liveStrengths=this.deriveStrengths(s);
+  },
+  deriveStrengths:function(s){
+    var out=[], h=s.hitting||{}, p=s.pitching||{};
+    if(h.count){
+      if(h.maxDistance!=null) out.push({ic:'💥',t:'Max distance '+h.maxDistance+' ft',d:'Your best-struck ball this cycle across '+h.count+' tracked swings.'});
+      if(h.sweetSpotPct!=null) out.push({ic:'🎯',t:'Sweet-spot contact '+h.sweetSpotPct+'%',d:'Share of swings in the 8–32° launch window — quality of contact.'});
+    }
+    if(p.count){
+      if(p.avgSpinEfficiency!=null) out.push({ic:'🌀',t:'Spin efficiency '+p.avgSpinEfficiency+'%',d:'How much of your spin translates to movement across '+p.count+' pitches.'});
+      if(p.avgSpin!=null) out.push({ic:'⚾',t:'Average spin '+p.avgSpin+' rpm',d:'Raw spin from your live Rapsodo sessions.'});
+    }
+    if(!out.length) out.push({ic:'📡',t:'No sessions yet',d:'Once you log a Rapsodo session, your live insights appear here.'});
+    return out.slice(0,3);
+  },
+
+  openLiveAthlete:function(p){
+    var d=document.getElementById('athleteDrawer');
+    d.innerHTML='<div class="modal-head"><div class="ah-avatar" style="width:46px;height:46px;font-size:17px">'+initials(p.name)+'</div><div><div class="m-ttl" style="font-size:18px">'+p.name+'</div><div class="m-sub">Loading Rapsodo data…</div></div><button class="modal-x" onclick="closeDrawer()">✕</button></div><div class="modal-body"><div class="empty">Fetching latest sessions…</div></div>';
+    d.classList.add('open'); document.getElementById('drawerScrim').classList.add('open');
+    this.api('/api/rapsodo?resource=summary&playerId='+encodeURIComponent(p.id)).then(function(s){
+      if(!s || !s.player){ d.querySelector('.modal-body').innerHTML='<div class="empty">Could not load data for this athlete.</div>'; return; }
+      d.innerHTML=LIQ.athleteDrawerHTML(s);
+    });
+  },
+
+  athleteDrawerHTML:function(s){
+    var p=s.player, h=s.hitting||{}, pi=s.pitching||{};
+    var link=location.origin+'/iq?player='+p.id;
+    function stat(l,v){ return '<div class="card pad" style="padding:12px"><div class="mono mut" style="font-size:9px;letter-spacing:1px">'+l+'</div><div style="font-family:var(--f-d);font-size:22px;font-weight:900;color:var(--gold)">'+(v==null?'—':v)+'</div></div>'; }
+    var body='<div class="modal-head"><div class="ah-avatar" style="width:46px;height:46px;font-size:17px">'+initials(p.name)+'</div>'+
+      '<div><div class="m-ttl" style="font-size:18px">'+p.name+'</div><div class="m-sub">'+(p.bats||'?')+'/'+(p.throws||'?')+' · '+(p.height?Math.floor(p.height/12)+"\'"+(p.height%12)+'"':'')+' · <span style="color:var(--gold)">Live · Rapsodo</span></div></div>'+
+      '<button class="modal-x" onclick="closeDrawer()">✕</button></div><div class="modal-body">';
+    if(!s.hasData){ body+='<div class="empty">No Rapsodo sessions recorded yet for this athlete.</div>'; }
+    else {
+      body+='<div style="display:flex;align-items:center;gap:16px;margin-bottom:16px"><div style="position:relative;width:96px;height:96px;flex-shrink:0">'+ring(s.talentIndex||0,96,10,'#C9A84C')+'<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-family:var(--f-d);font-size:26px;font-weight:900;color:var(--gold)">'+(s.talentIndex==null?'—':s.talentIndex)+'</span><span class="mono" style="font-size:7px;color:var(--steel)">TALENT</span></div></div>'+
+        '<div class="mut" style="font-size:12px">Talent Index derived from live Rapsodo ball-flight. Character, Mentality &amp; Alignment come from Lanista check-ins &amp; coach evaluations.</div></div>';
+      if(h.count){ body+='<div class="card-head" style="margin-top:6px"><span class="lbl">🏏 Hitting · '+h.count+' swings</span></div><div class="grid g2" style="gap:8px;margin-bottom:14px">'+stat('AVG DIST',h.avgDistance)+stat('MAX DIST',h.maxDistance)+stat('LAUNCH ANGLE',h.avgLaunchAngle+'°')+stat('SWEET SPOT',h.sweetSpotPct+'%')+'</div>'; }
+      if(pi.count){ body+='<div class="card-head"><span class="lbl">⚾ Pitching · '+pi.count+' pitches</span></div><div class="grid g2" style="gap:8px;margin-bottom:14px">'+stat('AVG SPIN',pi.avgSpin)+stat('SPIN EFF',pi.avgSpinEfficiency+'%')+stat('V-BREAK',pi.avgVerticalBreakIn+'"')+stat('RELEASE EXT',pi.avgReleaseExtensionFt+"'")+'</div>'; }
+    }
+    body+='<div style="display:flex;gap:8px;margin-top:8px"><button class="btn gold sm" style="flex:1" onclick="LIQ.viewAsPlayer('+p.id+')">Open Full Dashboard</button>'+
+      '<button class="btn sm" onclick="LIQ.copy(\''+link+'\')">Copy Link</button></div>'+
+      '<div class="mut" style="font-size:11px;margin-top:10px">Shareable dashboard link: <span class="mono" style="color:var(--gold)">'+link+'</span></div></div>';
+    return body;
+  },
+
+  viewAsPlayer:function(id){ closeDrawer(); location.href='/iq?player='+id; },
+  copy:function(t){ try{ navigator.clipboard.writeText(t).then(function(){showToast('Link copied','good');}); }catch(e){ showToast(t,''); } },
+
+  refresh:async function(){
+    showToast('Refreshing from Rapsodo…','gold');
+    var res=await this.api('/api/rapsodo?resource=roster&fresh=1');
+    if(res && res.configured){ this.lastSync=res.updatedAt||Date.now(); this.injectBadge(); showToast('Synced '+(res.count||0)+' athletes','good'); }
+    if(ATHLETE._rapsodo && ATHLETE.id){ await this.loadPlayer(ATHLETE.id, this.playerToken); route(); }
+  },
+
+  injectBadge:function(){
+    var host=document.querySelector('.tb-right'); if(!host) return;
+    var el=document.getElementById('liqLive');
+    if(!el){ el=document.createElement('div'); el.id='liqLive'; el.style.cssText='display:flex;align-items:center;gap:8px;font-family:var(--f-m);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--steel);border:1px solid var(--line);border-radius:10px;padding:6px 10px;cursor:pointer'; el.onclick=function(){ LIQ.refresh(); }; host.insertBefore(el, host.firstChild); }
+    var when=this.lastSync?new Date(this.lastSync).toLocaleDateString():'';
+    el.innerHTML='<span style="width:7px;height:7px;border-radius:50%;background:'+(this.live?'#4ade80':'#8A93A0')+';box-shadow:0 0 8px '+(this.live?'#4ade80':'transparent')+'"></span>'+(this.live?('Rapsodo Live · '+when):'Demo data')+' <span style="color:var(--gold)">↻</span>';
+  },
+
+  openLogin:function(){
+    openModalHTML('<div class="modal-head"><div class="g-mark" style="width:34px;height:34px;border-radius:9px">L</div><div><div class="m-ttl">Player Sign In</div><div class="m-sub">Enter the access code from your coach</div></div><button class="modal-x" onclick="closeModal()">✕</button></div>'+
+      '<div class="modal-body"><input class="inp" id="liqCode" placeholder="Access code (e.g. ABCD1234)" style="text-transform:uppercase;letter-spacing:3px;font-family:var(--f-m);font-size:18px;text-align:center" maxlength="8"/>'+
+      '<div id="liqLoginErr" class="neg" style="font-size:12px;margin-bottom:10px;display:none">Invalid access code. Check with your coach.</div>'+
+      '<button class="btn gold" style="width:100%" onclick="LIQ.submitLogin()">Open My Dashboard →</button>'+
+      '<div class="mut" style="font-size:11px;margin-top:12px;text-align:center">Your dashboard is personal to you — powered by your live Rapsodo data.</div></div>');
+    setTimeout(function(){ var i=document.getElementById('liqCode'); if(i) i.focus(); },60);
+  },
+  submitLogin:async function(){
+    var code=(document.getElementById('liqCode').value||'').trim().toUpperCase();
+    if(!code) return;
+    var res=await this.api('/api/player-auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:code})});
+    if(res && res.success && res.token){
+      this.playerToken=res.token; try{ sessionStorage.setItem('liq_ptoken',res.token); }catch(e){}
+      closeModal(); location.href='/iq?player='+res.player.id+'&k='+encodeURIComponent(res.token);
+    } else {
+      var e=document.getElementById('liqLoginErr'); if(e) e.style.display='block';
+    }
+  },
+
+  openAccessPanel:function(){
+    var saved=''; try{ saved=sessionStorage.getItem('liq_adminkey')||''; }catch(e){}
+    openModalHTML('<div class="modal-head wide"><div><div class="m-ttl">Player Access Links</div><div class="m-sub">Generate a unique login link &amp; code for each athlete</div></div><button class="modal-x" onclick="closeModal()">✕</button></div>'+
+      '<div class="modal-body"><div style="display:flex;gap:8px;margin-bottom:14px"><input class="inp" id="liqAdminKey" placeholder="Admin key" value="'+saved+'" style="margin:0;flex:1"/><button class="btn gold" onclick="LIQ.loadCodes()">Load</button></div><div id="liqCodes"><div class="mut" style="font-size:12px">Enter your admin key to generate per-player codes &amp; shareable dashboard links.</div></div></div>');
+  },
+  loadCodes:async function(){
+    var key=(document.getElementById('liqAdminKey').value||'').trim();
+    try{ sessionStorage.setItem('liq_adminkey',key); }catch(e){}
+    var el=document.getElementById('liqCodes'); el.innerHTML='<div class="empty">Loading…</div>';
+    var res=await this.api('/api/player-auth?codes=1&base='+encodeURIComponent(location.origin),{headers:{'X-Admin-Key':key}});
+    if(!res || res.error || !res.players){ el.innerHTML='<div class="neg" style="font-size:12px">'+((res&&res.error)||'Could not load. Check the admin key.')+'</div>'; return; }
+    el.innerHTML='<div style="overflow:auto;max-height:52vh"><table class="tbl"><thead><tr><th>Athlete</th><th>Code</th><th>Link</th></tr></thead><tbody>'+
+      res.players.map(function(p){ return '<tr><td>'+p.name+'</td><td class="mono" style="color:var(--gold);letter-spacing:2px">'+p.code+'</td><td><button class="btn sm" onclick="LIQ.copy(\''+p.link+'\')">Copy Link</button></td></tr>'; }).join('')+'</tbody></table></div>'+
+      '<div class="mut" style="font-size:11px;margin-top:10px">Send each athlete their link (auto sign-in) or their code (they enter it at /iq?login=1).</div>';
+  }
+};
+
 /* ── INIT ── */
-try {
-  var qp = new URLSearchParams(location.search);
-  var qr = qp.get('role'); if(qr && NAV[qr]){ STATE.role = qr; persist(); }
-  var qpg = qp.get('page'); if(qpg){ STATE.page = qpg; }
-} catch(e){}
-renderSidebar();
-route();
+(async function boot(){
+  try { await LIQ.bootstrap(); } catch(e){}
+  renderSidebar();
+  route();
+  LIQ.injectBadge();
+  if(LIQ._pendingLogin) LIQ.openLogin();
+})();
 </script>
 </body>
 </html>
